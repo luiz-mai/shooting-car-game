@@ -1,0 +1,25 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<rect id="Body" fill="black" x="100" y="76" width="24" height="3.3"/>
+	<rect id="Body" fill="black" x="74" y="76" width="24" height="3.3"/>
+	<rect id="Body" x="44.1" y="30.8" fill="wine" width="111.8" height="17.7"/>
+	<polygon id="Body" fill="red" points="54.3,118.8 74,118.8 74,183.4 "/>
+	<polygon id="Body" fill="red" points="146.1,118.8 126.4,118.8 126.4,183.4 "/>
+	<polygon id="Body" fill="red" points="88.1,119 100,119 100,39.7 "/>
+	<polygon id="Body" fill="red" points="111.9,119 100,119 100,39.7 "/>
+	<rect id="Body" x="73.4" y="118.8" fill="red" width="53.1" height="65.1"/>
+	<polygon id="Body" fill="wine" points="163.8,187.5 119.7,187.5 119.7,183.9 "/>
+	<polygon id="Body" fill="wine" points="36.2,187.5 80.3,187.5 80.3,183.9 "/>
+	<rect id="Body" x="36.2" y="187.5" fill="red" width="127.6" height="12.5"/>
+	<rect id="Body" x="80.3" y="183.9" fill="wine" width="39.3" height="3.6"/>
+	<circle id="Body" fill="red" cx="36.2" cy="193.8" r="6.2"/>
+	<circle id="Body" fill="red" cx="163.8" cy="193.8" r="6.2"/>
+	<rect id="FrontWheels" fill="black" x="68.7" y="61.5" width="10.5" height="32.3"/>
+	<rect id="FrontWheels" fill="black" x="120.8" y="61.5" width="10.5" height="32.3"/>
+	<rect id="Body" fill="black" x="88.1" y="118.8" width="23.8" height="55"/>
+	<circle id="Body" fill="white" cx="100" cy="158.1" r="8.9"/>
+	<polygon id="Body" fill="red" points="53.9,119 100,119 100,111.8 "/>
+	<polygon id="Body" fill="red" points="146.1,119 100,119 100,111.8 "/>
+	<rect id="BackWheels" fill="black" x="59.3" y="133.5" width="10.5" height="32.3"/>
+	<rect id="BackWheels" fill="black" x="130.2" y="137.8" width="10.5" height="32.3"/>
+	<rect id="Cannon" fill="black" x="94.1" width="11.9" height="30.8"/>
+</svg>
