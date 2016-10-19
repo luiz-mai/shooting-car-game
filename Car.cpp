@@ -254,7 +254,7 @@ void Car::setIncrementalNumber(float incrementalNumber){
         return;
 }
 
-void Car::drawCar(GLfloat greenRadius, bool moving, vector<Circle> shotsVector){
+void Car::drawCar(GLfloat greenRadius, bool moving){
 
         float randomAngle = this->getIncrementalNumber();
         if(moving) {
@@ -325,8 +325,6 @@ void Car::drawCar(GLfloat greenRadius, bool moving, vector<Circle> shotsVector){
                 (*it).drawTriangle();
         }
 
-
-
         glTranslatef(
                 this->getCannon().getBeginX() + this->getCannon().getWidth()/2,
                 this->getCannon().getBeginY() + this->getCannon().getHeight()/2,
@@ -342,11 +340,6 @@ void Car::drawCar(GLfloat greenRadius, bool moving, vector<Circle> shotsVector){
                 );
 
         this->getCannon().drawRectangle();
-
-
-        for(vector<Circle>::iterator it = shotsVector.begin(); it != shotsVector.end(); ++it) {
-            (*it).drawCircle();
-        }
 
 
         glPopMatrix();

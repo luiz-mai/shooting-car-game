@@ -13,7 +13,7 @@ using namespace std;
 
 int i_status[1000];
 vector<Circle> circleVector;
-vector<Circle> shotsVector;
+vector<Shot> shotsVector;
 Circle* outerTrack;
 Rectangle* startTrack;
 Car* car;
@@ -76,9 +76,13 @@ void display(){
 	//Desenha a pista de largada/chegada
 	startTrack->drawRectangle();
 
-	car->drawCar(circleVector.front().getRadius(), moving, shotsVector);
+	car->drawCar(circleVector.front().getRadius(), moving);
 
-
+	GLfloat playerRadius = circleVector.front().getRadius();
+	GLfloat carWidth = car->getWidth();
+	for(vector<Shot>::iterator it = shotsVector.begin(); it != shotsVector.end(); ++it) {
+		(*it).drawShot(playerRadius, carWidth);
+	}
 
 	glutSwapBuffers();
 	glFlush();
@@ -126,9 +130,10 @@ void idle(){
 		moving = false;
 	}
 
-	for(vector<Circle>::iterator it = shotsVector.begin(); it != shotsVector.end(); ++it) {
-		//(*it).setCenterX((*it).getCenterX() + 1);
-		(*it).setCenterY((*it).getCenterY() - 1);
+	for(vector<Shot>::iterator it = shotsVector.begin(); it != shotsVector.end(); ++it) {
+		GLfloat angle = (*it).getShotAngle();
+		(*it).setCenterX((*it).getCenterX() - t*car->getShotSpeed()*sin(angle));
+		(*it).setCenterY((*it).getCenterY() - t*car->getShotSpeed()*cos(angle));
 	}
 
 	//Detecta colisão
@@ -165,13 +170,20 @@ void keyPressed(unsigned char key, int x, int y){
 
 void mouseClick(int button, int state, int x, int y){
 	if(button == GLUT_LEFT_BUTTON){
-		Circle* shot = new Circle(
+		Circle* shotCircle = new Circle(
 			"Shot",
-			8,
-			car->getCannon().getBeginX() + car->getCannon().getWidth()/2,
-			car->getCannon().getBeginY(),
+			15,
+			0,
+			0,
 			"white"
 		);
+		Shot* shot = new Shot(
+			*shotCircle,
+			car->getCenterX(),
+			car->getCenterY(),
+			car->getTheta() + car->getCannonAngle()
+		);
+		cout << shot->getShotAngle() << endl;
 		shotsVector.push_back(*shot);
 	}
 }

@@ -68,7 +68,7 @@ public:
     void setCannonAngle(GLfloat);
     void setIncrementalNumber(float);
 
-    void drawCar(GLfloat, bool, vector<Circle>);
+    void drawCar(GLfloat, bool);
 };
 
 #endif //CAR_H
