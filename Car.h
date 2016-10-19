@@ -29,6 +29,7 @@ class Car {
         GLfloat speed;
         GLfloat shotSpeed;
         GLfloat wheelsAngle;
+        GLfloat cannonAngle;
 
         float incrementalNumber;
 
@@ -48,6 +49,7 @@ public:
     GLfloat getSpeed();
     GLfloat getShotSpeed();
     GLfloat getWheelsAngle();
+    GLfloat getCannonAngle();
     float getIncrementalNumber();
 
     void setWheels(vector<Rectangle>);
@@ -63,9 +65,10 @@ public:
     void setSpeed(GLfloat);
     void setShotSpeed(GLfloat);
     void setWheelsAngle(GLfloat);
+    void setCannonAngle(GLfloat);
     void setIncrementalNumber(float);
 
-    void drawCar(GLfloat, bool);
+    void drawCar(GLfloat, bool, vector<Circle>);
 };
 
 #endif //CAR_H

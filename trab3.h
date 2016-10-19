@@ -35,6 +35,8 @@ public:
 
 void display(void);
 void idle(void);
+void mouseMotion(int, int);
+void mouseClick(int, int, int, int);
 void keyPressed(unsigned char, int, int);
 void keyUp(unsigned char, int, int);
 

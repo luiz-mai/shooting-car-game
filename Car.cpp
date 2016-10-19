@@ -168,6 +168,10 @@ GLfloat Car::getWheelsAngle(){
         return this->wheelsAngle;
 }
 
+GLfloat Car::getCannonAngle(){
+        return this->cannonAngle;
+}
+
 GLfloat Car::getIncrementalNumber(){
         return this->incrementalNumber;
 }
@@ -239,12 +243,18 @@ void Car::setWheelsAngle(GLfloat wheelsAngle){
         return;
 }
 
+void Car::setCannonAngle(GLfloat cannonAngle){
+        if(abs(cannonAngle) < 45)
+                this->cannonAngle = cannonAngle;
+        return;
+}
+
 void Car::setIncrementalNumber(float incrementalNumber){
         this->incrementalNumber = incrementalNumber;
         return;
 }
 
-void Car::drawCar(GLfloat greenRadius, bool moving){
+void Car::drawCar(GLfloat greenRadius, bool moving, vector<Circle> shotsVector){
 
         float randomAngle = this->getIncrementalNumber();
         if(moving) {
@@ -265,8 +275,9 @@ void Car::drawCar(GLfloat greenRadius, bool moving){
                 this->getCenterY(),
                 0
                 );
-        glRotatef(this->getTheta(), 0, 0, 1);
 
+
+        glRotatef(this->getTheta(), 0, 0, 1);
         glScalef(
                 2*greenRadius/this->getWidth(),
                 2*greenRadius/this->getHeight(),
@@ -281,25 +292,26 @@ void Car::drawCar(GLfloat greenRadius, bool moving){
         for(vector<Rectangle>::iterator it = wheels.begin(); it != wheels.end(); ++it) {
 
                 glPushMatrix();
-                if((*it).getID() == "FrontWheels"){
-                glTranslatef(
-                        (*it).getBeginX() + (*it).getWidth()/2,
-                        (*it).getBeginY() + (*it).getHeight()/2,
-                        0
-                        );
-                glRotatef(this->getWheelsAngle(), 0, 0, 1);
-                if(moving) {
-                        glRotatef(randomAngle, 1, 0, 0);
+                if((*it).getID() == "FrontWheels") {
+                        glTranslatef(
+                                (*it).getBeginX() + (*it).getWidth()/2,
+                                (*it).getBeginY() + (*it).getHeight()/2,
+                                0
+                                );
+                        glRotatef(this->getWheelsAngle(), 0, 0, 1);
+                        if(moving) {
+                                glRotatef(randomAngle, 1, 0, 0);
+                        }
+                        glTranslatef(
+                                -(*it).getBeginX() - (*it).getWidth()/2,
+                                -(*it).getBeginY() - (*it).getHeight()/2,
+                                0
+                                );
                 }
-                glTranslatef(
-                        -(*it).getBeginX() - (*it).getWidth()/2,
-                        -(*it).getBeginY() - (*it).getHeight()/2,
-                        0
-                        );
-                    }
                 (*it).drawRectangle();
                 glPopMatrix();
         }
+
 
         for(vector<Rectangle>::iterator it = bodyRectangles.begin(); it != bodyRectangles.end(); ++it) {
                 (*it).drawRectangle();
@@ -315,8 +327,27 @@ void Car::drawCar(GLfloat greenRadius, bool moving){
 
 
 
+        glTranslatef(
+                this->getCannon().getBeginX() + this->getCannon().getWidth()/2,
+                this->getCannon().getBeginY() + this->getCannon().getHeight()/2,
+                0
+                );
+
+                glRotatef(this->getCannonAngle(), 0, 0, 1);
+
+        glTranslatef(
+                -this->getCannon().getBeginX() - this->getCannon().getWidth()/2,
+                -this->getCannon().getBeginY() - this->getCannon().getHeight()/2,
+                0
+                );
 
         this->getCannon().drawRectangle();
+
+
+        for(vector<Circle>::iterator it = shotsVector.begin(); it != shotsVector.end(); ++it) {
+            (*it).drawCircle();
+        }
+
 
         glPopMatrix();
         return;

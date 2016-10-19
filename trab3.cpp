@@ -13,14 +13,18 @@ using namespace std;
 
 int i_status[1000];
 vector<Circle> circleVector;
+vector<Circle> shotsVector;
 Circle* outerTrack;
 Rectangle* startTrack;
 Car* car;
 int biggestRadius = 0;
 bool colision = false;
+int width, height;
 int arenaCenterX = 0, arenaCenterY = 0;
 GLfloat carRadius;
 bool moving;
+int lastX;
+bool shooting;
 
 
 int main(int argc, char** argv) {
@@ -35,8 +39,8 @@ int main(int argc, char** argv) {
 	car->setCenterY(circleVector.front().getCenterY());
 
 	//Define tamanho e título da janela
-	int width = 2*biggestRadius;
-	int height = 2*biggestRadius;
+	width = 2*biggestRadius;
+	height = 2*biggestRadius;
 
 	//Inicializações
 	glutInit(&argc, argv);
@@ -72,7 +76,9 @@ void display(){
 	//Desenha a pista de largada/chegada
 	startTrack->drawRectangle();
 
-	car->drawCar(circleVector.front().getRadius(), moving);
+	car->drawCar(circleVector.front().getRadius(), moving, shotsVector);
+
+
 
 	glutSwapBuffers();
 	glFlush();
@@ -106,13 +112,13 @@ void idle(){
 		car->setTheta(car->getTheta() - t*(car->getSpeed()*tan((car->getWheelsAngle())*M_PI/180)));
 	}
 	c = 'a';
-	if(i_status[c] == 1) car->setWheelsAngle(car->getWheelsAngle() - 0.4);
+	if(i_status[c] == 1) car->setWheelsAngle(car->getWheelsAngle() - 0.3);
 	c = 'A';
-	if(i_status[c] == 1) car->setWheelsAngle(car->getWheelsAngle() - 0.4);
+	if(i_status[c] == 1) car->setWheelsAngle(car->getWheelsAngle() - 0.3);
 	c = 'd';
-	if(i_status[c] == 1) car->setWheelsAngle(car->getWheelsAngle() + 0.4);
+	if(i_status[c] == 1) car->setWheelsAngle(car->getWheelsAngle() + 0.3);
 	c = 'D';
-	if(i_status[c] == 1) car->setWheelsAngle(car->getWheelsAngle() + 0.4);
+	if(i_status[c] == 1) car->setWheelsAngle(car->getWheelsAngle() + 0.3);
 
 	if(i_status['w'] == 1 || i_status['W'] == 1 || i_status['s'] == 1 || i_status['S'] == 1){
 		moving = true;
@@ -120,6 +126,10 @@ void idle(){
 		moving = false;
 	}
 
+	for(vector<Circle>::iterator it = shotsVector.begin(); it != shotsVector.end(); ++it) {
+		//(*it).setCenterX((*it).getCenterX() + 1);
+		(*it).setCenterY((*it).getCenterY() - 1);
+	}
 
 	//Detecta colisão
 	for(vector<Circle>::iterator it = ++circleVector.begin(); it != circleVector.end(); ++it) {
@@ -155,12 +165,25 @@ void keyPressed(unsigned char key, int x, int y){
 
 void mouseClick(int button, int state, int x, int y){
 	if(button == GLUT_LEFT_BUTTON){
-		
+		Circle* shot = new Circle(
+			"Shot",
+			8,
+			car->getCannon().getBeginX() + car->getCannon().getWidth()/2,
+			car->getCannon().getBeginY(),
+			"white"
+		);
+		shotsVector.push_back(*shot);
 	}
 }
 
 void mouseMotion(int x, int y){
-
+	int centerX = width/2;
+	if(x > centerX){
+		car->setCannonAngle(45*(x-centerX)/centerX);
+	} else if (x < centerX){
+		car->setCannonAngle(-45*(centerX-x)/centerX);
+	}
+	return;
 }
 
 
