@@ -55,20 +55,10 @@ void Shot::drawShot(GLfloat playerRadius, Car* car){
             this->getCenterY(),
             0
     );
-    glTranslatef(
-            0,
-            -car->getCannon().getHeight()/2,
-            0
-    );
-    glRotatef(car->getCannonAngle(), 0, 0, 1);
-    glTranslatef(
-            0,
-            car->getCannon().getHeight()/2,
-            0
-    );
     glScalef(2*playerRadius/car->getWidth(), 2*playerRadius/car->getWidth(), 1);
-    glRotatef(car->getTheta(), 0, 0, 1);
-    glTranslatef(0, -car->getHeight()/2, 0);
+    glTranslatef(0, -car->getCannon().getHeight(), 0);
+    glRotatef(this->getShotAngle(), 0, 0, 1);
+    glTranslatef(0, -car->getHeight()/2 + car->getCannon().getHeight(), 0);
     this->getCircle().drawCircle();
 
     glPopMatrix();
