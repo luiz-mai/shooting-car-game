@@ -81,7 +81,7 @@ void display(){
 	GLfloat playerRadius = circleVector.front().getRadius();
 	GLfloat carWidth = car->getWidth();
 	for(vector<Shot>::iterator it = shotsVector.begin(); it != shotsVector.end(); ++it) {
-		(*it).drawShot(playerRadius, carWidth);
+		(*it).drawShot(playerRadius, car);
 	}
 
 	glutSwapBuffers();
@@ -132,8 +132,8 @@ void idle(){
 
 	for(vector<Shot>::iterator it = shotsVector.begin(); it != shotsVector.end(); ++it) {
 		GLfloat angle = (*it).getShotAngle();
-		(*it).setCenterX((*it).getCenterX() - t*car->getShotSpeed()*sin(angle));
-		(*it).setCenterY((*it).getCenterY() - t*car->getShotSpeed()*cos(angle));
+		(*it).setCenterX((*it).getCenterX() + t*car->getShotSpeed()*cos((angle-90)*M_PI/180));
+		(*it).setCenterY((*it).getCenterY() + t*car->getShotSpeed()*sin((angle-90)*M_PI/180));
 	}
 
 	//Detecta colisão
@@ -172,7 +172,7 @@ void mouseClick(int button, int state, int x, int y){
 	if(button == GLUT_LEFT_BUTTON){
 		Circle* shotCircle = new Circle(
 			"Shot",
-			15,
+			12,
 			0,
 			0,
 			"white"
@@ -183,8 +183,9 @@ void mouseClick(int button, int state, int x, int y){
 			car->getCenterY(),
 			car->getTheta() + car->getCannonAngle()
 		);
-		cout << shot->getShotAngle() << endl;
 		shotsVector.push_back(*shot);
+
+		cout << car->getTheta() << " / " << shot->getShotAngle() << endl;
 	}
 }
 

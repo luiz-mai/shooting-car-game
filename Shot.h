@@ -3,9 +3,9 @@
 
 #include <GL/freeglut.h>
 #include<string>
-#include <iostream>
 #include "Utils.h"
 #include "Circle.h"
+#include "Car.h"
 using namespace std;
 
 class Shot{
@@ -28,7 +28,7 @@ public:
     void setCenterY(GLfloat);
     void setShotAngle(GLfloat);
 
-    void drawShot(GLfloat, GLfloat);
+    void drawShot(GLfloat, Car*);
 
 };
 
