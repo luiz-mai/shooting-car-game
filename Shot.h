@@ -2,33 +2,36 @@
 #define SHOT_H
 
 #include <GL/freeglut.h>
-#include<string>
+#include <string>
 #include "Utils.h"
 #include "Circle.h"
 #include "Car.h"
 using namespace std;
 
-class Shot{
-    Circle circle;
-    GLfloat centerX;
-    GLfloat centerY;
-    GLfloat shotAngle;
+class Shot {
+Circle circle;
+GLfloat centerX;
+GLfloat centerY;
+GLfloat carAngle;
+GLfloat cannonAngle;
 
 public:
-    Shot();
-    Shot(Circle, GLfloat, GLfloat, GLfloat);
+Shot();
+Shot(Circle, GLfloat, GLfloat, GLfloat, GLfloat);
 
-    Circle getCircle();
-    GLfloat getCenterX();
-    GLfloat getCenterY();
-    GLfloat getShotAngle();
+Circle getCircle();
+GLfloat getCenterX();
+GLfloat getCenterY();
+GLfloat getCarAngle();
+GLfloat getCannonAngle();
 
-    void setCircle(Circle);
-    void setCenterX(GLfloat);
-    void setCenterY(GLfloat);
-    void setShotAngle(GLfloat);
+void setCircle(Circle);
+void setCenterX(GLfloat);
+void setCenterY(GLfloat);
+void setCarAngle(GLfloat);
+void setCannonAngle(GLfloat);
 
-    void drawShot(GLfloat, Car*);
+void drawShot(GLfloat, Car*);
 
 };
 

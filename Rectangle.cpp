@@ -1,7 +1,8 @@
 #include "Rectangle.h"
 
 
-Rectangle::Rectangle(){}
+Rectangle::Rectangle(){
+}
 
 Rectangle::Rectangle(string ID, GLfloat beginX, GLfloat beginY, GLfloat width, GLfloat height, string fill){
         this->ID = ID;
@@ -14,56 +15,56 @@ Rectangle::Rectangle(string ID, GLfloat beginX, GLfloat beginY, GLfloat width, G
 }
 
 string Rectangle::getID(){
-  return this->ID;
+        return this->ID;
 }
 GLfloat Rectangle::getBeginX(){
-  return this->beginX;
+        return this->beginX;
 }
 
 GLfloat Rectangle::getBeginY(){
-  return this->beginY;
+        return this->beginY;
 }
 
 GLfloat Rectangle::getWidth(){
-  return this->width;
+        return this->width;
 }
 
 GLfloat Rectangle::getHeight(){
-  return this->height;
+        return this->height;
 }
 
 string Rectangle::getFill(){
-  return this->fill;
+        return this->fill;
 }
 
 void Rectangle::setID(string ID){
-  this->ID = ID;
-  return;
+        this->ID = ID;
+        return;
 }
 
 void Rectangle::setBeginX(GLfloat beginX){
-  this->beginX = beginX;
-  return;
+        this->beginX = beginX;
+        return;
 }
 
 void Rectangle::setBeginY(GLfloat beginY){
-  this->beginY = beginY;
-  return;
+        this->beginY = beginY;
+        return;
 }
 
 void Rectangle::setWidth(GLfloat width){
-  this->width = width;
-  return;
+        this->width = width;
+        return;
 }
 
 void Rectangle::setHeight(GLfloat height){
-  this->height = height;
-  return;
+        this->height = height;
+        return;
 }
 
 void Rectangle::setFill(string fill){
-  this->fill = fill;
-  return;
+        this->fill = fill;
+        return;
 }
 
 void Rectangle::drawRectangle(){

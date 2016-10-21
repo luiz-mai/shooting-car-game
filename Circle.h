@@ -8,29 +8,29 @@
 using namespace std;
 
 class Circle {
-  string ID;
-  GLfloat radius;
-  GLfloat centerX;
-  GLfloat centerY;
-  string fill;
+string ID;
+GLfloat radius;
+GLfloat centerX;
+GLfloat centerY;
+string fill;
 
 public:
-  Circle();
-  Circle(string, GLfloat, GLfloat, GLfloat, string);
+Circle();
+Circle(string, GLfloat, GLfloat, GLfloat, string);
 
-  string getID();
-  GLfloat getRadius();
-  GLfloat getCenterX();
-  GLfloat getCenterY();
-  string getFill();
+string getID();
+GLfloat getRadius();
+GLfloat getCenterX();
+GLfloat getCenterY();
+string getFill();
 
-  void setID(string);
-  void setRadius(GLfloat);
-  void setCenterX(GLfloat);
-  void setCenterY(GLfloat);
-  void setFill(string);
+void setID(string);
+void setRadius(GLfloat);
+void setCenterX(GLfloat);
+void setCenterY(GLfloat);
+void setFill(string);
 
-  void drawCircle();
+void drawCircle();
 };
 
 #endif //CIRCLE_H

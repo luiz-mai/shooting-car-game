@@ -1,7 +1,8 @@
 #include "Circle.h"
 
 
-Circle::Circle(){}
+Circle::Circle(){
+}
 
 Circle::Circle(string id, GLfloat radius, GLfloat centerX, GLfloat centerY, string fill){
         this->ID = id;
@@ -12,48 +13,48 @@ Circle::Circle(string id, GLfloat radius, GLfloat centerX, GLfloat centerY, stri
 }
 
 string Circle::getID(){
-  return this->ID;
+        return this->ID;
 }
 
 GLfloat Circle::getRadius(){
-  return this->radius;
+        return this->radius;
 }
 
 GLfloat Circle::getCenterX(){
-  return this->centerX;
+        return this->centerX;
 }
 
 GLfloat Circle::getCenterY(){
-  return this->centerY;
+        return this->centerY;
 }
 
 string Circle::getFill(){
-  return this->fill;
+        return this->fill;
 }
 
 void Circle::setID(string ID){
-  this->ID = ID;
-  return;
+        this->ID = ID;
+        return;
 }
 
 void Circle::setRadius(GLfloat radius){
-  this->radius = radius;
-  return;
+        this->radius = radius;
+        return;
 }
 
 void Circle::setCenterX(GLfloat centerX){
-  this->centerX = centerX;
-  return;
+        this->centerX = centerX;
+        return;
 }
 
 void Circle::setCenterY(GLfloat centerY){
-  this->centerY = centerY;
-  return;
+        this->centerY = centerY;
+        return;
 }
 
 void Circle::setFill(string fill){
-  this->fill = fill;
-  return;
+        this->fill = fill;
+        return;
 }
 
 void Circle::drawCircle(){

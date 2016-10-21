@@ -283,7 +283,7 @@ void Car::drawCar(GLfloat greenRadius, bool moving){
                 2*greenRadius/this->getHeight(),
                 1
                 );
-                
+
         glTranslatef(
                 -this->getWidth()/2,
                 -this->getHeight()/2,
@@ -331,7 +331,7 @@ void Car::drawCar(GLfloat greenRadius, bool moving){
                 0
                 );
 
-                glRotatef(this->getCannonAngle(), 0, 0, 1);
+        glRotatef(this->getCannonAngle(), 0, 0, 1);
 
         glTranslatef(
                 -this->getCannon().getBeginX() - this->getCannon().getWidth()/2,

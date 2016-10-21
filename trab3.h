@@ -1,7 +1,7 @@
 /*****************************************************************************************
 **																						**
 **						UNIVERSIDADE FEDERAL DO ESPÍRITO SANTO							**
-**							   Luiz Felipe Ferreira Mai 								**
+**							   Luiz Felipe Ferreira Mai                                 **
 **																						**
 **						   Trabalho 2 de Computação Gráfica								**
 **																						**
@@ -14,6 +14,7 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <cmath>
 #include <GL/freeglut.h>
 #include "tinyxml2.h"
@@ -24,14 +25,14 @@
 using namespace std;
 using namespace tinyxml2;
 
-class Trab3{
+class Trab3 {
 
 public:
-  Trab3();
-  string getArenaPath(int, char**);
-  vector<Circle> arenaReading(Trab3, string, vector<Circle>);
-  Rectangle* rectangleReading(XMLElement*);
-  vector<Circle> circleReading(XMLElement*, vector<Circle>);
+Trab3();
+string getArenaPath(int, char**);
+vector<Circle> arenaReading(Trab3, string, vector<Circle>);
+Rectangle* rectangleReading(XMLElement*);
+vector<Circle> circleReading(XMLElement*, vector<Circle>);
 };
 
 void display(void);
@@ -40,5 +41,6 @@ void mouseMotion(int, int);
 void mouseClick(int, int, int, int);
 void keyPressed(unsigned char, int, int);
 void keyUp(unsigned char, int, int);
+bool outOfScreen(Shot);
 
 #endif //TRAB3_H

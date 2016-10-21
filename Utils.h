@@ -5,10 +5,10 @@
 #include <GL/freeglut.h>
 using namespace std;
 
-class Utils{
+class Utils {
 
 public:
-  void checkColor(string);
+void checkColor(string);
 };
 
 #endif //UTILS_H
