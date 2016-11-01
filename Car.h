@@ -21,6 +21,7 @@ vector<Triangle> bodyTriangles;
 vector<Circle> bodyCircles;
 Rectangle cannon;
 
+GLfloat circleRadius;
 GLfloat width;
 GLfloat height;
 GLfloat theta;
@@ -32,6 +33,7 @@ GLfloat wheelsAngle;
 GLfloat cannonAngle;
 
 float incrementalNumber;
+bool moving;
 
 public:
 Car();
@@ -41,6 +43,7 @@ vector<Rectangle> getBodyRectangles();
 vector<Triangle> getBodyTriangles();
 vector<Circle> getBodyCircles();
 Rectangle getCannon();
+GLfloat getCircleRadius();
 GLfloat getWidth();
 GLfloat getHeight();
 GLfloat getTheta();
@@ -51,12 +54,14 @@ GLfloat getShotSpeed();
 GLfloat getWheelsAngle();
 GLfloat getCannonAngle();
 float getIncrementalNumber();
+bool getMoving();
 
 void setWheels(vector<Rectangle>);
 void setBodyRectangles(vector<Rectangle>);
 void setBodyTriangles(vector<Triangle>);
 void setBodyCircles(vector<Circle>);
 void setCannon(Rectangle);
+void setCircleRadius(GLfloat);
 void setWidth(GLfloat);
 void setHeight(GLfloat);
 void setTheta(GLfloat);
@@ -67,8 +72,11 @@ void setShotSpeed(GLfloat);
 void setWheelsAngle(GLfloat);
 void setCannonAngle(GLfloat);
 void setIncrementalNumber(float);
+void setMoving(bool);
 
-void drawCar(GLfloat, bool);
+void drawCar();
+void detectFoeColision(Car, GLfloat, GLfloat);
+void detectTrackColision(Circle, GLfloat, GLfloat, GLfloat);
 };
 
 #endif //CAR_H

@@ -1,7 +1,7 @@
 /*****************************************************************************************
 **																						**
 **						UNIVERSIDADE FEDERAL DO ESPÍRITO SANTO							**
-**							   Luiz Felipe Ferreira Mai         						**
+**							   Luiz Felipe Ferreira Mai               **
 **																						**
 **						   Trabalho 3 de Computação Gráfica								**
 **																						**
@@ -13,30 +13,25 @@ using namespace std;
 
 //VARIÁVEIS GLOBAIS
 int i_status[1000];
-vector<Circle> circleVector;
+vector<Circle> trackVector;
+vector<Car> foesVector;
 vector<Shot> shotsVector;
 Circle* outerTrack;
 Rectangle* startTrack;
-Car* car;
+Car* player;
 int biggestRadius = 0;
 bool colision = false;
 int width, height;
 int arenaCenterX = 0, arenaCenterY = 0;
-GLfloat carRadius;
-bool moving;
-int lastX;
-bool shooting;
 
 int main(int argc, char** argv) {
 
 								Trab3 trab;
-								car = new Car();
+								player = new Car();
 
 								//Abre o arquivo de config e seta o centro do carro.
 								string arenaFullPath = trab.getArenaPath(argc, argv);
-								circleVector = trab.arenaReading(trab, arenaFullPath, circleVector);
-								car->setCenterX(circleVector.front().getCenterX());
-								car->setCenterY(circleVector.front().getCenterY());
+								trackVector = trab.arenaReading(trab, arenaFullPath, trackVector);
 
 								//Define tamanho e título da janela
 								width = 2*biggestRadius;
@@ -47,7 +42,7 @@ int main(int argc, char** argv) {
 								glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 								glutInitWindowSize(width,height);
 								glutInitWindowPosition(100,100);
-								glutCreateWindow("Trabalho 3 de Computacao Grafica");
+								glutCreateWindow("Trabalho 4 de Computacao Grafica");
 								glClearColor(0,0,0,0);
 								glMatrixMode(GL_PROJECTION);
 								glLoadIdentity();
@@ -69,18 +64,24 @@ int main(int argc, char** argv) {
 void display(){
 								glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-								//Desenha todos os inimigos
-								for(vector<Circle>::iterator it = ++circleVector.begin(); it != circleVector.end(); ++it) {
+								//Desenha a pista
+								for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
 																(*it).drawCircle();
 								}
 								//Desenha a pista de largada/chegada
 								startTrack->drawRectangle();
 								//Desenha o carro
-								car->drawCar(circleVector.front().getRadius(), moving);
+								player->drawCar();
+
+
+								//Desenha todos os inimigos
+								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+																(*it).drawCar();
+								}
 								//Desenha os tiros
-								GLfloat playerRadius = circleVector.front().getRadius();
+								GLfloat playerRadius = player->getCircleRadius();
 								for(vector<Shot>::iterator it = shotsVector.begin(); it != shotsVector.end(); ++it) {
-																(*it).drawShot(playerRadius, car);
+																(*it).drawShot(playerRadius, player);
 								}
 
 								glutSwapBuffers();
@@ -90,8 +91,8 @@ void display(){
 
 void idle(){
 
-								float oldCenterX =  car->getCenterX();
-								float oldCenterY =  car->getCenterY();
+								float oldCenterX =  player->getCenterX();
+								float oldCenterY =  player->getCenterY();
 
 								//Efetua a medição do tempo decorrido
 								static GLdouble previousTime = 0;
@@ -104,61 +105,55 @@ void idle(){
 								//Movimentação do carro
 								char c;
 								if(i_status['w'] == 1 || i_status['W'] == 1) {
-																car->setCenterX(car->getCenterX() + t*(car->getSpeed()*cos((car->getTheta()-90)*M_PI/180)));
-																car->setCenterY(car->getCenterY() + t*(car->getSpeed()*sin((car->getTheta()-90)*M_PI/180)));
-																car->setTheta(car->getTheta() + t*(car->getSpeed()*tan((car->getWheelsAngle())*M_PI/180)));
+																player->setCenterX(player->getCenterX() + t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180)));
+																player->setCenterY(player->getCenterY() + t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180)));
+																player->setTheta(player->getTheta() + t*(player->getSpeed()*tan((player->getWheelsAngle())*M_PI/180)));
 								}
 								if(i_status['s'] == 1 || i_status['S'] == 1) {
-																car->setCenterX(car->getCenterX() - t*(car->getSpeed()*cos((car->getTheta()-90)*M_PI/180)));
-																car->setCenterY(car->getCenterY() - t*(car->getSpeed()*sin((car->getTheta()-90)*M_PI/180)));
-																car->setTheta(car->getTheta() - t*(car->getSpeed()*tan((car->getWheelsAngle())*M_PI/180)));
+																player->setCenterX(player->getCenterX() - t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180)));
+																player->setCenterY(player->getCenterY() - t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180)));
+																player->setTheta(player->getTheta() - t*(player->getSpeed()*tan((player->getWheelsAngle())*M_PI/180)));
 								}
 
 								//Angulação do carro
 								c = 'a';
-								if(i_status[c] == 1) car->setWheelsAngle(car->getWheelsAngle() - 0.3);
+								if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 0.3);
 								c = 'A';
-								if(i_status[c] == 1) car->setWheelsAngle(car->getWheelsAngle() - 0.3);
+								if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 0.3);
 								c = 'd';
-								if(i_status[c] == 1) car->setWheelsAngle(car->getWheelsAngle() + 0.3);
+								if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 0.3);
 								c = 'D';
-								if(i_status[c] == 1) car->setWheelsAngle(car->getWheelsAngle() + 0.3);
+								if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 0.3);
 
 								//Define as flags usadas pra representaçao do movimento nas rodas.
 								if(i_status['w'] == 1 || i_status['W'] == 1 || i_status['s'] == 1 || i_status['S'] == 1) {
-																moving = true;
+																player->setMoving(true);
 								} else {
-																moving = false;
+																player->setMoving(false);
 								}
 
 								//Movimentação dos tiros
 								for(vector<Shot>::iterator it = shotsVector.begin(); it != shotsVector.end(); ++it) {
 																GLfloat angle = (*it).getCarAngle() + (*it).getCannonAngle();
-																(*it).setCenterX((*it).getCenterX() + t*car->getShotSpeed()*cos((angle-90)*M_PI/180));
-																(*it).setCenterY((*it).getCenterY() + t*car->getShotSpeed()*sin((angle-90)*M_PI/180));
+																(*it).setCenterX((*it).getCenterX() + t*player->getShotSpeed()*cos((angle-90)*M_PI/180));
+																(*it).setCenterY((*it).getCenterY() + t*player->getShotSpeed()*sin((angle-90)*M_PI/180));
 								}
 								//Remove os tiros fora da tela
 								shotsVector.erase(
 																remove_if(shotsVector.begin(), shotsVector.end(), outOfScreen),
 																shotsVector.end());
 
-								//Detecta colisão
-								for(vector<Circle>::iterator it = ++circleVector.begin(); it != circleVector.end(); ++it) {
+								//Detecta colisão com a pista
+								for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
 																Circle c = (*it);
+																player->detectTrackColision(c, biggestRadius, oldCenterX, oldCenterY);
 
-																if(c.getRadius() != biggestRadius ) {
-																								if(sqrt(pow((c.getCenterX() - car->getCenterX()),2) + pow((c.getCenterY() - car->getCenterY()),2))
-																											< c.getRadius() + carRadius) {
-																																car->setCenterX(oldCenterX);
-																																car->setCenterY(oldCenterY);
-																								}
-																} else {
-																								if(sqrt(pow((c.getCenterX() - car->getCenterX()),2)+pow(c.getCenterY() - car->getCenterY(),2)) + carRadius
-																											> biggestRadius) {
-																																car->setCenterX(oldCenterX);
-																																car->setCenterY(oldCenterY);
-																								}
-																}
+								}
+
+								//Detecta colisão com os inimigos
+								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+																Car foe = (*it);
+																player->detectFoeColision(foe, oldCenterX, oldCenterY);
 								}
 
 								glutPostRedisplay();
@@ -194,10 +189,10 @@ void mouseClick(int button, int state, int x, int y){
 																								);
 																Shot* shot = new Shot(
 																								*shotCircle,
-																								car->getCenterX(),
-																								car->getCenterY(),
-																								car->getTheta(),
-																								car->getCannonAngle()
+																								player->getCenterX(),
+																								player->getCenterY(),
+																								player->getTheta(),
+																								player->getCannonAngle()
 																								);
 																shotsVector.push_back(*shot);
 								}
@@ -208,9 +203,9 @@ void mouseMotion(int x, int y){
 								//Canto esquerdo da tela: -45 / Canto direito da tela: +45
 								int centerX = width/2;
 								if(x > centerX) {
-																car->setCannonAngle(45*(x-centerX)/centerX);
+																player->setCannonAngle(45*(x-centerX)/centerX);
 								} else if (x < centerX) {
-																car->setCannonAngle(-45*(centerX-x)/centerX);
+																player->setCannonAngle(-45*(centerX-x)/centerX);
 								}
 								return;
 }
@@ -237,22 +232,28 @@ string Trab3::getArenaPath(int argc, char** argv){
 								XMLElement* aplicationElement = configs.FirstChildElement("aplicacao");
 								XMLElement* arenaFileElement = aplicationElement->FirstChildElement("arquivoDaArena");
 								XMLElement* carroFileElement = aplicationElement->FirstChildElement("carro");
-								car->setSpeed( carroFileElement->FloatAttribute("velCarro"));
-								car->setShotSpeed( carroFileElement->FloatAttribute("velTiro"));
+								player->setSpeed( carroFileElement->FloatAttribute("velCarro"));
+								player->setShotSpeed( carroFileElement->FloatAttribute("velTiro"));
+								XMLElement* carroInimigoFileElement = aplicationElement->FirstChildElement("carroInimigo");
+								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+																Car foe = (*it);
+																foe.setSpeed(carroInimigoFileElement->FloatAttribute("velCarro"));
+																foe.setShotSpeed(carroInimigoFileElement->FloatAttribute("velTiro"));
+								}
 								string arenaPath = arenaFileElement->Attribute("caminho");
 								string arenaFilename = arenaFileElement->Attribute("nome");
 								string arenaExtension = arenaFileElement->Attribute("tipo");
 								return arenaPath + arenaFilename + "." + arenaExtension;
 }
 
-vector<Circle> Trab3::arenaReading(Trab3 trab, string arenaFullPath, vector<Circle> circleVector){
+vector<Circle> Trab3::arenaReading(Trab3 trab, string arenaFullPath, vector<Circle> trackVector){
 								//Leitura do arquivo da Arena
 								XMLDocument arena;
 								arena.LoadFile(arenaFullPath.c_str());
 								XMLElement* svgElement = arena.FirstChildElement("svg");
 								startTrack = trab.rectangleReading(svgElement);
-								circleVector = trab.circleReading(svgElement, circleVector);
-								return circleVector;
+								trackVector = trab.circleReading(svgElement, trackVector);
+								return trackVector;
 }
 
 Rectangle* Trab3::rectangleReading(XMLElement* svgElement){
@@ -269,7 +270,7 @@ Rectangle* Trab3::rectangleReading(XMLElement* svgElement){
 								return rect;
 }
 
-vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> circleVector){
+vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> trackVector){
 								//Leitura das pistas e jogadores
 								for(XMLElement* circleElement = svgElement->FirstChildElement("circle"); circleElement != NULL; circleElement = circleElement->NextSiblingElement("circle"))
 								{
@@ -283,12 +284,17 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> circl
 
 																//Garante que o jogador sempre será o primeiro do vector
 																if(circle->getID() == "Jogador") {
-																								vector<Circle>::iterator it;
-																								it = circleVector.begin();
-																								circleVector.insert(it, *circle);
-																								carRadius = circle->getRadius();
+																								player->setCenterX(circle->getCenterX());
+																								player->setCenterY(circle->getCenterY());
+																								player->setCircleRadius(circle->getRadius());
+																} else if(circle->getID() == "Inimigo") {
+																								Car* foe = new Car();
+																								foe->setCenterX(circle->getCenterX());
+																								foe->setCenterY(circle->getCenterY());
+																								foe->setCircleRadius(circle->getRadius());
+																								foesVector.push_back(*foe);
 																} else {
-																								circleVector.push_back(*circle);
+																								trackVector.push_back(*circle);
 																}
 																//Considerações para ajustar o tamanho da tela e posição dos elementos
 																if(circle->getRadius() > biggestRadius) {
@@ -298,5 +304,5 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> circl
 																}
 								}
 
-								return circleVector;
+								return trackVector;
 }

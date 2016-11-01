@@ -112,6 +112,9 @@ Car::Car(){
         this->setWidth(200);
         this->setHeight(200);
         this->setTheta(0);
+        this->setCannonAngle(0);
+        this->setWheelsAngle(0);
+        this->setMoving(false);
 
         return;
 }
@@ -134,6 +137,10 @@ vector<Circle> Car::getBodyCircles(){
 
 Rectangle Car::getCannon(){
         return this->cannon;
+}
+
+GLfloat Car::getCircleRadius(){
+        return this->circleRadius;
 }
 
 GLfloat Car::getWidth(){
@@ -176,6 +183,10 @@ GLfloat Car::getIncrementalNumber(){
         return this->incrementalNumber;
 }
 
+bool Car::getMoving(){
+        return this->moving;
+}
+
 void Car::setWheels(vector<Rectangle> wheels){
         this->wheels = wheels;
         return;
@@ -201,6 +212,12 @@ void Car::setCannon(Rectangle cannon){
         this->cannon = cannon;
         return;
 }
+
+void Car::setCircleRadius(GLfloat circleRadius){
+        this->circleRadius = circleRadius;
+        return;
+}
+
 
 void Car::setWidth(GLfloat width){
         this->width = width;
@@ -254,8 +271,14 @@ void Car::setIncrementalNumber(float incrementalNumber){
         return;
 }
 
-void Car::drawCar(GLfloat greenRadius, bool moving){
+void Car::setMoving(bool moving){
+        this->moving = moving;
+        return;
+}
 
+void Car::drawCar(){
+        bool moving = this->getMoving();
+        GLfloat playerRadius = this->getCircleRadius();
         float randomAngle = this->getIncrementalNumber();
         if(moving) {
                 if(randomAngle >=45) {
@@ -279,8 +302,8 @@ void Car::drawCar(GLfloat greenRadius, bool moving){
 
         glRotatef(this->getTheta(), 0, 0, 1);
         glScalef(
-                2*greenRadius/this->getWidth(),
-                2*greenRadius/this->getHeight(),
+                2*playerRadius/this->getWidth(),
+                2*playerRadius/this->getHeight(),
                 1
                 );
 
@@ -344,4 +367,28 @@ void Car::drawCar(GLfloat greenRadius, bool moving){
 
         glPopMatrix();
         return;
+}
+
+void Car::detectFoeColision(Car foe, GLfloat oldCenterX, GLfloat oldCenterY){
+        if(sqrt(pow((foe.getCenterX() - this->getCenterX()),2) + pow((foe.getCenterY() - this->getCenterY()),2))
+           < foe.getCircleRadius() + this->getCircleRadius()) {
+                this->setCenterX(oldCenterX);
+                this->setCenterY(oldCenterY);
+        }
+}
+
+void Car::detectTrackColision(Circle c, GLfloat biggestRadius, GLfloat oldCenterX, GLfloat oldCenterY){
+        if(c.getRadius() != biggestRadius ) {
+                if(sqrt(pow((c.getCenterX() - this->getCenterX()),2) + pow((c.getCenterY() - this->getCenterY()),2))
+                   < c.getRadius() + this->getCircleRadius()) {
+                        this->setCenterX(oldCenterX);
+                        this->setCenterY(oldCenterY);
+                }
+        } else {
+                if(sqrt(pow((c.getCenterX() - this->getCenterX()),2)+pow(c.getCenterY() - this->getCenterY(),2)) + this->getCircleRadius()
+                   > biggestRadius) {
+                        this->setCenterX(oldCenterX);
+                        this->setCenterY(oldCenterY);
+                }
+        }
 }
