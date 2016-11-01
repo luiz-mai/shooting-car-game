@@ -34,6 +34,7 @@ GLfloat cannonAngle;
 
 float incrementalNumber;
 bool moving;
+string color;
 
 public:
 Car();
@@ -55,6 +56,7 @@ GLfloat getWheelsAngle();
 GLfloat getCannonAngle();
 float getIncrementalNumber();
 bool getMoving();
+string getColor();
 
 void setWheels(vector<Rectangle>);
 void setBodyRectangles(vector<Rectangle>);
@@ -73,6 +75,7 @@ void setWheelsAngle(GLfloat);
 void setCannonAngle(GLfloat);
 void setIncrementalNumber(float);
 void setMoving(bool);
+void setColor(string);
 
 void drawCar();
 void detectFoeColision(Car, GLfloat, GLfloat);

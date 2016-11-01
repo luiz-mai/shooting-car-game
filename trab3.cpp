@@ -117,13 +117,13 @@ void idle(){
 
 								//Angulação do carro
 								c = 'a';
-								if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 0.3);
+								if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 1.5);
 								c = 'A';
-								if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 0.3);
+								if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 1.5);
 								c = 'd';
-								if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 0.3);
+								if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 1.5);
 								c = 'D';
-								if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 0.3);
+								if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 1.5);
 
 								//Define as flags usadas pra representaçao do movimento nas rodas.
 								if(i_status['w'] == 1 || i_status['W'] == 1 || i_status['s'] == 1 || i_status['S'] == 1) {
@@ -287,11 +287,13 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> track
 																								player->setCenterX(circle->getCenterX());
 																								player->setCenterY(circle->getCenterY());
 																								player->setCircleRadius(circle->getRadius());
+																								player->setColor(circle->getFill());
 																} else if(circle->getID() == "Inimigo") {
 																								Car* foe = new Car();
 																								foe->setCenterX(circle->getCenterX());
 																								foe->setCenterY(circle->getCenterY());
 																								foe->setCircleRadius(circle->getRadius());
+																								foe->setColor(circle->getFill());
 																								foesVector.push_back(*foe);
 																} else {
 																								trackVector.push_back(*circle);

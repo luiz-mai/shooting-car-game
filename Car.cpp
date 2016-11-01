@@ -187,6 +187,10 @@ bool Car::getMoving(){
         return this->moving;
 }
 
+string Car::getColor(){
+        return this->color;
+}
+
 void Car::setWheels(vector<Rectangle> wheels){
         this->wheels = wheels;
         return;
@@ -276,6 +280,11 @@ void Car::setMoving(bool moving){
         return;
 }
 
+void Car::setColor(string color){
+        this->color = color;
+        return;
+}
+
 void Car::drawCar(){
         bool moving = this->getMoving();
         GLfloat playerRadius = this->getCircleRadius();
@@ -335,16 +344,34 @@ void Car::drawCar(){
                 glPopMatrix();
         }
 
+        string carColor = this->getColor();
+        string darkerColor = "dark" + carColor;
 
         for(vector<Rectangle>::iterator it = bodyRectangles.begin(); it != bodyRectangles.end(); ++it) {
+                if((*it).getID() == "Body1") {
+                        (*it).setFill(carColor);
+                } else if((*it).getID() == "Body2") {
+                        (*it).setFill(darkerColor);
+                }
+
                 (*it).drawRectangle();
         }
 
         for(vector<Circle>::iterator it = bodyCircles.begin(); it != bodyCircles.end(); ++it) {
+                if((*it).getID() == "Body1") {
+                        (*it).setFill(carColor);
+                } else if((*it).getID() == "Body2") {
+                        (*it).setFill(darkerColor);
+                }
                 (*it).drawCircle();
         }
 
         for(vector<Triangle>::iterator it = bodyTriangles.begin(); it != bodyTriangles.end(); ++it) {
+                if((*it).getID() == "Body1") {
+                        (*it).setFill(carColor);
+                } else if((*it).getID() == "Body2") {
+                        (*it).setFill(darkerColor);
+                }
                 (*it).drawTriangle();
         }
 
