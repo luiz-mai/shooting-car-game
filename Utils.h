@@ -9,6 +9,7 @@ class Utils {
 
 public:
 void checkColor(string);
+int randomInt(int, int);
 };
 
 #endif //UTILS_H

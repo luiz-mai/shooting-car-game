@@ -83,10 +83,13 @@ void setColor(string);
 
 void drawCar();
 void drawShots();
+void moveForward(GLdouble);
+void moveBackward(GLdouble);
 void addShot();
-void detectFoeColision(Car, GLfloat, GLfloat);
-void detectTrackColision(Circle, GLfloat, GLfloat, GLfloat);
+bool detectFoeColision(Car, GLfloat, GLfloat);
+bool detectTrackColision(Circle, GLfloat, GLfloat, GLfloat);
 void updateShots(GLdouble);
+void randomMove(GLdouble, GLfloat, GLfloat);
 };
 
 #endif //CAR_H

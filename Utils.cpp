@@ -31,3 +31,8 @@ void Utils::checkColor(string fill){
 																glColor3f(0.0, 0.0, 0.0);
 								return;
 }
+
+int Utils::randomInt(int min, int max){
+								srand(clock());
+								return min + (rand() % (max - min + 1));
+}

@@ -107,14 +107,10 @@ void idle(){
 								//Movimentação do carro
 								char c;
 								if(i_status['w'] == 1 || i_status['W'] == 1) {
-																player->setCenterX(player->getCenterX() + t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180)));
-																player->setCenterY(player->getCenterY() + t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180)));
-																player->setTheta(player->getTheta() + t*(player->getSpeed()*tan((player->getWheelsAngle())*M_PI/180)));
+																player->moveForward(t);
 								}
 								if(i_status['s'] == 1 || i_status['S'] == 1) {
-																player->setCenterX(player->getCenterX() - t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180)));
-																player->setCenterY(player->getCenterY() - t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180)));
-																player->setTheta(player->getTheta() - t*(player->getSpeed()*tan((player->getWheelsAngle())*M_PI/180)));
+																player->moveBackward(t);
 								}
 
 								//Angulação do carro
@@ -150,7 +146,11 @@ void idle(){
 																foeShotsVector.erase(
 																								remove_if(foeShotsVector.begin(), foeShotsVector.end(), outOfScreen),
 																								foeShotsVector.end());
+
+																(*it).randomMove(t, arenaCenterX, arenaCenterY);
 								}
+
+
 
 								shootingTime += foeShootingFrequency*t;
 								if(shootingTime >= 1) {
@@ -163,14 +163,20 @@ void idle(){
 								//Detecta colisão com a pista
 								for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
 																Circle c = (*it);
-																player->detectTrackColision(c, biggestRadius, oldCenterX, oldCenterY);
+																if(player->detectTrackColision(c, biggestRadius, oldCenterX, oldCenterY)) {
+																								player->setCenterX(oldCenterX);
+																								player->setCenterY(oldCenterY);
+																};
 
 								}
 
 								//Detecta colisão com os inimigos
 								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
 																Car foe = (*it);
-																player->detectFoeColision(foe, oldCenterX, oldCenterY);
+																if(player->detectFoeColision(foe, oldCenterX, oldCenterY)) {
+																								player->setCenterX(oldCenterX);
+																								player->setCenterY(oldCenterY);
+																};
 								}
 
 								glutPostRedisplay();
@@ -297,6 +303,12 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> track
 																								foe->setColor(circle->getFill());
 																								foe->setSpeed(foeSpeed);
 																								foe->setShotSpeed(foeShootingSpeed);
+																								GLfloat initialAngle = atan(((arenaCenterY - foe->getCenterY())/(foe->getCenterX() - arenaCenterX)))*180/M_PI;
+																								if(foe->getCenterX() < arenaCenterX) {
+																																foe->setTheta(180-initialAngle);
+																								} else {
+																																foe->setTheta(-initialAngle);
+																								}
 																								foesVector.push_back(*foe);
 																} else {
 																								trackVector.push_back(*circle);

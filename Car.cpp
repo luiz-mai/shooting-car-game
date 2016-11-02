@@ -405,12 +405,12 @@ void Car::drawCar(){
         return;
 }
 
-void Car::detectFoeColision(Car foe, GLfloat oldCenterX, GLfloat oldCenterY){
+bool Car::detectFoeColision(Car foe, GLfloat oldCenterX, GLfloat oldCenterY){
         if(sqrt(pow((foe.getCenterX() - this->getCenterX()),2) + pow((foe.getCenterY() - this->getCenterY()),2))
            < foe.getCircleRadius() + this->getCircleRadius()) {
-                this->setCenterX(oldCenterX);
-                this->setCenterY(oldCenterY);
+                return true;
         }
+        return false;
 }
 
 void Car::drawShots(){
@@ -461,26 +461,25 @@ void Car::drawShots(){
 }
 
 void Car::addShot(){
-        Circle shotCircle = Circle("Shot", 12, 0, 0, "white");
+        Circle shotCircle = Circle("Shot", 12, 0, 0, "yellow");
         Shot shot = Shot(shotCircle,this->getCenterX(),this->getCenterY(),this->getTheta(),this->getCannonAngle());
         this->shotsVector.push_back(shot);
         return;
 }
 
-void Car::detectTrackColision(Circle c, GLfloat biggestRadius, GLfloat oldCenterX, GLfloat oldCenterY){
+bool Car::detectTrackColision(Circle c, GLfloat biggestRadius, GLfloat oldCenterX, GLfloat oldCenterY){
         if(c.getRadius() != biggestRadius ) {
                 if(sqrt(pow((c.getCenterX() - this->getCenterX()),2) + pow((c.getCenterY() - this->getCenterY()),2))
                    < c.getRadius() + this->getCircleRadius()) {
-                        this->setCenterX(oldCenterX);
-                        this->setCenterY(oldCenterY);
+                        return true;
                 }
         } else {
                 if(sqrt(pow((c.getCenterX() - this->getCenterX()),2)+pow(c.getCenterY() - this->getCenterY(),2)) + this->getCircleRadius()
                    > biggestRadius) {
-                        this->setCenterX(oldCenterX);
-                        this->setCenterY(oldCenterY);
+                        return true;
                 }
         }
+        return false;
 }
 
 void Car::updateShots(GLdouble t){
@@ -492,4 +491,24 @@ void Car::updateShots(GLdouble t){
         }
         this->setShotsVector(playerShotsVector);
         return;
+}
+
+void Car::moveForward(GLdouble t){
+        this->setCenterX(this->getCenterX() + t*(this->getSpeed()*cos((this->getTheta()-90)*M_PI/180)));
+        this->setCenterY(this->getCenterY() + t*(this->getSpeed()*sin((this->getTheta()-90)*M_PI/180)));
+        this->setTheta(this->getTheta() + t*(this->getSpeed()*tan((this->getWheelsAngle())*M_PI/180)));
+}
+
+void Car::moveBackward(GLdouble t){
+        this->setCenterX(this->getCenterX() - t*(this->getSpeed()*cos((this->getTheta()-90)*M_PI/180)));
+        this->setCenterY(this->getCenterY() - t*(this->getSpeed()*sin((this->getTheta()-90)*M_PI/180)));
+        this->setTheta(this->getTheta() - t*(this->getSpeed()*tan((this->getWheelsAngle())*M_PI/180)));
+}
+void Car::randomMove(GLdouble t, GLfloat arenaCenterX, GLfloat arenaCenterY){
+        Utils utils;
+        if(utils.randomInt(0,20) == 19)
+                this->setCannonAngle(utils.randomInt(-45,45));
+        this->moveForward(t);
+
+
 }
