@@ -18,13 +18,14 @@ vector<Car> foesVector;
 Circle* outerTrack;
 Rectangle* startTrack;
 Car* player;
-int biggestRadius = 0;
+int biggestRadius = 0, smallestRadius = 99999;
 int width, height;
 int arenaCenterX = 0, arenaCenterY = 0;
 GLfloat foeSpeed;
 GLfloat foeShootingSpeed;
 GLfloat foeShootingFrequency;
 GLfloat shootingTime = 0;
+int movingBackward = 0;
 
 int main(int argc, char** argv) {
 
@@ -138,7 +139,24 @@ void idle(){
 																remove_if(playerShotsVector.begin(), playerShotsVector.end(), outOfScreen),
 																playerShotsVector.end());
 
+								shootingTime += foeShootingFrequency*t;
+								if(shootingTime >= 1) {
+																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+																								(*it).addShot();
+																}
+																shootingTime = 0;
+								}
+								//Detecta colisão com os inimigos
+								if(player->detectFoeColision(foesVector) || player->detectTrackColision(trackVector, biggestRadius)) {
+																player->setCenterX(oldCenterX);
+																player->setCenterY(oldCenterY);
+								}
+
 								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+
+																int index = it - foesVector.begin();
+																vector<Car> otherFoes = foesVector;
+																otherFoes.erase(otherFoes.begin() + index);
 
 																vector<Shot> foeShotsVector = (*it).getShotsVector();
 																(*it).updateShots(t);
@@ -147,37 +165,21 @@ void idle(){
 																								remove_if(foeShotsVector.begin(), foeShotsVector.end(), outOfScreen),
 																								foeShotsVector.end());
 
-																(*it).randomMove(t, arenaCenterX, arenaCenterY);
-								}
+																GLfloat threshold = smallestRadius + (biggestRadius-smallestRadius)/2;
 
-
-
-								shootingTime += foeShootingFrequency*t;
-								if(shootingTime >= 1) {
-																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
-																								(*it).addShot();
+																if((*it).detectTrackColision(trackVector, biggestRadius) || (*it).detectCarColision(*player) || (*it).detectFoeColision(otherFoes)) {
+																								Utils utils;
+																								(*it).foeMove(t, threshold, -1);
+																								(*it).setBackwardCount(utils.randomInt(20, 100));
+																} else if ((*it).getBackwardCount() > 0) {
+																								(*it).foeMove(t, threshold, -1);
+																								(*it).setBackwardCount((*it).getBackwardCount()-1);
+																} else {
+																								(*it).foeMove(t, threshold, 1);
 																}
-																shootingTime = 0;
 								}
 
-								//Detecta colisão com a pista
-								for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
-																Circle c = (*it);
-																if(player->detectTrackColision(c, biggestRadius, oldCenterX, oldCenterY)) {
-																								player->setCenterX(oldCenterX);
-																								player->setCenterY(oldCenterY);
-																};
 
-								}
-
-								//Detecta colisão com os inimigos
-								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
-																Car foe = (*it);
-																if(player->detectFoeColision(foe, oldCenterX, oldCenterY)) {
-																								player->setCenterX(oldCenterX);
-																								player->setCenterY(oldCenterY);
-																};
-								}
 
 								glutPostRedisplay();
 }
@@ -312,13 +314,17 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> track
 																								foesVector.push_back(*foe);
 																} else {
 																								trackVector.push_back(*circle);
+																								if(circle->getRadius() > biggestRadius) {
+																																biggestRadius = circle->getRadius();
+																																arenaCenterX = circle->getCenterX();
+																																arenaCenterY = circle->getCenterY();
+																								}
+																								if(circle->getRadius() < smallestRadius) {
+																																smallestRadius = circle->getRadius();
+																								}
 																}
 																//Considerações para ajustar o tamanho da tela e posição dos elementos
-																if(circle->getRadius() > biggestRadius) {
-																								biggestRadius = circle->getRadius();
-																								arenaCenterX = circle->getCenterX();
-																								arenaCenterY = circle->getCenterY();
-																}
+
 								}
 
 								return trackVector;

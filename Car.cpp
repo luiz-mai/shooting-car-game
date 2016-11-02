@@ -115,6 +115,8 @@ Car::Car(){
         this->setCannonAngle(0);
         this->setWheelsAngle(0);
         this->setMoving(false);
+        this->setAxisWidth(58.5);
+        this->setBackwardCount(0);
 
         return;
 }
@@ -181,6 +183,14 @@ GLfloat Car::getWheelsAngle(){
 
 GLfloat Car::getCannonAngle(){
         return this->cannonAngle;
+}
+
+GLfloat Car::getAxisWidth(){
+        return this->axisWidth;
+}
+
+int Car::getBackwardCount(){
+        return this->backwardCount;
 }
 
 GLfloat Car::getIncrementalNumber(){
@@ -279,8 +289,18 @@ void Car::setCannonAngle(GLfloat cannonAngle){
         return;
 }
 
+void Car::setAxisWidth(GLfloat axisWidth){
+        this->axisWidth = axisWidth;
+        return;
+}
+
 void Car::setIncrementalNumber(float incrementalNumber){
         this->incrementalNumber = incrementalNumber;
+        return;
+}
+
+void Car::setBackwardCount(int backwardCount){
+        this->backwardCount = backwardCount;
         return;
 }
 
@@ -405,13 +425,6 @@ void Car::drawCar(){
         return;
 }
 
-bool Car::detectFoeColision(Car foe, GLfloat oldCenterX, GLfloat oldCenterY){
-        if(sqrt(pow((foe.getCenterX() - this->getCenterX()),2) + pow((foe.getCenterY() - this->getCenterY()),2))
-           < foe.getCircleRadius() + this->getCircleRadius()) {
-                return true;
-        }
-        return false;
-}
 
 void Car::drawShots(){
 
@@ -467,18 +480,40 @@ void Car::addShot(){
         return;
 }
 
-bool Car::detectTrackColision(Circle c, GLfloat biggestRadius, GLfloat oldCenterX, GLfloat oldCenterY){
-        if(c.getRadius() != biggestRadius ) {
-                if(sqrt(pow((c.getCenterX() - this->getCenterX()),2) + pow((c.getCenterY() - this->getCenterY()),2))
-                   < c.getRadius() + this->getCircleRadius()) {
-                        return true;
+bool Car::detectTrackColision(vector<Circle> trackVector, GLfloat biggestRadius){
+        for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
+
+                if((*it).getRadius() != biggestRadius ) {
+                        if(sqrt(pow(((*it).getCenterX() - this->getCenterX()),2) + pow(((*it).getCenterY() - this->getCenterY()),2))
+                           < (*it).getRadius() + this->getCircleRadius()) {
+                                return true;
+                        }
+                } else {
+                        if(sqrt(pow(((*it).getCenterX() - this->getCenterX()),2)+pow((*it).getCenterY() - this->getCenterY(),2)) + this->getCircleRadius()
+                           > biggestRadius) {
+                                return true;
+                        }
                 }
-        } else {
-                if(sqrt(pow((c.getCenterX() - this->getCenterX()),2)+pow(c.getCenterY() - this->getCenterY(),2)) + this->getCircleRadius()
-                   > biggestRadius) {
+        }
+        return false;
+}
+
+bool Car::detectFoeColision(vector<Car> foesVector){
+        for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+                if(sqrt(pow(((*it).getCenterX() - this->getCenterX()),2) + pow(((*it).getCenterY() - this->getCenterY()),2))
+                   < (*it).getCircleRadius() + this->getCircleRadius()) {
                         return true;
                 }
         }
+        return false;
+}
+
+bool Car::detectCarColision(Car car){
+        if(sqrt(pow((car.getCenterX() - this->getCenterX()),2) + pow((car.getCenterY() - this->getCenterY()),2))
+           < car.getCircleRadius() + this->getCircleRadius()) {
+                return true;
+        }
+
         return false;
 }
 
@@ -504,11 +539,18 @@ void Car::moveBackward(GLdouble t){
         this->setCenterY(this->getCenterY() - t*(this->getSpeed()*sin((this->getTheta()-90)*M_PI/180)));
         this->setTheta(this->getTheta() - t*(this->getSpeed()*tan((this->getWheelsAngle())*M_PI/180)));
 }
-void Car::randomMove(GLdouble t, GLfloat arenaCenterX, GLfloat arenaCenterY){
-        Utils utils;
-        if(utils.randomInt(0,20) == 19)
-                this->setCannonAngle(utils.randomInt(-45,45));
-        this->moveForward(t);
+void Car::foeMove(GLdouble t, GLfloat threshold, int direction){
+        // Utils utils;
+        // if(utils.randomInt(0,20) == 19)
+        //         this->setCannonAngle(utils.randomInt(-45,45));
+
+
+        this->setWheelsAngle((-1)*asin(this->getAxisWidth()/threshold)*180/M_PI);
+        if(direction == 1) {
+                this->moveForward(t);
+        } else {
+                this->moveBackward(t);
+        }
 
 
 }
