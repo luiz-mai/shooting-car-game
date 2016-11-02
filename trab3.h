@@ -33,6 +33,7 @@ string getArenaPath(int, char**);
 vector<Circle> arenaReading(Trab3, string, vector<Circle>);
 Rectangle* rectangleReading(XMLElement*);
 vector<Circle> circleReading(XMLElement*, vector<Circle>);
+void drawPlayerShots();
 };
 
 void display(void);

@@ -15,14 +15,16 @@ using namespace std;
 int i_status[1000];
 vector<Circle> trackVector;
 vector<Car> foesVector;
-vector<Shot> shotsVector;
 Circle* outerTrack;
 Rectangle* startTrack;
 Car* player;
 int biggestRadius = 0;
-bool colision = false;
 int width, height;
 int arenaCenterX = 0, arenaCenterY = 0;
+GLfloat foeSpeed;
+GLfloat foeShootingSpeed;
+GLfloat foeShootingFrequency;
+GLfloat shootingTime = 0;
 
 int main(int argc, char** argv) {
 
@@ -79,9 +81,9 @@ void display(){
 																(*it).drawCar();
 								}
 								//Desenha os tiros
-								GLfloat playerRadius = player->getCircleRadius();
-								for(vector<Shot>::iterator it = shotsVector.begin(); it != shotsVector.end(); ++it) {
-																(*it).drawShot(playerRadius, player);
+								player->drawShots();
+								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+																(*it).drawShots();
 								}
 
 								glutSwapBuffers();
@@ -132,16 +134,31 @@ void idle(){
 																player->setMoving(false);
 								}
 
-								//Movimentação dos tiros
-								for(vector<Shot>::iterator it = shotsVector.begin(); it != shotsVector.end(); ++it) {
-																GLfloat angle = (*it).getCarAngle() + (*it).getCannonAngle();
-																(*it).setCenterX((*it).getCenterX() + t*player->getShotSpeed()*cos((angle-90)*M_PI/180));
-																(*it).setCenterY((*it).getCenterY() + t*player->getShotSpeed()*sin((angle-90)*M_PI/180));
-								}
+								//Movimentação dos tiros do jogador
+								vector<Shot> playerShotsVector = player->getShotsVector();
+								player->updateShots(t);
 								//Remove os tiros fora da tela
-								shotsVector.erase(
-																remove_if(shotsVector.begin(), shotsVector.end(), outOfScreen),
-																shotsVector.end());
+								playerShotsVector.erase(
+																remove_if(playerShotsVector.begin(), playerShotsVector.end(), outOfScreen),
+																playerShotsVector.end());
+
+								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+
+																vector<Shot> foeShotsVector = (*it).getShotsVector();
+																(*it).updateShots(t);
+																//Remove os tiros fora da tela
+																foeShotsVector.erase(
+																								remove_if(foeShotsVector.begin(), foeShotsVector.end(), outOfScreen),
+																								foeShotsVector.end());
+								}
+
+								shootingTime += foeShootingFrequency*t;
+								if(shootingTime >= 1) {
+																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+																								(*it).addShot();
+																}
+																shootingTime = 0;
+								}
 
 								//Detecta colisão com a pista
 								for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
@@ -178,23 +195,9 @@ void keyPressed(unsigned char key, int x, int y){
 }
 
 void mouseClick(int button, int state, int x, int y){
-								if(button == GLUT_LEFT_BUTTON) {
+								if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 																//Cria um novo tiro e insere no vetor
-																Circle* shotCircle = new Circle(
-																								"Shot",
-																								12,
-																								0,
-																								0,
-																								"white"
-																								);
-																Shot* shot = new Shot(
-																								*shotCircle,
-																								player->getCenterX(),
-																								player->getCenterY(),
-																								player->getTheta(),
-																								player->getCannonAngle()
-																								);
-																shotsVector.push_back(*shot);
+																player->addShot();
 								}
 }
 
@@ -235,11 +238,9 @@ string Trab3::getArenaPath(int argc, char** argv){
 								player->setSpeed( carroFileElement->FloatAttribute("velCarro"));
 								player->setShotSpeed( carroFileElement->FloatAttribute("velTiro"));
 								XMLElement* carroInimigoFileElement = aplicationElement->FirstChildElement("carroInimigo");
-								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
-																Car foe = (*it);
-																foe.setSpeed(carroInimigoFileElement->FloatAttribute("velCarro"));
-																foe.setShotSpeed(carroInimigoFileElement->FloatAttribute("velTiro"));
-								}
+								foeSpeed = carroInimigoFileElement->FloatAttribute("velCarro");
+								foeShootingSpeed = carroInimigoFileElement->FloatAttribute("velTiro");
+								foeShootingFrequency = carroInimigoFileElement->FloatAttribute("freqTiro");
 								string arenaPath = arenaFileElement->Attribute("caminho");
 								string arenaFilename = arenaFileElement->Attribute("nome");
 								string arenaExtension = arenaFileElement->Attribute("tipo");
@@ -294,6 +295,8 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> track
 																								foe->setCenterY(circle->getCenterY());
 																								foe->setCircleRadius(circle->getRadius());
 																								foe->setColor(circle->getFill());
+																								foe->setSpeed(foeSpeed);
+																								foe->setShotSpeed(foeShootingSpeed);
 																								foesVector.push_back(*foe);
 																} else {
 																								trackVector.push_back(*circle);

@@ -139,6 +139,10 @@ Rectangle Car::getCannon(){
         return this->cannon;
 }
 
+vector<Shot> Car::getShotsVector(){
+        return this->shotsVector;
+}
+
 GLfloat Car::getCircleRadius(){
         return this->circleRadius;
 }
@@ -214,6 +218,11 @@ void Car::setBodyCircles(vector<Circle> bodyCircles){
 
 void Car::setCannon(Rectangle cannon){
         this->cannon = cannon;
+        return;
+}
+
+void Car::setShotsVector(vector<Shot> shotsVector){
+        this->shotsVector = shotsVector;
         return;
 }
 
@@ -404,6 +413,60 @@ void Car::detectFoeColision(Car foe, GLfloat oldCenterX, GLfloat oldCenterY){
         }
 }
 
+void Car::drawShots(){
+
+        vector<Shot> carShots = this->getShotsVector();
+
+        for(vector<Shot>::iterator it = carShots.begin(); it != carShots.end(); ++it) {
+                glPushMatrix();
+                glTranslatef(
+                        (*it).getCenterX(),
+                        (*it).getCenterY(),
+                        0
+                        );
+
+
+                glRotatef((*it).getCarAngle(), 0, 0, 1);
+                glScalef(
+                        2*this->getCircleRadius()/this->getWidth(),
+                        2*this->getCircleRadius()/this->getHeight(),
+                        1
+                        );
+
+                glTranslatef(
+                        -this->getWidth()/2,
+                        -this->getHeight()/2,
+                        0
+                        );
+
+                glTranslatef(
+                        this->getCannon().getBeginX() + this->getCannon().getWidth()/2,
+                        this->getCannon().getBeginY() + this->getCannon().getHeight(),
+                        0
+                        );
+
+                glRotatef((*it).getCannonAngle(), 0, 0, 1);
+
+                glTranslatef(
+                        0,
+                        -this->getCannon().getHeight(),
+                        0
+                        );
+                (*it).getCircle().drawCircle();
+
+                glPopMatrix();
+        }
+        return;
+
+}
+
+void Car::addShot(){
+        Circle shotCircle = Circle("Shot", 12, 0, 0, "white");
+        Shot shot = Shot(shotCircle,this->getCenterX(),this->getCenterY(),this->getTheta(),this->getCannonAngle());
+        this->shotsVector.push_back(shot);
+        return;
+}
+
 void Car::detectTrackColision(Circle c, GLfloat biggestRadius, GLfloat oldCenterX, GLfloat oldCenterY){
         if(c.getRadius() != biggestRadius ) {
                 if(sqrt(pow((c.getCenterX() - this->getCenterX()),2) + pow((c.getCenterY() - this->getCenterY()),2))
@@ -418,4 +481,15 @@ void Car::detectTrackColision(Circle c, GLfloat biggestRadius, GLfloat oldCenter
                         this->setCenterY(oldCenterY);
                 }
         }
+}
+
+void Car::updateShots(GLdouble t){
+        vector<Shot> playerShotsVector = this->getShotsVector();
+        for(vector<Shot>::iterator it = playerShotsVector.begin(); it != playerShotsVector.end(); ++it) {
+                GLfloat angle = (*it).getCarAngle() + (*it).getCannonAngle();
+                (*it).setCenterX((*it).getCenterX() + t*this->getShotSpeed()*cos((angle-90)*M_PI/180));
+                (*it).setCenterY((*it).getCenterY() + t*this->getShotSpeed()*sin((angle-90)*M_PI/180));
+        }
+        this->setShotsVector(playerShotsVector);
+        return;
 }

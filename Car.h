@@ -10,6 +10,7 @@
 #include "Rectangle.h"
 #include "Triangle.h"
 #include "Circle.h"
+#include "Shot.h"
 #include "tinyxml2.h"
 using namespace std;
 using namespace tinyxml2;
@@ -20,6 +21,7 @@ vector<Rectangle> bodyRectangles;
 vector<Triangle> bodyTriangles;
 vector<Circle> bodyCircles;
 Rectangle cannon;
+vector<Shot> shotsVector;
 
 GLfloat circleRadius;
 GLfloat width;
@@ -44,6 +46,7 @@ vector<Rectangle> getBodyRectangles();
 vector<Triangle> getBodyTriangles();
 vector<Circle> getBodyCircles();
 Rectangle getCannon();
+vector<Shot> getShotsVector();
 GLfloat getCircleRadius();
 GLfloat getWidth();
 GLfloat getHeight();
@@ -63,6 +66,7 @@ void setBodyRectangles(vector<Rectangle>);
 void setBodyTriangles(vector<Triangle>);
 void setBodyCircles(vector<Circle>);
 void setCannon(Rectangle);
+void setShotsVector(vector<Shot>);
 void setCircleRadius(GLfloat);
 void setWidth(GLfloat);
 void setHeight(GLfloat);
@@ -78,8 +82,11 @@ void setMoving(bool);
 void setColor(string);
 
 void drawCar();
+void drawShots();
+void addShot();
 void detectFoeColision(Car, GLfloat, GLfloat);
 void detectTrackColision(Circle, GLfloat, GLfloat, GLfloat);
+void updateShots(GLdouble);
 };
 
 #endif //CAR_H

@@ -5,7 +5,6 @@
 #include <string>
 #include "Utils.h"
 #include "Circle.h"
-#include "Car.h"
 using namespace std;
 
 class Shot {
@@ -17,7 +16,7 @@ GLfloat cannonAngle;
 
 public:
 Shot();
-Shot(Circle, GLfloat, GLfloat, GLfloat, GLfloat);
+Shot(Circle&, GLfloat, GLfloat, GLfloat, GLfloat);
 
 Circle getCircle();
 GLfloat getCenterX();
@@ -30,8 +29,6 @@ void setCenterX(GLfloat);
 void setCenterY(GLfloat);
 void setCarAngle(GLfloat);
 void setCannonAngle(GLfloat);
-
-void drawShot(GLfloat, Car*);
 
 };
 
