@@ -16,6 +16,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <ctime>
 #include <GL/freeglut.h>
 #include "tinyxml2.h"
 #include "Circle.h"
@@ -34,6 +35,8 @@ vector<Circle> arenaReading(Trab3, string, vector<Circle>);
 Rectangle* rectangleReading(XMLElement*);
 vector<Circle> circleReading(XMLElement*, vector<Circle>);
 void drawPlayerShots();
+void printCronometer(GLfloat x, GLfloat y);
+void printEndMessage(GLfloat x, GLfloat y);
 };
 
 void display(void);
@@ -43,5 +46,6 @@ void mouseClick(int, int, int, int);
 void keyPressed(unsigned char, int, int);
 void keyUp(unsigned char, int, int);
 bool outOfScreen(Shot);
+bool detectEnemyShotColision(Car);
 
 #endif //TRAB3_H

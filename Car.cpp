@@ -480,6 +480,8 @@ void Car::addShot(){
         return;
 }
 
+
+
 bool Car::detectTrackColision(vector<Circle> trackVector, GLfloat biggestRadius){
         for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
 
