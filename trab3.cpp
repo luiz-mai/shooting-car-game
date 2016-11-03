@@ -35,6 +35,7 @@ time_t start = time(0);
 int seconds, minutes;
 int gameState = 0;
 GLfloat lastX = 9999, lastY = 9999;
+bool crossedLine1 = false, crossedLine2 = false;
 int main(int argc, char** argv) {
 
 								player = new Car();
@@ -129,8 +130,29 @@ void idle(){
 																								if(i_status['s'] == 1 || i_status['S'] == 1) {
 																																player->moveBackward(t);
 																								}
-																								if(player->getCenterY() + player->getCircleRadius() > startTrack->getBeginY() && lastY < startTrack->getBeginY()) {
-																																gameState = 1;
+																								bool betweenStartTrackX = (player->getCenterX() > startTrack->getBeginX())
+																																																		&& (player->getCenterX() < startTrack->getBeginX() + startTrack->getWidth());
+																								bool betweenStartTrackY = (player->getCenterY() > startTrack->getBeginY() - startTrack->getHeight())
+																																																		&& (player->getCenterY() < startTrack->getBeginY() + startTrack->getHeight());
+																								bool aboveStartTrack = player->getCenterY() < startTrack->getBeginY() - startTrack->getHeight();
+																								bool belowStartTrack = player->getCenterY() > startTrack->getBeginY() + startTrack->getHeight();
+
+																								if( aboveStartTrack && betweenStartTrackX) {
+																																crossedLine1 = true;
+																																crossedLine2 = false;
+																								}
+
+																								if(belowStartTrack && betweenStartTrackX) {
+																																crossedLine2 = true;
+																								}
+
+																								if(betweenStartTrackY && betweenStartTrackX) {
+																																if(crossedLine1 && crossedLine2) {
+																																								gameState = 1;
+																																} else {
+																																								crossedLine1 = false;
+																																								crossedLine2 = false;
+																																}
 																								}
 																} else {
 																								player->setMoving(false);
@@ -179,8 +201,9 @@ void idle(){
 																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
 																								vector<Shot> foeShotsVector = (*it).getShotsVector();
 																								for(vector<Shot>::iterator it2 = foeShotsVector.begin(); it2 != foeShotsVector.end(); ++it2) {
-																																if(utils.distance2P((*it2).getCenterX(), (*it2).getCenterY(), player->getCenterX(), player->getCenterY()) < player->getCircleRadius()) {
-																																								//gameState = -1;
+																																if(utils.distance2P((*it2).getCenterX(), (*it2).getCenterY(), player->getCenterX(),
+																																																				player->getCenterY()) < player->getCircleRadius()) {
+																																								gameState = -1;
 																																}
 																								}
 																}

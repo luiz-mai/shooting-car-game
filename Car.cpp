@@ -542,9 +542,9 @@ void Car::moveBackward(GLdouble t){
         this->setTheta(this->getTheta() - t*(this->getSpeed()*tan((this->getWheelsAngle())*M_PI/180)));
 }
 void Car::foeMove(GLdouble t, GLfloat threshold, int direction){
-        // Utils utils;
-        // if(utils.randomInt(0,20) == 19)
-        //         this->setCannonAngle(utils.randomInt(-45,45));
+        Utils utils;
+        if(utils.randomInt(0,20) == 19)
+                this->setCannonAngle(utils.randomInt(-45,45));
 
 
         this->setWheelsAngle((-1)*asin(this->getAxisWidth()/threshold)*180/M_PI);
