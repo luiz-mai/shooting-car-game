@@ -9,9 +9,11 @@ Car::Car(){
         vector<Circle> bodyCircles;
         Rectangle cannon;
 
+        //Loads the car' SVG
         car.LoadFile("car.svg");
         XMLElement* svgElement = car.FirstChildElement("svg");
 
+        //Loads all the rectangular parts (Body, Wheels and Cannon)
         for(XMLElement* rectElement = svgElement->FirstChildElement("rect"); rectElement != NULL; rectElement = rectElement->NextSiblingElement("rect"))
         {
                 Rectangle* rect = new Rectangle(
@@ -38,6 +40,7 @@ Car::Car(){
         this->setBodyRectangles(bodyRectangles);
         this->setWheels(wheels);
 
+        //Loads all the circular parts (Body)
         for(XMLElement* circleElement = svgElement->FirstChildElement("circle"); circleElement != NULL; circleElement = circleElement->NextSiblingElement("circle"))
         {
                 Circle* circle = new Circle(
@@ -52,6 +55,7 @@ Car::Car(){
         }
         this->setBodyCircles(bodyCircles);
 
+        //Loads all the triangular parts (Body)
         for(XMLElement* triangleElement = svgElement->FirstChildElement("polygon"); triangleElement != NULL; triangleElement = triangleElement->NextSiblingElement("polygon"))
         {
                 float pointsArray[6];
@@ -106,8 +110,9 @@ Car::Car(){
                         triangleElement->Attribute("fill")
                         );
                 bodyTriangles.push_back(*triangle);
-
         }
+
+        //Sets the initial values to the car
         this->setBodyTriangles(bodyTriangles);
         this->setWidth(200);
         this->setHeight(200);
@@ -319,6 +324,7 @@ void Car::drawCar(){
         GLfloat playerRadius = this->getCircleRadius();
         float randomAngle = this->getIncrementalNumber();
         if(moving) {
+                //Does the moving effect to the wheels.
                 if(randomAngle >=45) {
                         this->setIncrementalNumber(0);
                 } else {
@@ -330,14 +336,13 @@ void Car::drawCar(){
         vector<Rectangle> bodyRectangles = this->getBodyRectangles();
         vector<Rectangle> wheels = this->getWheels();
 
+        //Does the positioning transformations
         glPushMatrix();
         glTranslatef(
                 this->getCenterX(),
                 this->getCenterY(),
                 0
                 );
-
-
         glRotatef(this->getTheta(), 0, 0, 1);
         glScalef(
                 2*playerRadius/this->getWidth(),
@@ -351,7 +356,7 @@ void Car::drawCar(){
                 0
                 );
         for(vector<Rectangle>::iterator it = wheels.begin(); it != wheels.end(); ++it) {
-
+                //Rotate the wheels
                 glPushMatrix();
                 if((*it).getID() == "FrontWheels") {
                         glTranslatef(
@@ -373,9 +378,10 @@ void Car::drawCar(){
                 glPopMatrix();
         }
 
+        //Render the body parts
+        //Sets the color as the specified by arena.svg
         string carColor = this->getColor();
         string darkerColor = "dark" + carColor;
-
         for(vector<Rectangle>::iterator it = bodyRectangles.begin(); it != bodyRectangles.end(); ++it) {
                 if((*it).getID() == "Body1") {
                         (*it).setFill(carColor);
@@ -404,6 +410,7 @@ void Car::drawCar(){
                 (*it).drawTriangle();
         }
 
+        //Rotates the cannon
         glTranslatef(
                 this->getCannon().getBeginX() + this->getCannon().getWidth()/2,
                 this->getCannon().getBeginY() + this->getCannon().getHeight(),
@@ -429,7 +436,7 @@ void Car::drawCar(){
 void Car::drawShots(){
 
         vector<Shot> carShots = this->getShotsVector();
-
+        //Applies the positioning transformations to all the shots.
         for(vector<Shot>::iterator it = carShots.begin(); it != carShots.end(); ++it) {
                 glPushMatrix();
                 glTranslatef(
@@ -437,8 +444,6 @@ void Car::drawShots(){
                         (*it).getCenterY(),
                         0
                         );
-
-
                 glRotatef((*it).getCarAngle(), 0, 0, 1);
                 glScalef(
                         2*this->getCircleRadius()/this->getWidth(),
@@ -451,15 +456,12 @@ void Car::drawShots(){
                         -this->getHeight()/2,
                         0
                         );
-
                 glTranslatef(
                         this->getCannon().getBeginX() + this->getCannon().getWidth()/2,
                         this->getCannon().getBeginY() + this->getCannon().getHeight(),
                         0
                         );
-
                 glRotatef((*it).getCannonAngle(), 0, 0, 1);
-
                 glTranslatef(
                         0,
                         -this->getCannon().getHeight(),
@@ -480,17 +482,17 @@ void Car::addShot(){
         return;
 }
 
-
-
 bool Car::detectTrackColision(vector<Circle> trackVector, GLfloat biggestRadius){
         for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
-
+                //Can't go inside the inner track
                 if((*it).getRadius() != biggestRadius ) {
                         if(sqrt(pow(((*it).getCenterX() - this->getCenterX()),2) + pow(((*it).getCenterY() - this->getCenterY()),2))
                            < (*it).getRadius() + this->getCircleRadius()) {
                                 return true;
                         }
-                } else {
+                }
+                //Can't go outside the outer track
+                else {
                         if(sqrt(pow(((*it).getCenterX() - this->getCenterX()),2)+pow((*it).getCenterY() - this->getCenterY(),2)) + this->getCircleRadius()
                            > biggestRadius) {
                                 return true;
@@ -542,11 +544,12 @@ void Car::moveBackward(GLdouble t){
         this->setTheta(this->getTheta() - t*(this->getSpeed()*tan((this->getWheelsAngle())*M_PI/180)));
 }
 void Car::foeMove(GLdouble t, GLfloat threshold, int direction){
+        //Sets the cannon at a random position
         Utils utils;
-        if(utils.randomInt(0,20) == 19)
+        if(utils.randomInt(0,20) == 19)       //Don't change too often
                 this->setCannonAngle(utils.randomInt(-45,45));
 
-
+        //Sets the position of the wheels to keep tracking the threshold's radius
         this->setWheelsAngle((-1)*asin(this->getAxisWidth()/threshold)*180/M_PI);
         if(direction == 1) {
                 this->moveForward(t);

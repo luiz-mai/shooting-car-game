@@ -15,6 +15,7 @@ compila: tinyxml2.o Triangle.o Rectangle.o Circle.o Utils.o Car.o Shot.o
 	@g++ trab3.cpp Triangle.o Circle.o Rectangle.o Utils.o Car.o Shot.o tinyxml2.o -o trabalhocg -lglut -lGLU -lGL
 
 clean:
-	@rm tinyxml2.o
+	@rm *.o
+	@rm *.pdf
 	@rm trabalhocg
 	@echo "Arquivos removidos com sucesso"
