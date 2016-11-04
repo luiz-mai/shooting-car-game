@@ -11,44 +11,43 @@
 
 using namespace std;
 
-//VARIÁVEIS GLOBAIS
 Trab3 trab;
 int i_status[1000];
+//Arena variables
 vector<Circle> trackVector;
-vector<Car> foesVector;
-Circle* outerTrack;
 Rectangle* startTrack;
 Car* player;
 int biggestRadius = 0, smallestRadius = 99999;
 int width, height;
 int arenaCenterX = 0, arenaCenterY = 0;
+//Foes variables
+vector<Car> foesVector;
 GLfloat foeSpeed;
 GLfloat foeShootingSpeed;
 GLfloat foeShootingFrequency;
 GLfloat shootingTime = 0;
-int movingBackward = 0;
-// Text variable
+//Text variables
 static char str[2000];
 void * timer_font = GLUT_BITMAP_9_BY_15;
 void * end_font = GLUT_BITMAP_TIMES_ROMAN_24;
 time_t start = time(0);
 int seconds, minutes;
+//End of the game variables
 int gameState = 0;
-GLfloat lastX = 9999, lastY = 9999;
 bool crossedLine1 = false, crossedLine2 = false;
+
+
 int main(int argc, char** argv) {
 
 								player = new Car();
 
-								//Abre o arquivo de config e seta o centro do carro.
+								//Reads the config and arena files.
 								string arenaFullPath = trab.getArenaPath(argc, argv);
 								trackVector = trab.arenaReading(trab, arenaFullPath, trackVector);
-
-								//Define tamanho e título da janela
 								width = 2*biggestRadius;
 								height = 2*biggestRadius;
 
-								//Inicializações
+								//OpenGL initializations
 								glutInit(&argc, argv);
 								glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 								glutInitWindowSize(width,height);
@@ -74,29 +73,35 @@ int main(int argc, char** argv) {
 
 void display(){
 								glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+								//If player hasn't won or lost
 								if(gameState == 0) {
+																//Renders the cronometer at the corner of the screen
 																trab.printCronometer(60,70);
-																//Desenha a pista
+
+																//Draws all the tracks
 																for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
 																								(*it).drawCircle();
 																}
-																//Desenha a pista de largada/chegada
+
+																//Draws the start track
 																startTrack->drawRectangle();
-																//Desenha o carro
+
+																//Draws the player's car
 																player->drawCar();
 
-
-																//Desenha todos os inimigos
+																//Draws all the foes
 																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
 																								(*it).drawCar();
 																}
-																//Desenha os tiros
+
+																//Draws all the shots
 																player->drawShots();
 																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
 																								(*it).drawShots();
 																}
 
 								} else{
+																//GAME OVER or YOU WIN
 																trab.printEndMessage(width/2, height/2);
 								}
 								glutSwapBuffers();
@@ -105,11 +110,13 @@ void display(){
 }
 
 void idle(){
+								//If player hasn't won or lost
 								if(gameState == 0) {
+																//Position before moving (used in case of colision)
 																float oldCenterX =  player->getCenterX();
 																float oldCenterY =  player->getCenterY();
 
-																//Efetua a medição do tempo decorrido
+																//Measure of the elapsed time
 																static GLdouble previousTime = 0;
 																GLdouble currentTime;
 																GLdouble t;
@@ -117,19 +124,19 @@ void idle(){
 																t = currentTime - previousTime;
 																previousTime = currentTime;
 
-																//Movimentação do carro
+																//Player movement
 																char c;
-																//Define as flags usadas pra representaçao do movimento nas rodas.
 																if(i_status['w'] == 1 || i_status['W'] == 1 || i_status['s'] == 1 || i_status['S'] == 1) {
-																								lastX = player->getCenterX();
-																								lastY = player->getCenterY();
 																								player->setMoving(true);
+																								//Moves the carroInimigoFileElement
 																								if(i_status['w'] == 1 || i_status['W'] == 1) {
 																																player->moveForward(t);
 																								}
 																								if(i_status['s'] == 1 || i_status['S'] == 1) {
 																																player->moveBackward(t);
 																								}
+
+																								//Check if player won
 																								bool betweenStartTrackX = (player->getCenterX() > startTrack->getBeginX())
 																																																		&& (player->getCenterX() < startTrack->getBeginX() + startTrack->getWidth());
 																								bool betweenStartTrackY = (player->getCenterY() > startTrack->getBeginY() - startTrack->getHeight())
@@ -159,7 +166,7 @@ void idle(){
 																}
 
 
-																//Angulação do carro
+																//Sets the angle of the wheels
 																c = 'a';
 																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 1.5);
 																c = 'A';
@@ -170,20 +177,18 @@ void idle(){
 																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 1.5);
 
 
-
-																//Movimentação dos tiros do jogador
+																//Updates the position of all the shots
+																//Erases the shots that are outside the screen.
 																vector<Shot> playerShotsVector = player->getShotsVector();
 																player->updateShots(t);
-																//Remove os tiros fora da tela
 																playerShotsVector.erase(
 																								remove_if(playerShotsVector.begin(), playerShotsVector.end(), outOfScreen),
 																								playerShotsVector.end());
-
-																//Remove os tiros fora da tela
 																foesVector.erase(
 																								remove_if(foesVector.begin(), foesVector.end(), detectEnemyShotColision),
 																								foesVector.end());
 
+																//Adds a shot to the foes every X seg.
 																shootingTime += foeShootingFrequency*t;
 																if(shootingTime >= 1) {
 																								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
@@ -191,12 +196,14 @@ void idle(){
 																								}
 																								shootingTime = 0;
 																}
-																//Detecta colisão com os inimigos
+
+																//Detects colision with the foes and tracks
 																if(player->detectFoeColision(foesVector) || player->detectTrackColision(trackVector, biggestRadius)) {
 																								player->setCenterX(oldCenterX);
 																								player->setCenterY(oldCenterY);
 																}
 
+																//Detects colision with the shots
 																Utils utils;
 																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
 																								vector<Shot> foeShotsVector = (*it).getShotsVector();
@@ -208,6 +215,7 @@ void idle(){
 																								}
 																}
 
+																//Gives some AI to the foes
 																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
 
 																								int index = it - foesVector.begin();
@@ -216,7 +224,7 @@ void idle(){
 
 																								vector<Shot> foeShotsVector = (*it).getShotsVector();
 																								(*it).updateShots(t);
-																								//Remove os tiros fora da tela
+
 																								foeShotsVector.erase(
 																																remove_if(foeShotsVector.begin(), foeShotsVector.end(), outOfScreen),
 																																foeShotsVector.end());
@@ -234,11 +242,7 @@ void idle(){
 																																(*it).foeMove(t, threshold, 1);
 																								}
 																}
-
-
-
 								}
-
 								glutPostRedisplay();
 }
 
@@ -301,8 +305,6 @@ Trab3::Trab3(){
 
 
 string Trab3::getArenaPath(int argc, char** argv){
-								//Retorna o caminho do arquivo da arena
-								//Seta as configurações do carro
 								XMLDocument configs;
 								string configFile;
 								if(argc == 1) {
@@ -328,7 +330,6 @@ string Trab3::getArenaPath(int argc, char** argv){
 }
 
 vector<Circle> Trab3::arenaReading(Trab3 trab, string arenaFullPath, vector<Circle> trackVector){
-								//Leitura do arquivo da Arena
 								XMLDocument arena;
 								arena.LoadFile(arenaFullPath.c_str());
 								XMLElement* svgElement = arena.FirstChildElement("svg");
@@ -338,7 +339,6 @@ vector<Circle> Trab3::arenaReading(Trab3 trab, string arenaFullPath, vector<Circ
 }
 
 Rectangle* Trab3::rectangleReading(XMLElement* svgElement){
-								//Leitura da pista de largada/chegada
 								XMLElement* rectElement = svgElement->FirstChildElement("rect");
 								Rectangle* rect = new Rectangle(
 																rectElement->Attribute("id"),
@@ -352,7 +352,6 @@ Rectangle* Trab3::rectangleReading(XMLElement* svgElement){
 }
 
 vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> trackVector){
-								//Leitura das pistas e jogadores
 								for(XMLElement* circleElement = svgElement->FirstChildElement("circle"); circleElement != NULL; circleElement = circleElement->NextSiblingElement("circle"))
 								{
 																Circle* circle = new Circle(
@@ -363,7 +362,6 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> track
 																								circleElement->Attribute("fill")
 																								);
 
-																//Garante que o jogador sempre será o primeiro do vector
 																if(circle->getID() == "Jogador") {
 																								player->setCenterX(circle->getCenterX());
 																								player->setCenterY(circle->getCenterY());
@@ -377,6 +375,7 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> track
 																								foe->setColor(circle->getFill());
 																								foe->setSpeed(foeSpeed);
 																								foe->setShotSpeed(foeShootingSpeed);
+																								//Put the foes at the right position.
 																								GLfloat initialAngle = atan(((arenaCenterY - foe->getCenterY())/(foe->getCenterX() - arenaCenterX)))*180/M_PI;
 																								if(foe->getCenterX() < arenaCenterX) {
 																																foe->setTheta(180-initialAngle);
@@ -395,26 +394,18 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> track
 																																smallestRadius = circle->getRadius();
 																								}
 																}
-																//Considerações para ajustar o tamanho da tela e posição dos elementos
-
 								}
-
 								return trackVector;
 }
 
 void Trab3::printCronometer(GLfloat x, GLfloat y){
-								//Create a string to be printed
 								char *tmpStr;
 								int seconds_since_start = difftime( time(0), start);
 								minutes = seconds_since_start / 60;
 								seconds = seconds_since_start % 60;
 								sprintf(str, "%02d:%02d", minutes, seconds);
-								//Define the position to start printing
 								glRasterPos2f(x, y);
-								//Print  the first Char with a certain font
-								//glutBitmapLength(font,(unsigned char*)str);
 								tmpStr = str;
-								//Print each of the other Char at time
 								while( *tmpStr ) {
 																glutBitmapCharacter(timer_font, *tmpStr);
 																tmpStr++;
@@ -422,7 +413,6 @@ void Trab3::printCronometer(GLfloat x, GLfloat y){
 }
 
 void Trab3::printEndMessage(GLfloat x, GLfloat y){
-								//Create a string to be printed
 								char *tmpStr;
 								if(gameState == 1) {
 																sprintf(str, "You win!");
@@ -430,12 +420,8 @@ void Trab3::printEndMessage(GLfloat x, GLfloat y){
 								} else if(gameState == -1) {
 																sprintf(str, "GAME OVER!");
 								}
-								//Define the position to start printing
 								glRasterPos2f(x, y);
-								//Print  the first Char with a certain font
-								//glutBitmapLength(font,(unsigned char*)str);
 								tmpStr = str;
-								//Print each of the other Char at time
 								while( *tmpStr ) {
 																glutBitmapCharacter(end_font, *tmpStr);
 																tmpStr++;
