@@ -30,15 +30,14 @@ GLfloat shootingTime = 0;
 static char str[2000];
 void * timer_font = GLUT_BITMAP_9_BY_15;
 void * end_font = GLUT_BITMAP_TIMES_ROMAN_24;
-time_t start = time(0);
-int seconds, minutes;
+time_t start;
 //End of the game variables
 int gameState = 0;
 bool crossedLine1 = false, crossedLine2 = false;
 
 
 int main(int argc, char** argv) {
-
+								start = time(0);
 								player = new Car();
 
 								//Reads the config and arena files.
@@ -61,12 +60,12 @@ int main(int argc, char** argv) {
 																arenaCenterY + biggestRadius, arenaCenterY - biggestRadius,
 																-1, 1
 																);
-								glutDisplayFunc(display);
 								glutIdleFunc(idle);
 								glutKeyboardFunc(keyPressed);
 								glutKeyboardUpFunc(keyUp);
 								glutMouseFunc(mouseClick);
 								glutPassiveMotionFunc(mouseMotion);
+								glutDisplayFunc(display);
 								glutMainLoop();
 								return 0;
 }
@@ -75,8 +74,6 @@ void display(){
 								glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 								//If player hasn't won or lost
 								if(gameState == 0) {
-																//Renders the cronometer at the corner of the screen
-																trab.printCronometer(60,70);
 
 																//Draws all the tracks
 																for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
@@ -99,6 +96,10 @@ void display(){
 																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
 																								(*it).drawShots();
 																}
+																//Renders the cronometer at the corner of the screen
+																Utils utils;
+																utils.checkColor("white");
+																trab.printCronometer(60,70);
 
 								} else{
 																//GAME OVER or YOU WIN
@@ -231,19 +232,20 @@ void idle(){
 
 																								GLfloat threshold = smallestRadius + (biggestRadius-smallestRadius)/2;
 
-																								if((*it).detectTrackColision(trackVector, biggestRadius) || (*it).detectCarColision(*player) || (*it).detectFoeColision(otherFoes)) {
+																								if((*it).getBackwardCount() > 0) {
+																																(*it).foeMove(t, threshold, -1);
+																																(*it).setBackwardCount((*it).getBackwardCount()-1);
+																								} else if ((*it).detectTrackColision(trackVector, biggestRadius) || (*it).detectCarColision(*player) || (*it).detectFoeColision(otherFoes)) {
 																																Utils utils;
 																																(*it).foeMove(t, threshold, -1);
 																																(*it).setBackwardCount(utils.randomInt(20, 100));
-																								} else if ((*it).getBackwardCount() > 0) {
-																																(*it).foeMove(t, threshold, -1);
-																																(*it).setBackwardCount((*it).getBackwardCount()-1);
 																								} else {
 																																(*it).foeMove(t, threshold, 1);
 																								}
 																}
 								}
 								glutPostRedisplay();
+								return;
 }
 
 bool outOfScreen(Shot shot)
@@ -270,11 +272,13 @@ bool detectEnemyShotColision(Car car){
 
 void keyUp(unsigned char key, int x, int y){
 								i_status[key] = 0;
+								glutPostRedisplay();
 								return;
 }
 
 void keyPressed(unsigned char key, int x, int y){
 								i_status[key] = 1;
+								glutPostRedisplay();
 								return;
 }
 
@@ -283,6 +287,8 @@ void mouseClick(int button, int state, int x, int y){
 																//Cria um novo tiro e insere no vetor
 																player->addShot();
 								}
+								glutPostRedisplay();
+								return;
 }
 
 void mouseMotion(int x, int y){
@@ -294,6 +300,7 @@ void mouseMotion(int x, int y){
 								} else if (x < centerX) {
 																player->setCannonAngle(-45*(centerX-x)/centerX);
 								}
+								glutPostRedisplay();
 								return;
 }
 
@@ -401,8 +408,8 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> track
 void Trab3::printCronometer(GLfloat x, GLfloat y){
 								char *tmpStr;
 								int seconds_since_start = difftime( time(0), start);
-								minutes = seconds_since_start / 60;
-								seconds = seconds_since_start % 60;
+								int minutes = seconds_since_start / 60;
+								int seconds = seconds_since_start % 60;
 								sprintf(str, "%02d:%02d", minutes, seconds);
 								glRasterPos2f(x, y);
 								tmpStr = str;

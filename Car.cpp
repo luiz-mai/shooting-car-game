@@ -434,7 +434,7 @@ void Car::drawCar(){
 
 
 void Car::drawShots(){
-
+        glPushMatrix();
         vector<Shot> carShots = this->getShotsVector();
         //Applies the positioning transformations to all the shots.
         for(vector<Shot>::iterator it = carShots.begin(); it != carShots.end(); ++it) {
@@ -471,6 +471,7 @@ void Car::drawShots(){
 
                 glPopMatrix();
         }
+        glPopMatrix();
         return;
 
 }
