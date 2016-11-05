@@ -36,6 +36,7 @@ GLfloat cannonAngle;                    //Angle of the cannon of the car (-45 ~ 
 GLfloat axisWidth;                      //Width of the car axis
 
 int backwardCount;                      //Counter used when the foes colide.
+int direction;                          //Movement's direction (1:forward / -1: backward)
 float incrementalNumber;                //Counter used to "roll" the wheels
 bool moving;                            //Determines if the car is moving or not
 string color;                           //Car's color
@@ -63,6 +64,7 @@ GLfloat getWheelsAngle();
 GLfloat getCannonAngle();
 GLfloat getAxisWidth();
 int getBackwardCount();
+int getDirection();
 float getIncrementalNumber();
 bool getMoving();
 string getColor();
@@ -86,6 +88,7 @@ void setWheelsAngle(GLfloat);
 void setCannonAngle(GLfloat);
 void setAxisWidth(GLfloat);
 void setBackwardCount(int);
+void setDirection(int);
 void setIncrementalNumber(float);
 void setMoving(bool);
 void setColor(string);
@@ -131,8 +134,7 @@ void updateShots(GLdouble);
 //Moves the foes with a kind of AI.
 //PARAMETER: (GLdouble) current time.
 //PARAMETER: (GLfloat) radius of the foes movement.
-//PARAMETER: (int) direction of the movement (1 - forward / -1 - backward).
-void foeMove(GLdouble, GLfloat, int);
+void foeMove(GLdouble, GLfloat);
 };
 
 #endif //CAR_H

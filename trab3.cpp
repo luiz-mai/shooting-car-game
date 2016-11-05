@@ -233,14 +233,16 @@ void idle(){
 																								GLfloat threshold = smallestRadius + (biggestRadius-smallestRadius)/2;
 
 																								if((*it).getBackwardCount() > 0) {
-																																(*it).foeMove(t, threshold, -1);
+																																(*it).foeMove(t, threshold);
 																																(*it).setBackwardCount((*it).getBackwardCount()-1);
 																								} else if ((*it).detectTrackColision(trackVector, biggestRadius) || (*it).detectCarColision(*player) || (*it).detectFoeColision(otherFoes)) {
 																																Utils utils;
-																																(*it).foeMove(t, threshold, -1);
+																																(*it).setDirection((*it).getDirection() * (-1));
+																																(*it).foeMove(t, threshold);
 																																(*it).setBackwardCount(utils.randomInt(20, 100));
 																								} else {
-																																(*it).foeMove(t, threshold, 1);
+																																(*it).setDirection(1);
+																																(*it).foeMove(t, threshold);
 																								}
 																}
 								}

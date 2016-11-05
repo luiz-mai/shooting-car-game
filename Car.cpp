@@ -122,6 +122,7 @@ Car::Car(){
         this->setMoving(false);
         this->setAxisWidth(58.5);
         this->setBackwardCount(0);
+        this->setDirection(1);
 
         return;
 }
@@ -196,6 +197,10 @@ GLfloat Car::getAxisWidth(){
 
 int Car::getBackwardCount(){
         return this->backwardCount;
+}
+
+int Car::getDirection(){
+        return this->direction;
 }
 
 GLfloat Car::getIncrementalNumber(){
@@ -306,6 +311,11 @@ void Car::setIncrementalNumber(float incrementalNumber){
 
 void Car::setBackwardCount(int backwardCount){
         this->backwardCount = backwardCount;
+        return;
+}
+
+void Car::setDirection(int direction){
+        this->direction = direction;
         return;
 }
 
@@ -544,7 +554,7 @@ void Car::moveBackward(GLdouble t){
         this->setCenterY(this->getCenterY() - t*(this->getSpeed()*sin((this->getTheta()-90)*M_PI/180)));
         this->setTheta(this->getTheta() - t*(this->getSpeed()*tan((this->getWheelsAngle())*M_PI/180)));
 }
-void Car::foeMove(GLdouble t, GLfloat threshold, int direction){
+void Car::foeMove(GLdouble t, GLfloat threshold){
         //Sets the cannon at a random position
         Utils utils;
         if(utils.randomInt(0,20) == 19)       //Don't change too often
@@ -552,7 +562,7 @@ void Car::foeMove(GLdouble t, GLfloat threshold, int direction){
 
         //Sets the position of the wheels to keep tracking the threshold's radius
         this->setWheelsAngle((-1)*asin(this->getAxisWidth()/threshold)*180/M_PI);
-        if(direction == 1) {
+        if(this->getDirection() == 1) {
                 this->moveForward(t);
         } else {
                 this->moveBackward(t);
