@@ -26,6 +26,7 @@ GLfloat foeSpeed;
 GLfloat foeShootingSpeed;
 GLfloat foeShootingFrequency;
 GLfloat shootingTime = 0;
+GLfloat t;
 //Text variables
 static char str[2000];
 void * timer_font = GLUT_BITMAP_9_BY_15;
@@ -34,7 +35,12 @@ time_t start;
 //End of the game variables
 int gameState = 0;
 bool crossedLine1 = false, crossedLine2 = false;
-
+//Camera variables
+int lastX, lastY;
+int buttonDown;
+double camDist=10;
+double camXYAngle=0;
+double camXZAngle=0;
 
 int main(int argc, char** argv) {
 								start = time(0);
@@ -49,17 +55,17 @@ int main(int argc, char** argv) {
 								//OpenGL initializations
 								glutInit(&argc, argv);
 								glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-								glutInitWindowSize(width,height);
+								glutInitWindowSize(500,500);
 								glutInitWindowPosition(100,100);
 								glutCreateWindow("Trabalho 4 de Computacao Grafica");
 								glClearColor(0,0,0,0);
+								glEnable(GL_DEPTH_TEST);
+								glEnable(GL_TEXTURE_2D);
+								glViewport(0,0,500,500);
 								glMatrixMode(GL_PROJECTION);
+								gluPerspective(60.0f, 1, 3, 3000);
+								glMatrixMode(GL_MODELVIEW);
 								glLoadIdentity();
-								glOrtho(
-																arenaCenterX - biggestRadius, arenaCenterX + biggestRadius,
-																arenaCenterY + biggestRadius, arenaCenterY - biggestRadius,
-																-1, 1
-																);
 								glutIdleFunc(idle);
 								glutKeyboardFunc(keyPressed);
 								glutKeyboardUpFunc(keyUp);
@@ -72,9 +78,16 @@ int main(int argc, char** argv) {
 
 void display(){
 								glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+								glLoadIdentity();
 								//If player hasn't won or lost
 								if(gameState == 0) {
-
+																GLfloat cam1x=player->getCenterX()+t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
+																GLfloat cam1y=player->getCenterY()+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																GLfloat cam1z=15;
+																GLfloat centro_x=player->getCenterX()+5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
+																GLfloat centro_y=player->getCenterY()+5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																GLfloat centro_z=0;
+																gluLookAt(cam1x, cam1y, cam1z, centro_x, centro_y, centro_z, 0, 0, 1);
 																//Draws all the tracks
 																for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
 																								(*it).drawCircle();
@@ -120,7 +133,6 @@ void idle(){
 																//Measure of the elapsed time
 																static GLdouble previousTime = 0;
 																GLdouble currentTime;
-																GLdouble t;
 																currentTime = glutGet(GLUT_ELAPSED_TIME);
 																t = currentTime - previousTime;
 																previousTime = currentTime;
@@ -287,7 +299,12 @@ void keyPressed(unsigned char key, int x, int y){
 void mouseClick(int button, int state, int x, int y){
 								if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 																//Cria um novo tiro e insere no vetor
-																player->addShot();
+																player->addShot(); lastX = x;
+																lastY = y;
+																buttonDown = 1;
+								}
+								if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
+																buttonDown = 0;
 								}
 								glutPostRedisplay();
 								return;
@@ -296,12 +313,21 @@ void mouseClick(int button, int state, int x, int y){
 void mouseMotion(int x, int y){
 								//Determina a angulação do canhão.
 								//Canto esquerdo da tela: -45 / Canto direito da tela: +45
-								int centerX = width/2;
-								if(x > centerX) {
-																player->setCannonAngle(45*(x-centerX)/centerX);
-								} else if (x < centerX) {
-																player->setCannonAngle(-45*(centerX-x)/centerX);
+								if (!buttonDown) {
+																int centerX = width/2;
+																if(x > centerX) {
+																								player->setCannonAngle(45*(x-centerX)/centerX);
+																} else if (x < centerX) {
+																								player->setCannonAngle(-45*(centerX-x)/centerX);
+																}
+								} else {
+																camXYAngle += x - lastX;
+																camXZAngle += y - lastY;
+																camXYAngle = (int)camXYAngle % 360;
+																camXZAngle = (int)camXZAngle % 360;
 								}
+								lastX = x;
+								lastY = y;
 								glutPostRedisplay();
 								return;
 }
@@ -435,4 +461,46 @@ void Trab3::printEndMessage(GLfloat x, GLfloat y){
 																glutBitmapCharacter(end_font, *tmpStr);
 																tmpStr++;
 								}
+}
+
+void Trab3::drawAxes(double size){
+								GLfloat mat_ambient_r[] = { 1.0, 0.0, 0.0, 1.0 };
+								GLfloat mat_ambient_g[] = { 0.0, 1.0, 0.0, 1.0 };
+								GLfloat mat_ambient_b[] = { 0.0, 0.0, 1.0, 1.0 };
+								GLfloat no_mat[] = { 0.0, 0.0, 0.0, 1.0 };
+								glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE,
+																					no_mat);
+								glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
+								glMaterialfv(GL_FRONT, GL_SHININESS, no_mat);
+
+								//x axis
+								glPushMatrix();
+								glMaterialfv(GL_FRONT, GL_EMISSION, mat_ambient_r);
+								glColor3fv(mat_ambient_r);
+								glScalef(size, size*0.1, size*0.1);
+								glTranslatef(0.5, 0, 0);  // put in one end
+								glutSolidCube(1.0);
+								glPopMatrix();
+
+								//y axis
+								glPushMatrix();
+								glMaterialfv(GL_FRONT, GL_EMISSION, mat_ambient_g);
+								glColor3fv(mat_ambient_g);
+								glRotatef(90,0,0,1);
+								glScalef(size, size*0.1, size*0.1);
+								glTranslatef(0.5, 0, 0);  // put in one end
+								glutSolidCube(1.0);
+								glPopMatrix();
+
+								//z axis
+								glPushMatrix();
+								glMaterialfv(GL_FRONT, GL_EMISSION, mat_ambient_b);
+								glColor3fv(mat_ambient_b);
+								glRotatef(-90,0,1,0);
+								glScalef(size, size*0.1, size*0.1);
+								glTranslatef(0.5, 0, 0);  // put in one end
+								glutSolidCube(1.0);
+								glPopMatrix();
+
+
 }

@@ -16,6 +16,5 @@ compila: tinyxml2.o Triangle.o Rectangle.o Circle.o Utils.o Car.o Shot.o
 
 clean:
 	@rm *.o
-	@rm *.pdf
 	@rm trabalhocg
 	@echo "Arquivos removidos com sucesso"

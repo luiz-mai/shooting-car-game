@@ -43,11 +43,14 @@ void printCronometer(GLfloat x, GLfloat y);
 
 //Prints the Win/Lose message at the end of the game.
 void printEndMessage(GLfloat x, GLfloat y);
+
+void drawAxes(double);
 };
 
 //OPENGL CALLBACKS
 void display(void);
 void idle(void);
+void reshape(int, int);
 void mouseMotion(int, int);
 void mouseClick(int, int, int, int);
 void keyPressed(unsigned char, int, int);
