@@ -36,6 +36,8 @@ time_t start;
 int gameState = 0;
 bool crossedLine1 = false, crossedLine2 = false;
 //Camera variables
+int cameraMode = 1;  //0:Cockpit  /  1:Canhão  /  2:Externa
+GLfloat cam1x, cam1y, cam1z, cam2x, cam2y, cam2z, centro_x, centro_y, centro_z;
 int lastX, lastY;
 int buttonDown;
 double camDist=10;
@@ -57,19 +59,20 @@ int main(int argc, char** argv) {
 								glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 								glutInitWindowSize(500,500);
 								glutInitWindowPosition(100,100);
-								glutCreateWindow("Trabalho 4 de Computacao Grafica");
+								glutCreateWindow("Trabalho Final de Computacao Grafica");
 								glClearColor(0,0,0,0);
 								glEnable(GL_DEPTH_TEST);
 								glEnable(GL_TEXTURE_2D);
 								glViewport(0,0,500,500);
 								glMatrixMode(GL_PROJECTION);
-								gluPerspective(60.0f, 1, 3, 3000);
+								gluPerspective(60.0f, -1, 3, 3000);
 								glMatrixMode(GL_MODELVIEW);
 								glLoadIdentity();
 								glutIdleFunc(idle);
 								glutKeyboardFunc(keyPressed);
 								glutKeyboardUpFunc(keyUp);
 								glutMouseFunc(mouseClick);
+								glutMotionFunc(moveCamera);
 								glutPassiveMotionFunc(mouseMotion);
 								glutDisplayFunc(display);
 								glutMainLoop();
@@ -81,13 +84,31 @@ void display(){
 								glLoadIdentity();
 								//If player hasn't won or lost
 								if(gameState == 0) {
-																GLfloat cam1x=player->getCenterX()+t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
-																GLfloat cam1y=player->getCenterY()+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
-																GLfloat cam1z=15;
-																GLfloat centro_x=player->getCenterX()+5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
-																GLfloat centro_y=player->getCenterY()+5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
-																GLfloat centro_z=0;
-																gluLookAt(cam1x, cam1y, cam1z, centro_x, centro_y, centro_z, 0, 0, 1);
+																GLfloat scale = player->getCircleRadius()/player->getWidth();
+																if(cameraMode == 0) {
+																								cam1x=player->getCenterX()+t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
+																								cam1y=player->getCenterY()+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																								cam1z=15;
+																								centro_x=player->getCenterX()+5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
+																								centro_y=player->getCenterY()+5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																								centro_z=0;
+																								gluLookAt(cam1x, cam1y, cam1z, centro_x, centro_y, centro_z, 0, 0, 1);
+																} else if(cameraMode == 1) {
+																								GLfloat angulo = player->getTheta() + player->getCannonAngle();
+																								GLfloat scale = player->getCircleRadius()/player->getHeight();
+																								cam1x= player->getCenterX()+(sin(player->getTheta()*M_PI/180)*player->getCircleRadius())+(sin(angulo*M_PI/180)*player->getCannon().getHeight()*scale);
+																								cam1y = player->getCenterY()-(cos(player->getTheta()*M_PI/180)*player->getCircleRadius())-(cos(angulo*M_PI/180)*player->getCannon().getHeight()*scale);
+																								cam1z = 15;
+																								centro_x = cam1x + sin(angulo*M_PI/180)*200;
+																								centro_y = cam1y - cos(angulo*M_PI/180)*200;
+																								centro_z = 15;
+																								gluLookAt(cam1x,cam1y,cam1z, centro_x,centro_y,centro_z, 0,0,1);
+																} else{
+																								cam1x = player->getCenterX() + 2*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
+																								cam1y = player->getCenterY() + 2*(player->getCircleRadius())*cos((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
+																								cam1z= 40;
+																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),0, 0,0,1);
+																}
 																//Draws all the tracks
 																for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
 																								(*it).drawCircle();
@@ -189,6 +210,12 @@ void idle(){
 																c = 'D';
 																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 1.5);
 
+																c = '1';
+																if(i_status[c] == 1) cameraMode = 0;
+																c = '2';
+																if(i_status[c] == 1) cameraMode = 1;
+																c = '3';
+																if(i_status[c] == 1) cameraMode = 2;
 
 																//Updates the position of all the shots
 																//Erases the shots that are outside the screen.
@@ -299,38 +326,58 @@ void keyPressed(unsigned char key, int x, int y){
 void mouseClick(int button, int state, int x, int y){
 								if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 																//Cria um novo tiro e insere no vetor
-																player->addShot(); lastX = x;
-																lastY = y;
-																buttonDown = 1;
+																player->addShot();
 								}
-								if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
-																buttonDown = 0;
+								if (button == GLUT_RIGHT_BUTTON) {
+																if(state == GLUT_DOWN) {
+																								lastX = x;
+																								lastY = y;
+																								buttonDown = 1;
+																} else {
+																								buttonDown = 0;
+																}
 								}
 								glutPostRedisplay();
 								return;
 }
 
+void moveCamera(int x, int y)
+{
+
+								if (!buttonDown)
+																return;
+
+								if(x-lastX>0) {camXYAngle += 2; }
+								else if(x-lastX<0) {camXYAngle -= 2; }
+
+								if(y-lastY>0) {camXZAngle += 2; }
+								else if(y-lastY<0) {camXZAngle -= 2; }
+
+								if(camXYAngle>=180) camXYAngle=180;
+								if(camXYAngle<=-180) camXYAngle=-180;
+								if(camXZAngle>=90) camXZAngle=89;
+								if(camXZAngle<=-90) camXZAngle=-89;
+
+								lastX = x;
+								lastY = y;
+
+}
+
 void mouseMotion(int x, int y){
 								//Determina a angulação do canhão.
 								//Canto esquerdo da tela: -45 / Canto direito da tela: +45
-								if (!buttonDown) {
-																int centerX = width/2;
-																if(x > centerX) {
-																								player->setCannonAngle(45*(x-centerX)/centerX);
-																} else if (x < centerX) {
-																								player->setCannonAngle(-45*(centerX-x)/centerX);
-																}
-								} else {
-																camXYAngle += x - lastX;
-																camXZAngle += y - lastY;
-																camXYAngle = (int)camXYAngle % 360;
-																camXZAngle = (int)camXZAngle % 360;
+								int centerX = width/2;
+								if(x > centerX) {
+																player->setCannonAngle(45*(x-centerX)/centerX);
+								} else if (x < centerX) {
+																player->setCannonAngle(-45*(centerX-x)/centerX);
 								}
-								lastX = x;
-								lastY = y;
+
 								glutPostRedisplay();
 								return;
 }
+
+
 
 
 //----------------------------MÉTODOS DA CLASSE--------------------------------

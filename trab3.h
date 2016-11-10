@@ -52,6 +52,7 @@ void display(void);
 void idle(void);
 void reshape(int, int);
 void mouseMotion(int, int);
+void moveCamera(int, int);
 void mouseClick(int, int, int, int);
 void keyPressed(unsigned char, int, int);
 void keyUp(unsigned char, int, int);
