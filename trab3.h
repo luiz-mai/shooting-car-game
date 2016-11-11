@@ -1,6 +1,12 @@
 #ifndef TRAB3_H
 #define TRAB3_H
 
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
 #include <string>
 #include <cstdlib>
 #include <cstring>
@@ -9,7 +15,6 @@
 #include <algorithm>
 #include <cmath>
 #include <ctime>
-#include <GL/freeglut.h>
 #include "tinyxml2.h"
 #include "Circle.h"
 #include "Rectangle.h"

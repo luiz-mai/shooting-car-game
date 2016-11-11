@@ -1,7 +1,14 @@
 #ifndef SHOT_H
 #define SHOT_H
 
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
 #include <GL/freeglut.h>
+#endif
+
 #include <string>
 #include "Utils.h"
 #include "Circle.h"

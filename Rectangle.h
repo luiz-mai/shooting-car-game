@@ -2,7 +2,15 @@
 #define RECTANGLE_H
 
 #include <string>
+
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
 #include <GL/freeglut.h>
+#endif
+
 #include "Utils.h"
 using namespace std;
 
