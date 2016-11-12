@@ -20,6 +20,7 @@
 #include "Rectangle.h"
 #include "Car.h"
 #include "Shot.h"
+#include "ModelObj.h"
 using namespace std;
 using namespace tinyxml2;
 
@@ -50,7 +51,10 @@ void printCronometer(GLfloat x, GLfloat y);
 void printEndMessage(GLfloat x, GLfloat y);
 
 void drawAxes(double);
+
 };
+
+
 
 //OPENGL CALLBACKS
 void display(void);

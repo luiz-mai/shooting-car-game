@@ -36,13 +36,15 @@ time_t start;
 int gameState = 0;
 bool crossedLine1 = false, crossedLine2 = false;
 //Camera variables
-int cameraMode = 1;  //0:Cockpit  /  1:Canhão  /  2:Externa
+int cameraMode = 0;  //0:Cockpit  /  1:Canhão  /  2:Externa
 GLfloat cam1x, cam1y, cam1z, cam2x, cam2y, cam2z, centro_x, centro_y, centro_z;
 int lastX, lastY;
 int buttonDown;
 double camDist=10;
 double camXYAngle=0;
 double camXZAngle=0;
+//Model variables
+ModelObj obj;
 
 int main(int argc, char** argv) {
 								start = time(0);
@@ -75,6 +77,7 @@ int main(int argc, char** argv) {
 								glutMotionFunc(moveCamera);
 								glutPassiveMotionFunc(mouseMotion);
 								glutDisplayFunc(display);
+								obj.Load("car.obj");
 								glutMainLoop();
 								return 0;
 }
@@ -103,7 +106,7 @@ void display(){
 																								centro_y = cam1y - cos(angulo*M_PI/180)*200;
 																								centro_z = 15;
 																								gluLookAt(cam1x,cam1y,cam1z, centro_x,centro_y,centro_z, 0,0,1);
-																} else{
+																} else if(cameraMode == 2) {
 																								cam1x = player->getCenterX() + 2*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
 																								cam1y = player->getCenterY() + 2*(player->getCircleRadius())*cos((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
 																								cam1z= 40;
@@ -118,7 +121,8 @@ void display(){
 																startTrack->drawRectangle();
 
 																//Draws the player's car
-																player->drawCar();
+																//player->drawCar();
+																obj.Draw();
 
 																//Draws all the foes
 																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
@@ -548,6 +552,5 @@ void Trab3::drawAxes(double size){
 								glTranslatef(0.5, 0, 0);  // put in one end
 								glutSolidCube(1.0);
 								glPopMatrix();
-
 
 }
