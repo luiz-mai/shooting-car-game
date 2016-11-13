@@ -44,6 +44,8 @@ double camDist=10;
 double camXYAngle=0;
 double camXZAngle=0;
 //Model variables
+ObjLoader objl;
+CGL cgl;
 
 int main(int argc, char** argv) {
 								start = time(0);
@@ -76,6 +78,8 @@ int main(int argc, char** argv) {
 								glutMotionFunc(moveCamera);
 								glutPassiveMotionFunc(mouseMotion);
 								glutDisplayFunc(display);
+
+								cgl.objLoad("car.obj", &objl);
 								glutMainLoop();
 								return 0;
 }
@@ -164,7 +168,12 @@ void display(){
 																startTrack->drawRectangle();
 
 																//Draws the player's car
-																player->drawCar();
+																//player->drawCar();
+																glPushMatrix();
+																glScalef(0.0000001, 0.0000001, 0.0000001);
+																//O TEMPO PASSOU E EU SOFRI CALADO
+																cgl.objDraw(objl);
+																glPopMatrix();
 
 																//Draws all the foes
 																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {

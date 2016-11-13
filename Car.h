@@ -34,6 +34,7 @@ vector<Shot> shotsVector;               //Contains all the shots of the car.
 GLfloat circleRadius;                   //Radius of the circle that contains the car.
 GLfloat width;                          //SVG's width
 GLfloat height;                         //SVG's height
+GLfloat zHeight;
 GLfloat theta;                          //Angle of the car
 GLfloat centerX;                        //Coordinate X of the center of the car
 GLfloat centerY;                        //Coordinate Y of the center of the car
@@ -63,6 +64,7 @@ vector<Shot> getShotsVector();
 GLfloat getCircleRadius();
 GLfloat getWidth();
 GLfloat getHeight();
+GLfloat getZHeight();
 GLfloat getTheta();
 GLfloat getCenterX();
 GLfloat getCenterY();
@@ -87,6 +89,7 @@ void setShotsVector(vector<Shot>);
 void setCircleRadius(GLfloat);
 void setWidth(GLfloat);
 void setHeight(GLfloat);
+void setZHeight(GLfloat);
 void setTheta(GLfloat);
 void setCenterX(GLfloat);
 void setCenterY(GLfloat);
