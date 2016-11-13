@@ -44,8 +44,7 @@ double camDist=10;
 double camXYAngle=0;
 double camXZAngle=0;
 //Model variables
-ObjLoader objl;
-CGL cgl;
+GLMmodel *model;
 
 int main(int argc, char** argv) {
 								start = time(0);
@@ -79,7 +78,8 @@ int main(int argc, char** argv) {
 								glutPassiveMotionFunc(mouseMotion);
 								glutDisplayFunc(display);
 
-								cgl.objLoad("car.obj", &objl);
+								model=glmReadOBJ("glm-data/pig.obj");
+							    glmVertexNormals(model,180.0,0);
 								glutMainLoop();
 								return 0;
 }
@@ -131,6 +131,8 @@ void display(){
 								glLoadIdentity();
 								//If player hasn't won or lost
 								if(gameState == 0) {
+
+
 																GLfloat scale = player->getCircleRadius()/player->getWidth();
 																if(cameraMode == 0) {
 																								cam1x=player->getCenterX()+t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
@@ -157,7 +159,14 @@ void display(){
 																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),0, 0,0,1);
 																}
 
-																drawWalls();
+																glPushMatrix();
+																GLfloat angle = 1.0;
+																glScalef(20, 20, 20);
+															    //HERE IS WHERE I DRAW MY OBJ
+															    glmDraw(model, GLM_SMOOTH|GLM_TEXTURE|GLM_MATERIAL);
+																glPopMatrix();
+
+																// drawWalls();
 
 																//Draws all the tracks
 																for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
@@ -169,11 +178,7 @@ void display(){
 
 																//Draws the player's car
 																//player->drawCar();
-																glPushMatrix();
-																glScalef(0.0000001, 0.0000001, 0.0000001);
-																//O TEMPO PASSOU E EU SOFRI CALADO
-																cgl.objDraw(objl);
-																glPopMatrix();
+
 
 																//Draws all the foes
 																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {

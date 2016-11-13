@@ -1,6 +1,13 @@
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
+#endif
+
 #include <string>
 #include <string.h>
 #include <vector>
@@ -57,7 +64,7 @@ struct ObjLoader{
     string mtllib;
 };
 
-typedef enum _types { TYPE_BMP, TYPE_RPI } ImagesType; 
+typedef enum _types { TYPE_BMP, TYPE_RPI } ImagesType;
 
 //CLASS DEFINITIONS--------------------------------------------------------------
 class cglTexture{
@@ -120,9 +127,9 @@ ObjLoader* CGL::objLoad(const char* filename, ObjLoader* obj){
     //Starting container at 0, not one. adjust accordingly!**************
     //objcount starts at 1;
     string line;
-    
-   
-    
+
+
+
     while(getline(fin, line)){
         stringstream ss(line);
         string lhead;
@@ -188,28 +195,28 @@ ObjLoader* CGL::objLoad(const char* filename, ObjLoader* obj){
             }
             obj->obj[obj->objCount-1].fmap.push_back(mtmp);
         }else if(lhead.compare("mtllib") == 0){
-        
-       
-        	 
-        	 	
+
+
+
+
             getline(ss,obj->mtllib);
             ifstream mtlTest(obj->mtllib.c_str());
             if(!fin){
                 cout << "ERROR: Unable able to open mtllib file " << obj->mtllib << endl;
             }
         }else if(lhead.compare("usemtl") == 0){
-        
-        	
-        	
+
+
+
             getline(ss, obj->obj[obj->objCount -1].mtl);
-           
-            
-            
+
+
+
         }
 
     }
-    
-    
+
+
     objLoadTex(obj);
 }
 ObjLoader * CGL::objLoadTex(ObjLoader* obj){
@@ -218,19 +225,19 @@ ObjLoader * CGL::objLoadTex(ObjLoader* obj){
         cout << "Unable to load textures" << endl;
         return obj;
     }
-    
+
     ifstream mtl(obj->mtllib.c_str());
-    
+
     if(!mtl){
         cout << "Unable to open mtl file" << endl;
         return obj;
     }
-    
-    
+
+
     glEnable(GL_TEXTURE_2D);
     string line;
     int picID = 0;
-    
+
     while(getline(mtl, line)){
         string header;
         stringstream ss(line);
@@ -241,9 +248,9 @@ ObjLoader * CGL::objLoadTex(ObjLoader* obj){
             //Cycle through all of the objects to see which one uses this material
             for(int i = 0; i < obj->objCount; i++){
                 if(obj->obj[i].mtl.compare(value) == 0){
-                	
+
                     string subLine;
-                    
+
                     while(getline(mtl, subLine)){
                         stringstream subSS(subLine);
                         string subValue;
@@ -258,13 +265,13 @@ ObjLoader * CGL::objLoadTex(ObjLoader* obj){
                             break;
                         }
                     }
-                    
+
                     break;
                 }
             }
         }
     }
-    
+
 }
 void CGL::objDraw(ObjLoader obj){
     glBegin(GL_TRIANGLES);
@@ -362,4 +369,3 @@ void cglTexture::getBitmapImageData( char *pFileName, Image *pImage ){
                 pImage->data[i+2] = charTemp;
     }
 }
-
