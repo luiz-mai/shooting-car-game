@@ -20,9 +20,6 @@
 #include "Rectangle.h"
 #include "Car.h"
 #include "Shot.h"
-// #include "cgl.h"
-#include "glm.h"
-#include "glmint.h"
 using namespace std;
 using namespace tinyxml2;
 

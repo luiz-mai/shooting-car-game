@@ -10,13 +10,10 @@ classes:
 	@g++ Circle.cpp -c
 	@g++ Car.cpp -c
 	@g++ Shot.cpp -c
-	@gcc glm.c -c
-	@gcc glm_util.c -c
-	@gcc glmimg.c -c
 
-compila: tinyxml2.o Triangle.o Rectangle.o Circle.o Utils.o Car.o Shot.o glm.o
-	# @g++ trab3.cpp Triangle.o Circle.o Rectangle.o Utils.o Car.o Shot.o tinyxml2.o -o trabalhocg -lglut -lGLU -lGL
-	@g++ trab3.cpp Triangle.o Circle.o Rectangle.o Utils.o Car.o Shot.o tinyxml2.o glm.o glm_util.o glmimg.o -o trabalhocg -framework GLUT -framework OpenGL -Wno-deprecated-declarations
+compila: tinyxml2.o Triangle.o Rectangle.o Circle.o Utils.o Car.o Shot.o
+	# @g++ trab3.cpp Triangle.o Circle.o Rectangle.o Utils.o Car.o Shot.o tinyxml2.o -o trabalhocg -lglut -lGLU -lGL -lglm -lpng12 -ljpeg -lm -lalut -lopenal
+	@g++ trab3.cpp Triangle.o Circle.o Rectangle.o Utils.o Car.o Shot.o tinyxml2.o -o trabalhocg -framework GLUT -framework OpenGL -Wno-deprecated-declarations
 
 executa:
 	./trabalhocg
