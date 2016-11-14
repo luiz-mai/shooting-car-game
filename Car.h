@@ -111,7 +111,9 @@ public:
   void drawCar();
   void drawCarBody();
   void drawCarAxis();
-  void drawCarWheels();
+  void drawFrontWheels();
+  void drawBackWheels();
+  void drawSingleWheel();
   void drawCarCannon();
 
   // Does all the transformations and draw the car.

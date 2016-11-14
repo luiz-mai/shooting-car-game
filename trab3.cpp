@@ -255,13 +255,13 @@ void idle(){
 
 																//Sets the angle of the wheels
 																c = 'a';
-																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 1.5);
+																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 2.5);
 																c = 'A';
-																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 1.5);
+																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 2.5);
 																c = 'd';
-																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 1.5);
+																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 2.5);
 																c = 'D';
-																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 1.5);
+																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 2.5);
 
 																c = '1';
 																if(i_status[c] == 1) cameraMode = 0;
