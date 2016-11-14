@@ -378,26 +378,27 @@ void Car::drawCar(){
 
         this->drawFrontWheels();
         this->drawBackWheels();
-
-        //Render the body parts
-        //Sets the color as the specified by arena.svg
-        this->drawCarBody();
         this->drawCarAxis();
-
         this->drawCarCannon();
+        this->drawCarBody();
 
         glPopMatrix();
         return;
 }
 
 void Car::drawCarBody(){
-
+        glPushMatrix();
+        glTranslatef(100,118, 25);
+        glScalef(60, 150, 40);
+        glColor3f(1,0,0);
+        glutSolidCube(1);
+        glPopMatrix();
 }
 
 void Car::drawCarAxis(){
         //Front axis
         glPushMatrix();
-        glTranslatef(70, 75, 0);
+        glTranslatef(70, 70, 0);
         glRotatef(90, 0, 1, 0);
         GLUquadricObj *quadObj = gluNewQuadric();
         gluQuadricNormals(quadObj, GLU_SMOOTH);
@@ -406,7 +407,7 @@ void Car::drawCarAxis(){
 
         //Back Axis
         glPushMatrix();
-        glTranslatef(70, 150, 0);
+        glTranslatef(70, 160, 0);
         glRotatef(90, 0, 1, 0);
         GLUquadricObj *quadObj2 = gluNewQuadric();
         gluQuadricNormals(quadObj2, GLU_SMOOTH);
@@ -415,18 +416,19 @@ void Car::drawCarAxis(){
 
         //Center axis
         glPushMatrix();
-        glTranslatef(100, 75, 0);
+        glTranslatef(100, 70, 0);
         glRotatef(90, 0, 0, 1);
         glRotatef(90, 0, 1, 0);
         GLUquadricObj *quadObj3 = gluNewQuadric();
         gluQuadricNormals(quadObj3, GLU_SMOOTH);
-        gluCylinder(quadObj3, 3, 3, 75, 10, 100);
+        gluCylinder(quadObj3, 3, 3, 100, 10, 100);
         glPopMatrix();
 }
 
 void Car::drawFrontWheels(){
+
         glPushMatrix();
-        glTranslatef(70,75,0);
+        glTranslatef(70,70,0);
         glRotatef(this->getWheelsAngle(), 0, 0, 1);
         glTranslatef(-5, 0, 0);
         glRotatef(this->getIncrementalNumber(), 1, 0, 0);
@@ -435,7 +437,7 @@ void Car::drawFrontWheels(){
         glPopMatrix();
 
         glPushMatrix();
-        glTranslatef(130,75,0);
+        glTranslatef(130,70,0);
         glRotatef(this->getWheelsAngle(), 0, 0, 1);
         glTranslatef(-5, 0, 0);
         glRotatef(this->getIncrementalNumber(), 1, 0, 0);
@@ -446,14 +448,14 @@ void Car::drawFrontWheels(){
 
 void Car::drawBackWheels(){
         glPushMatrix();
-        glTranslatef(70,150,0);
+        glTranslatef(70,160,0);
         glTranslatef(-5, 0, 0);
         glRotatef(90, 0, 1, 0);
         this->drawSingleWheel();
         glPopMatrix();
 
         glPushMatrix();
-        glTranslatef(130,150,0);
+        glTranslatef(130,160,0);
         glTranslatef(-5, 0, 0);
         glRotatef(90, 0, 1, 0);
         this->drawSingleWheel();
@@ -461,29 +463,32 @@ void Car::drawBackWheels(){
 }
 
 void Car::drawSingleWheel(){
+        glColor3f(0,0,0);
         GLUquadricObj *quadObj = gluNewQuadric();
         gluQuadricNormals(quadObj, GLU_SMOOTH);
+        gluDisk(quadObj, 0, 10, 10, 100);
+        glPushMatrix();
+        glTranslatef(0, 0, 10);
+        gluDisk(quadObj, 0, 10, 10, 100);
+        glPopMatrix();
         gluCylinder(quadObj, 10, 10, 10, 10, 100);
 }
 
 void Car::drawCarCannon(){
         glPushMatrix();
-        //Rotates the cannon
-        glTranslatef(
-                this->getCannon().getBeginX() + this->getCannon().getWidth()/2,
-                this->getCannon().getBeginY() + this->getCannon().getHeight(),
-                0
-                );
-
+        glColor3f(0,0,0);
+        glTranslatef(100,50,15);
         glRotatef(this->getCannonAngle(), 0, 0, 1);
+        glRotatef(90, 1, 0, 0);
+        GLUquadricObj *quadObj = gluNewQuadric();
+        gluQuadricNormals(quadObj, GLU_SMOOTH);
+        gluCylinder(quadObj, 10, 10, 35, 10, 100);
 
-        glTranslatef(
-                -this->getCannon().getBeginX() - this->getCannon().getWidth()/2,
-                -this->getCannon().getBeginY() - this->getCannon().getHeight(),
-                0
-                );
+        glPushMatrix();
+        glTranslatef(0,0,30);
+        gluSphere(quadObj, 10, 50, 100);
+        glPopMatrix();
 
-        this->getCannon().drawRectangle();
         glPopMatrix();
 }
 

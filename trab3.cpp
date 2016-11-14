@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 
 								//Texture definitions
 								glEnable( GL_TEXTURE_2D );
-								    glEnable(GL_DEPTH_TEST);
+								glEnable(GL_DEPTH_TEST);
 
 								chao = LoadTextureRAW( "floor.bmp" );
 								parede = LoadTextureRAW( "parede.bmp" );
@@ -95,135 +95,135 @@ int main(int argc, char** argv) {
 }
 
 void drawWalls(){
-	GLuint texture = parede;
-	GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
-	GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
-	GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
-	GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
-	GLfloat mat_shininess[] = { 100.0 };
-    // if(textura_ligada==0)glColor3f(1,0,0);
+								GLuint texture = parede;
+								GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
+								GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
+								GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
+								GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
+								GLfloat mat_shininess[] = { 100.0 };
+								// if(textura_ligada==0)glColor3f(1,0,0);
 
-    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-    glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+								glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
+								glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-    // if(textura_ligada){
-	glColor3f(1,1,1);
-	glBindTexture (GL_TEXTURE_2D, texture);
-    double textureS = 1;
+								// if(textura_ligada){
+								glColor3f(1,1,1);
+								glBindTexture (GL_TEXTURE_2D, texture);
+								double textureS = 1;
 
-	float j = 0, i=0;
-	float definition = 0.1;
-	Circle pistaOut = trackVector.at(0);
-	GLfloat x = pistaOut.getCenterX();
-	GLfloat y = pistaOut.getCenterY();
-	GLfloat altura = 100;
+								float j = 0, i=0;
+								float definition = 0.1;
+								Circle pistaOut = trackVector.at(0);
+								GLfloat x = pistaOut.getCenterX();
+								GLfloat y = pistaOut.getCenterY();
+								GLfloat altura = 100;
 
 
-	glPushMatrix();
-		glTranslatef(x , y, 0);
+								glPushMatrix();
+								glTranslatef(x, y, 0);
 
-		//desenha parede externa (cilindro oco)
-		for(i = 0; i < 2; i++){
-			GLfloat raio = trackVector.at(i).getRadius();
+								//desenha parede externa (cilindro oco)
+								for(i = 0; i < 2; i++) {
+																GLfloat raio = trackVector.at(i).getRadius();
 
-			glBegin(GL_QUAD_STRIP);
-				for(j = 0; j <= 2 * M_PI; j += definition) {
-					const float tc = ( j / (float)( 2 * M_PI ) );
-					glNormal3f(0,1,0);
-			        glTexCoord2f( tc, 0.0 );
-					glVertex3f(raio*cos(j), raio*sin(j), altura);
-					glTexCoord2f( tc, 1.0 );
-					glVertex3f(raio*cos(j), raio*sin(j), 0);
-				}
-				glTexCoord2f( 0.0, 0.0 );
-		        glVertex3f(raio, 0, 0);
-			    glTexCoord2f( 0.0, 1.0 );
-		        glVertex3f(raio, altura, 0);
-			glEnd();
-		}
+																glBegin(GL_QUAD_STRIP);
+																for(j = 0; j <= 2 * M_PI; j += definition) {
+																								const float tc = ( j / (float)( 2 * M_PI ) );
+																								glNormal3f(0,1,0);
+																								glTexCoord2f( tc, 0.0 );
+																								glVertex3f(raio*cos(j), raio*sin(j), altura);
+																								glTexCoord2f( tc, 1.0 );
+																								glVertex3f(raio*cos(j), raio*sin(j), 0);
+																}
+																glTexCoord2f( 0.0, 0.0 );
+																glVertex3f(raio, 0, 0);
+																glTexCoord2f( 0.0, 1.0 );
+																glVertex3f(raio, altura, 0);
+																glEnd();
+								}
 
-	glPopMatrix();
+								glPopMatrix();
 
 }
 
 void drawFloor(){
-	GLuint texture = chao;
+								GLuint texture = chao;
 
-	GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
-    GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
-    GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
-    GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
-    GLfloat mat_shininess[] = { 100.0 };
-    // if(textura_ligada==0)glColor3f(1,1,0);
+								GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
+								GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
+								GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
+								GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
+								GLfloat mat_shininess[] = { 100.0 };
+								// if(textura_ligada==0)glColor3f(1,1,0);
 
-    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-    glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+								glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
+								glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-    // if(textura_ligada){
-	glColor3f(1,1,1);
-	glBindTexture (GL_TEXTURE_2D, texture);
-    double textureS = 2;
-	GLfloat height_window = 800; //é mil e quinhentox mas ela só ganha 750, a outra metade ela pegou na bolsa da amiga dela
-	GLfloat width_window = 800;
-    glBegin (GL_QUADS);
-        glNormal3f(0,1,0);
-        glTexCoord2f (0, 0);
-        glVertex3f (0, 0, 0);
-        glNormal3f(0,1,0);
-        glTexCoord2f (0, textureS);
-        glVertex3f (0, height_window, 0);
-        glNormal3f(0,1,0);
-        glTexCoord2f (textureS, textureS);
-        glVertex3f (width_window, height_window,0);
-        glNormal3f(0,1,0);
-        glTexCoord2f (textureS, 0);
-        glVertex3f (width_window, 0,0);
-    glEnd();
+								// if(textura_ligada){
+								glColor3f(1,1,1);
+								glBindTexture (GL_TEXTURE_2D, texture);
+								double textureS = 2;
+								GLfloat height_window = 800; //é mil e quinhentox mas ela só ganha 750, a outra metade ela pegou na bolsa da amiga dela
+								GLfloat width_window = 800;
+								glBegin (GL_QUADS);
+								glNormal3f(0,1,0);
+								glTexCoord2f (0, 0);
+								glVertex3f (0, 0, 0);
+								glNormal3f(0,1,0);
+								glTexCoord2f (0, textureS);
+								glVertex3f (0, height_window, 0);
+								glNormal3f(0,1,0);
+								glTexCoord2f (textureS, textureS);
+								glVertex3f (width_window, height_window,0);
+								glNormal3f(0,1,0);
+								glTexCoord2f (textureS, 0);
+								glVertex3f (width_window, 0,0);
+								glEnd();
 }
 
 void drawSky()
 {
-	GLuint texture = teto;
-    GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
-    GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
-    GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
-    GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
-    GLfloat mat_shininess[] = { 100.0 };
-    // if(textura_ligada==0)glColor3f(1,0,0);
+								GLuint texture = teto;
+								GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
+								GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
+								GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
+								GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
+								GLfloat mat_shininess[] = { 100.0 };
+								// if(textura_ligada==0)glColor3f(1,0,0);
 
-    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-    glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+								glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
+								glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-    // if(textura_ligada){
-	glColor3f(1,1,1);
-	glBindTexture (GL_TEXTURE_2D, texture);
-    double textureS = 1;
-	GLfloat height_window = 800;
-	GLfloat width_window = 800;
-	GLfloat altura = 100;
-    glBegin (GL_QUADS);
-        glNormal3f(0,1,0);
-        glTexCoord2f (0, 0);
-        glVertex3f (0,0,altura);
-        glNormal3f(0,1,0);
-        glTexCoord2f (0, textureS);
-        glVertex3f (0, height_window,altura);
-        glNormal3f(0,1,0);
-        glTexCoord2f (textureS, textureS);
-        glVertex3f (width_window, height_window,altura);
-        glNormal3f(0,1,0);
-        glTexCoord2f (textureS, 0);
-        glVertex3f (width_window, 0,altura);
-    glEnd();
+								// if(textura_ligada){
+								glColor3f(1,1,1);
+								glBindTexture (GL_TEXTURE_2D, texture);
+								double textureS = 1;
+								GLfloat height_window = 800;
+								GLfloat width_window = 800;
+								GLfloat altura = 100;
+								glBegin (GL_QUADS);
+								glNormal3f(0,1,0);
+								glTexCoord2f (0, 0);
+								glVertex3f (0,0,altura);
+								glNormal3f(0,1,0);
+								glTexCoord2f (0, textureS);
+								glVertex3f (0, height_window,altura);
+								glNormal3f(0,1,0);
+								glTexCoord2f (textureS, textureS);
+								glVertex3f (width_window, height_window,altura);
+								glNormal3f(0,1,0);
+								glTexCoord2f (textureS, 0);
+								glVertex3f (width_window, 0,altura);
+								glEnd();
 }
 
 
@@ -254,10 +254,10 @@ void display(){
 																								centro_z = 15;
 																								gluLookAt(cam1x,cam1y,cam1z, centro_x,centro_y,centro_z, 0,0,1);
 																} else if(cameraMode == 2) {
-																								cam1x = player->getCenterX() + 2*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
-																								cam1y = player->getCenterY() + 2*(player->getCircleRadius())*cos((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
-																								cam1z= 40;
-																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),0, 0,0,1);
+																								cam1x = player->getCenterX() + 3*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
+																								cam1y = player->getCenterY() + 5*(player->getCircleRadius())*cos((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
+																								cam1z= 60;
+																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),40, 0,0,1);
 																}
 
 																drawFloor();
@@ -269,13 +269,15 @@ void display(){
 																//Draws all the tracks
 																vector<Circle>::iterator it = trackVector.begin();
 																// for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
-																								// (*it).drawCircle();
+																// (*it).drawCircle();
 																// }
 
 																//Draws the start track
 																startTrack->drawRectangle();
 
 																//Draws the player's car
+																Circle* c = new Circle("id", player->getCircleRadius(), player->getCenterX(), player->getCenterY(), "green");
+																c->drawCircle();
 																player->drawCar();
 
 
@@ -439,7 +441,7 @@ void idle(){
 																																Utils utils;
 																																(*it).setDirection((*it).getDirection() * (-1));
 																																(*it).foeMove(t, threshold);
-																																(*it).setBackwardCount(utils.randomInt(20, 100));
+																																(*it).setBackwardCount(utils.randomInt(10, 50));
 																								} else {
 																																(*it).setDirection(1);
 																																(*it).foeMove(t, threshold);
