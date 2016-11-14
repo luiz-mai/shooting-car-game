@@ -43,7 +43,10 @@ int buttonDown;
 double camDist=10;
 double camXYAngle=0;
 double camXZAngle=0;
-//Model variables
+
+GLuint parede;
+GLuint chao;
+GLuint teto;
 
 int main(int argc, char** argv) {
 								start = time(0);
@@ -61,10 +64,20 @@ int main(int argc, char** argv) {
 								glutInitWindowSize(500,500);
 								glutInitWindowPosition(100,100);
 								glutCreateWindow("Trabalho Final de Computacao Grafica");
+
 								glClearColor(0,0,0,0);
 								glEnable(GL_DEPTH_TEST);
 								glEnable(GL_TEXTURE_2D);
 								glViewport(0,0,500,500);
+
+								//Texture definitions
+								glEnable( GL_TEXTURE_2D );
+								    glEnable(GL_DEPTH_TEST);
+
+								chao = LoadTextureRAW( "floor.bmp" );
+								parede = LoadTextureRAW( "parede.bmp" );
+								teto = LoadTextureRAW( "sky.bmp" );
+
 								glMatrixMode(GL_PROJECTION);
 								gluPerspective(60.0f, -1, 3, 3000);
 								glMatrixMode(GL_MODELVIEW);
@@ -76,49 +89,141 @@ int main(int argc, char** argv) {
 								glutMotionFunc(moveCamera);
 								glutPassiveMotionFunc(mouseMotion);
 								glutDisplayFunc(display);
+
 								glutMainLoop();
 								return 0;
 }
 
 void drawWalls(){
-								float j = 0;
-								GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
-								GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
-								GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
-								GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
-								GLfloat mat_shininess[] = { 100.0 };
-								//    if(textura_ligada==0)
-								//    glColor3f(0,1,1);
+	GLuint texture = parede;
+	GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
+	GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
+	GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
+	GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
+	GLfloat mat_shininess[] = { 100.0 };
+    // if(textura_ligada==0)glColor3f(1,0,0);
 
-								// glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-								// glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
-								// glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
-								// glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-								// glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-								// if(textura_ligada){glColor3f(1,1,1);glBindTexture (GL_TEXTURE_2D, texture);}
-								double textureS = 1;
-								float definition = 0.5;
-								Circle pistaOut = trackVector.front();
-								GLfloat x = pistaOut.getCenterX();
-								GLfloat y = pistaOut.getCenterY();
-								GLfloat raio = pistaOut.getRadius();
-								GLfloat altura = 100;
+    // if(textura_ligada){
+	glColor3f(1,1,1);
+	glBindTexture (GL_TEXTURE_2D, texture);
+    double textureS = 1;
 
-								glPushMatrix();
-								glTranslatef(x, y, 0);
-								glBegin(GL_QUADS);
+	float j = 0, i=0;
+	float definition = 0.1;
+	Circle pistaOut = trackVector.at(0);
+	GLfloat x = pistaOut.getCenterX();
+	GLfloat y = pistaOut.getCenterY();
+	GLfloat altura = 100;
 
 
-								for(j = 0; j <= 360; j += definition) {
-																glColor3f(1, 1, 0);
-																glVertex3f(raio*cos(j), raio*sin(j), altura);
-																glColor3f(0, 1, 0);
-																glVertex3f(raio*cos(j), raio*sin(j), -altura);
-								}
+	glPushMatrix();
+		glTranslatef(x , y, 0);
 
-								glEnd();
-								glPopMatrix();
+		//desenha parede externa (cilindro oco)
+		for(i = 0; i < 2; i++){
+			GLfloat raio = trackVector.at(i).getRadius();
+
+			glBegin(GL_QUAD_STRIP);
+				for(j = 0; j <= 2 * M_PI; j += definition) {
+					const float tc = ( j / (float)( 2 * M_PI ) );
+					glNormal3f(0,1,0);
+			        glTexCoord2f( tc, 0.0 );
+					glVertex3f(raio*cos(j), raio*sin(j), altura);
+					glTexCoord2f( tc, 1.0 );
+					glVertex3f(raio*cos(j), raio*sin(j), 0);
+				}
+				glTexCoord2f( 0.0, 0.0 );
+		        glVertex3f(raio, 0, 0);
+			    glTexCoord2f( 0.0, 1.0 );
+		        glVertex3f(raio, altura, 0);
+			glEnd();
+		}
+
+	glPopMatrix();
+
+}
+
+void drawFloor(){
+	GLuint texture = chao;
+
+	GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
+    GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
+    GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
+    GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
+    GLfloat mat_shininess[] = { 100.0 };
+    // if(textura_ligada==0)glColor3f(1,1,0);
+
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+    // if(textura_ligada){
+	glColor3f(1,1,1);
+	glBindTexture (GL_TEXTURE_2D, texture);
+    double textureS = 2;
+	GLfloat height_window = 800; //é mil e quinhentox mas ela só ganha 750, a outra metade ela pegou na bolsa da amiga dela
+	GLfloat width_window = 800;
+    glBegin (GL_QUADS);
+        glNormal3f(0,1,0);
+        glTexCoord2f (0, 0);
+        glVertex3f (0, 0, 0);
+        glNormal3f(0,1,0);
+        glTexCoord2f (0, textureS);
+        glVertex3f (0, height_window, 0);
+        glNormal3f(0,1,0);
+        glTexCoord2f (textureS, textureS);
+        glVertex3f (width_window, height_window,0);
+        glNormal3f(0,1,0);
+        glTexCoord2f (textureS, 0);
+        glVertex3f (width_window, 0,0);
+    glEnd();
+}
+
+void drawSky()
+{
+	GLuint texture = teto;
+    GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
+    GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
+    GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
+    GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
+    GLfloat mat_shininess[] = { 100.0 };
+    // if(textura_ligada==0)glColor3f(1,0,0);
+
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+    // if(textura_ligada){
+	glColor3f(1,1,1);
+	glBindTexture (GL_TEXTURE_2D, texture);
+    double textureS = 1;
+	GLfloat height_window = 800;
+	GLfloat width_window = 800;
+	GLfloat altura = 100;
+    glBegin (GL_QUADS);
+        glNormal3f(0,1,0);
+        glTexCoord2f (0, 0);
+        glVertex3f (0,0,altura);
+        glNormal3f(0,1,0);
+        glTexCoord2f (0, textureS);
+        glVertex3f (0, height_window,altura);
+        glNormal3f(0,1,0);
+        glTexCoord2f (textureS, textureS);
+        glVertex3f (width_window, height_window,altura);
+        glNormal3f(0,1,0);
+        glTexCoord2f (textureS, 0);
+        glVertex3f (width_window, 0,altura);
+    glEnd();
 }
 
 
@@ -155,14 +260,17 @@ void display(){
 																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),0, 0,0,1);
 																}
 
+																drawFloor();
 
-
+																drawSky();
 																drawWalls();
 
+
 																//Draws all the tracks
-																for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
-																								(*it).drawCircle();
-																}
+																vector<Circle>::iterator it = trackVector.begin();
+																// for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
+																								// (*it).drawCircle();
+																// }
 
 																//Draws the start track
 																startTrack->drawRectangle();
