@@ -44,7 +44,6 @@ double camDist=10;
 double camXYAngle=0;
 double camXZAngle=0;
 //Model variables
-GLMmodel *model;
 
 int main(int argc, char** argv) {
 								start = time(0);
@@ -77,9 +76,6 @@ int main(int argc, char** argv) {
 								glutMotionFunc(moveCamera);
 								glutPassiveMotionFunc(mouseMotion);
 								glutDisplayFunc(display);
-
-								model=glmReadOBJ("glm-data/pig.obj");
-							    glmVertexNormals(model,180.0,0);
 								glutMainLoop();
 								return 0;
 }
@@ -159,14 +155,9 @@ void display(){
 																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),0, 0,0,1);
 																}
 
-																glPushMatrix();
-																GLfloat angle = 1.0;
-																glScalef(20, 20, 20);
-															    //HERE IS WHERE I DRAW MY OBJ
-															    glmDraw(model, GLM_SMOOTH|GLM_TEXTURE|GLM_MATERIAL);
-																glPopMatrix();
 
-																// drawWalls();
+
+																drawWalls();
 
 																//Draws all the tracks
 																for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
@@ -177,7 +168,7 @@ void display(){
 																startTrack->drawRectangle();
 
 																//Draws the player's car
-																//player->drawCar();
+																player->drawCar();
 
 
 																//Draws all the foes

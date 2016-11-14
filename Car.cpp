@@ -332,15 +332,6 @@ void Car::setColor(string color){
 void Car::drawCar(){
         bool moving = this->getMoving();
         GLfloat playerRadius = this->getCircleRadius();
-        float randomAngle = this->getIncrementalNumber();
-        if(moving) {
-                //Does the moving effect to the wheels.
-                if(randomAngle >=45) {
-                        this->setIncrementalNumber(0);
-                } else {
-                        this->setIncrementalNumber(randomAngle + 0.5);
-                }
-        }
 
         vector<Circle> bodyCircles = this->getBodyCircles();
         vector<Rectangle> bodyRectangles = this->getBodyRectangles();
@@ -365,8 +356,68 @@ void Car::drawCar(){
                 -this->getHeight()/2,
                 0
                 );
+
+        this->drawCarWheels();
+
+        //Render the body parts
+        //Sets the color as the specified by arena.svg
+        this->drawCarBody();
+        this->drawCarAxis();
+
+        this->drawCarCannon();
+
+        glPopMatrix();
+        return;
+}
+
+void Car::drawCarBody(){
+
+}
+
+void Car::drawCarAxis(){
+        //Front axis
+        glPushMatrix();
+        glTranslatef(70, 75, 0);
+        glRotatef(90, 0, 1, 0);
+        GLUquadricObj *quadObj = gluNewQuadric();
+        gluQuadricNormals(quadObj, GLU_SMOOTH);
+        gluCylinder(quadObj, 1, 1, 60, 10, 100);
+        glPopMatrix();
+
+        //Back Axis
+        glPushMatrix();
+        glTranslatef(70, 150, 0);
+        glRotatef(90, 0, 1, 0);
+        GLUquadricObj *quadObj2 = gluNewQuadric();
+        gluQuadricNormals(quadObj2, GLU_SMOOTH);
+        gluCylinder(quadObj2, 1, 1, 60, 10, 100);
+        glPopMatrix();
+
+        //Center axis
+        glPushMatrix();
+        glTranslatef(100, 75, 0);
+        glRotatef(90, 0, 0, 1);
+        glRotatef(90, 0, 1, 0);
+        GLUquadricObj *quadObj3 = gluNewQuadric();
+        gluQuadricNormals(quadObj3, GLU_SMOOTH);
+        gluCylinder(quadObj3, 1, 1, 75, 10, 100);
+        glPopMatrix();
+}
+
+void Car::drawCarWheels(){
+        float randomAngle = this->getIncrementalNumber();
+        if(moving) {
+                //Does the moving effect to the wheels.
+                if(this->getDirection() == 1)
+                        this->setIncrementalNumber(randomAngle + 2);
+                else
+                        this->setIncrementalNumber(randomAngle - 2);
+        }
         for(vector<Rectangle>::iterator it = wheels.begin(); it != wheels.end(); ++it) {
                 //Rotate the wheels
+
+                GLUquadricObj *quadObj = gluNewQuadric();
+                gluQuadricNormals(quadObj, GLU_SMOOTH);
                 glPushMatrix();
                 if((*it).getID() == "FrontWheels") {
                         glTranslatef(
@@ -375,51 +426,20 @@ void Car::drawCar(){
                                 0
                                 );
                         glRotatef(this->getWheelsAngle(), 0, 0, 1);
-                        if(moving) {
-                                glRotatef(randomAngle, 1, 0, 0);
-                        }
+                        glRotatef(randomAngle, 1, 0, 0);
                         glTranslatef(
                                 -(*it).getBeginX() - (*it).getWidth()/2,
                                 -(*it).getBeginY() - (*it).getHeight()/2,
                                 0
                                 );
                 }
-                (*it).drawRectangle();
+                gluCylinder(quadObj, 30, 30, 10, 30, 100);
                 glPopMatrix();
         }
+}
 
-        //Render the body parts
-        //Sets the color as the specified by arena.svg
-        string carColor = this->getColor();
-        string darkerColor = "dark" + carColor;
-        for(vector<Rectangle>::iterator it = bodyRectangles.begin(); it != bodyRectangles.end(); ++it) {
-                if((*it).getID() == "Body1") {
-                        (*it).setFill(carColor);
-                } else if((*it).getID() == "Body2") {
-                        (*it).setFill(darkerColor);
-                }
-
-                (*it).drawRectangle();
-        }
-
-        for(vector<Circle>::iterator it = bodyCircles.begin(); it != bodyCircles.end(); ++it) {
-                if((*it).getID() == "Body1") {
-                        (*it).setFill(carColor);
-                } else if((*it).getID() == "Body2") {
-                        (*it).setFill(darkerColor);
-                }
-                (*it).drawCircle();
-        }
-
-        for(vector<Triangle>::iterator it = bodyTriangles.begin(); it != bodyTriangles.end(); ++it) {
-                if((*it).getID() == "Body1") {
-                        (*it).setFill(carColor);
-                } else if((*it).getID() == "Body2") {
-                        (*it).setFill(darkerColor);
-                }
-                (*it).drawTriangle();
-        }
-
+void Car::drawCarCannon(){
+        glPushMatrix();
         //Rotates the cannon
         glTranslatef(
                 this->getCannon().getBeginX() + this->getCannon().getWidth()/2,
@@ -436,10 +456,7 @@ void Car::drawCar(){
                 );
 
         this->getCannon().drawRectangle();
-
-
         glPopMatrix();
-        return;
 }
 
 
