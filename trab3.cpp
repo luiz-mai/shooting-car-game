@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 
 								//OpenGL initializations
 								glutInit(&argc, argv);
-								glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+								glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);
 								glutInitWindowSize(500,500);
 								glutInitWindowPosition(100,100);
 								glutCreateWindow("Trabalho Final de Computacao Grafica");
@@ -78,8 +78,10 @@ int main(int argc, char** argv) {
 								parede = LoadTextureRAW( "parede.bmp" );
 								teto = LoadTextureRAW( "sky.bmp" );
 
+								glClearDepth(1.0f);
+								glDepthFunc(GL_LEQUAL);
 								glMatrixMode(GL_PROJECTION);
-								gluPerspective(60.0f, -1, 3, 3000);
+								gluPerspective(60.0f, -1, 1, 1000);
 								glMatrixMode(GL_MODELVIEW);
 								glLoadIdentity();
 								glutIdleFunc(idle);
@@ -228,8 +230,8 @@ void drawSky()
 
 
 void display(){
-								glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 								glLoadIdentity();
+								glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 								//If player hasn't won or lost
 								if(gameState == 0) {
 
@@ -256,8 +258,8 @@ void display(){
 																} else if(cameraMode == 2) {
 																								cam1x = player->getCenterX() + 3*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
 																								cam1y = player->getCenterY() + 5*(player->getCircleRadius())*cos((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
-																								cam1z= 60;
-																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),40, 0,0,1);
+																								cam1z= 80;
+																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),60, 0,0,1);
 																}
 
 																drawFloor();

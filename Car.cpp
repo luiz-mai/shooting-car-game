@@ -379,14 +379,15 @@ void Car::drawCar(){
         this->drawFrontWheels();
         this->drawBackWheels();
         this->drawCarAxis();
-        this->drawCarCannon();
         this->drawCarBody();
+        this->drawCarCannon();
 
         glPopMatrix();
         return;
 }
 
 void Car::drawCarBody(){
+
         glPushMatrix();
         glTranslatef(100,118, 25);
         glScalef(60, 150, 40);
@@ -502,7 +503,7 @@ void Car::drawShots(){
                 glTranslatef(
                         (*it).getCenterX(),
                         (*it).getCenterY(),
-                        0
+                        10
                         );
                 glRotatef((*it).getCarAngle(), 0, 0, 1);
                 glScalef(
@@ -527,7 +528,9 @@ void Car::drawShots(){
                         -this->getCannon().getHeight(),
                         0
                         );
-                (*it).getCircle().drawCircle();
+                GLUquadricObj *quadObj = gluNewQuadric();
+                gluQuadricNormals(quadObj, GLU_SMOOTH);
+                gluSphere(quadObj, 5, 50, 100);
 
                 glPopMatrix();
         }
