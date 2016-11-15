@@ -390,24 +390,24 @@ void Car::drawCar(){
 
 // static void drawBox(GLfloat size, GLenum type, const char* texture)
 // {
-// 	GLuint carro = LoadTextureRAW(texture);
+//  GLuint carro = LoadTextureRAW(texture);
 //
-// 	GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
-// 	GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
-// 	GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
-// 	GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
-// 	GLfloat mat_shininess[] = { 100.0 };
-// 	// if(textura_ligada==0)glColor3f(1,0,0);
+//  GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
+//  GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
+//  GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
+//  GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
+//  GLfloat mat_shininess[] = { 100.0 };
+//  // if(textura_ligada==0)glColor3f(1,0,0);
 //
-// 	glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-// 	glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
-// 	glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
-// 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-// 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+//  glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+//  glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
+//  glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+//  glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+//  glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 //
-// 	glColor3f(1,1,1);
-// 	glBindTexture (GL_TEXTURE_2D, carro);
-// 	double textureS = 1;
+//  glColor3f(1,1,1);
+//  glBindTexture (GL_TEXTURE_2D, carro);
+//  double textureS = 1;
 //
 //
 //   static GLfloat n[6][3] =
@@ -451,20 +451,66 @@ void Car::drawCar(){
 
 
 void Car::drawCarBody(){
-		GLuint texture = LoadTextureRAW("sky.bmp");
+        GLuint texture;
 
         glPushMatrix();
-        glTranslatef(100,118, 25);
+        glTranslatef(100,118, 20);
 
         glColor3f(1,1,1);
-		glEnable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
-    	glEnable(GL_TEXTURE_GEN_T);
-    	glBindTexture(GL_TEXTURE_2D, texture);
-		glScalef(60, 150, 40);
-	    glutSolidCube(1);
-    	glDisable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
-	    glDisable(GL_TEXTURE_GEN_T);
-		// drawBox(1, GL_QUADS, "carro.bmp");
+        texture = LoadTextureRAW("car_top.bmp");
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glScalef(30, 75, 15);
+
+        glBegin(GL_QUADS);
+        // Front Face
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);      // Bottom Left Of The Texture and Quad
+        glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);      // Bottom Right Of The Texture and Quad
+        glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);      // Top Right Of The Texture and Quad
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);      // Top Left Of The Texture and Quad
+        // Back Face
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);      // Bottom Right Of The Texture and Quad
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);      // Top Right Of The Texture and Quad
+        glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);      // Top Left Of The Texture and Quad
+        glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);      // Bottom Left Of The Texture and Quad
+        glEnd();
+
+        texture = LoadTextureRAW("car_back.bmp");
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glBegin(GL_QUADS);
+        // Top Face
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f,  1.0f, -1.0f);      // Top Left Of The Texture and Quad
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);      // Bottom Left Of The Texture and Quad
+        glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);      // Bottom Right Of The Texture and Quad
+        glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f, -1.0f);      // Top Right Of The Texture and Quad
+        glEnd();
+
+
+        texture = LoadTextureRAW("car_front.bmp");
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glBegin(GL_QUADS);
+        // Bottom Face
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);      // Top Right Of The Texture and Quad
+        glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);      // Top Left Of The Texture and Quad
+        glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f,  1.0f);      // Bottom Left Of The Texture and Quad
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f,  1.0f);      // Bottom Right Of The Texture and Quad
+        glEnd();
+
+        texture = LoadTextureRAW("car_side.bmp");
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glBegin(GL_QUADS);
+        // Right face
+        glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);      // Bottom Right Of The Texture and Quad
+        glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f, -1.0f);      // Top Right Of The Texture and Quad
+        glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);      // Top Left Of The Texture and Quad
+        glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f,  1.0f);      // Bottom Left Of The Texture and Quad
+        // Left Face
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);      // Bottom Left Of The Texture and Quad
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f, -1.0f,  1.0f);      // Bottom Right Of The Texture and Quad
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);      // Top Right Of The Texture and Quad
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f,  1.0f, -1.0f);      // Top Left Of The Texture and Quad
+        glEnd();
+
+        // drawBox(1, GL_QUADS, "carro.bmp");
         glPopMatrix();
 }
 
