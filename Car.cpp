@@ -1,5 +1,7 @@
 #include "Car.h"
 
+GLuint LoadTextureRAW(const char *filename);
+
 Car::Car(){
         XMLDocument car;
 
@@ -386,13 +388,83 @@ void Car::drawCar(){
         return;
 }
 
+// static void drawBox(GLfloat size, GLenum type, const char* texture)
+// {
+// 	GLuint carro = LoadTextureRAW(texture);
+//
+// 	GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
+// 	GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
+// 	GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
+// 	GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
+// 	GLfloat mat_shininess[] = { 100.0 };
+// 	// if(textura_ligada==0)glColor3f(1,0,0);
+//
+// 	glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+// 	glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
+// 	glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+// 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+// 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+//
+// 	glColor3f(1,1,1);
+// 	glBindTexture (GL_TEXTURE_2D, carro);
+// 	double textureS = 1;
+//
+//
+//   static GLfloat n[6][3] =
+//   {
+//     {-1.0, 0.0, 0.0},
+//     {0.0, 1.0, 0.0},
+//     {1.0, 0.0, 0.0},
+//     {0.0, -1.0, 0.0},
+//     {0.0, 0.0, 1.0},
+//     {0.0, 0.0, -1.0}
+//   };
+//   static GLint faces[6][4] =
+//   {
+//     {0, 1, 2, 3},
+//     {3, 2, 6, 7},
+//     {7, 6, 5, 4},
+//     {4, 5, 1, 0},
+//     {5, 6, 2, 1},
+//     {7, 4, 0, 3}
+//   };
+//   GLfloat v[8][3];
+//   GLint i;
+//
+//   v[0][0] = v[1][0] = v[2][0] = v[3][0] = -size / 2;
+//   v[4][0] = v[5][0] = v[6][0] = v[7][0] = size / 2;
+//   v[0][1] = v[1][1] = v[4][1] = v[5][1] = -size / 2;
+//   v[2][1] = v[3][1] = v[6][1] = v[7][1] = size / 2;
+//   v[0][2] = v[3][2] = v[4][2] = v[7][2] = -size / 2;
+//   v[1][2] = v[2][2] = v[5][2] = v[6][2] = size / 2;
+//
+//   for (i = 5; i >= 0; i--) {
+//     glBegin(type);
+//     glNormal3fv(&n[i][0]);
+//     glVertex3fv(&v[faces[i][0]][0]);
+//     glVertex3fv(&v[faces[i][1]][0]);
+//     glVertex3fv(&v[faces[i][2]][0]);
+//     glVertex3fv(&v[faces[i][3]][0]);
+//     glEnd();
+//   }
+// }
+
+
 void Car::drawCarBody(){
+		GLuint texture = LoadTextureRAW("sky.bmp");
 
         glPushMatrix();
         glTranslatef(100,118, 25);
-        glScalef(60, 150, 40);
-        glColor3f(1,0,0);
-        glutSolidCube(1);
+
+        glColor3f(1,1,1);
+		glEnable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
+    	glEnable(GL_TEXTURE_GEN_T);
+    	glBindTexture(GL_TEXTURE_2D, texture);
+		glScalef(60, 150, 40);
+	    glutSolidCube(1);
+    	glDisable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
+	    glDisable(GL_TEXTURE_GEN_T);
+		// drawBox(1, GL_QUADS, "carro.bmp");
         glPopMatrix();
 }
 

@@ -9,6 +9,8 @@
 
 #include "trab3.h"
 
+GLuint LoadTextureRAW(const char *filename);
+
 using namespace std;
 
 Trab3 trab;

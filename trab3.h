@@ -7,11 +7,14 @@
 #include <GL/glut.h>
 #endif
 
+#ifndef IMGLOADER_H
+#include "imageloader.h"
+#endif
+
 #include "Car.h"
 #include "Circle.h"
 #include "Rectangle.h"
 #include "Shot.h"
-#include "imageloader.h"
 #include "tinyxml2.h"
 #include <algorithm>
 #include <cmath>

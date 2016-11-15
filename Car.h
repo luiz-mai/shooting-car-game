@@ -15,6 +15,10 @@
 #include <GL/freeglut.h>
 #endif
 
+// #ifndef IMGLOADER_H
+// #include "imageloader.h"
+// #endif
+
 #include "Circle.h"
 #include "Rectangle.h"
 #include "Shot.h"
