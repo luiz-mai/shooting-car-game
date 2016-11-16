@@ -52,7 +52,7 @@ GLuint teto;
 
 int main(int argc, char** argv) {
 								start = time(0);
-								player = new Car();
+								player = new Car("player");
 
 								//Reads the config and arena files.
 								string arenaFullPath = trab.getArenaPath(argc, argv);
@@ -258,7 +258,7 @@ void display(){
 																								centro_z = 15;
 																								gluLookAt(cam1x,cam1y,cam1z, centro_x,centro_y,centro_z, 0,0,1);
 																} else if(cameraMode == 2) {
-																								cam1x = player->getCenterX() + 3*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
+																								cam1x = player->getCenterX() + 5*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
 																								cam1y = player->getCenterY() + 5*(player->getCircleRadius())*cos((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
 																								cam1z= 80;
 																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),60, 0,0,1);
@@ -533,12 +533,13 @@ void moveCamera(int x, int y)
 void mouseMotion(int x, int y){
 								//Determina a angulação do canhão.
 								//Canto esquerdo da tela: -45 / Canto direito da tela: +45
-								int centerX = width/2;
-								if(x > centerX) {
-																player->setCannonAngle(45*(x-centerX)/centerX);
-								} else if (x < centerX) {
-																player->setCannonAngle(-45*(centerX-x)/centerX);
+								if(x > 250) {
+																player->setCannonAngle(45*(x-250)/250);
+								} else if (x < 250) {
+																player->setCannonAngle(-45*(250-x)/250);
 								}
+
+								player->setCannonZAngle(45*(500-y)/500);
 
 								glutPostRedisplay();
 								return;
@@ -617,7 +618,7 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> track
 																								player->setCircleRadius(circle->getRadius());
 																								player->setColor(circle->getFill());
 																} else if(circle->getID() == "Inimigo") {
-																								Car* foe = new Car();
+																								Car* foe = new Car("foe");
 																								foe->setCenterX(circle->getCenterX());
 																								foe->setCenterY(circle->getCenterY());
 																								foe->setCircleRadius(circle->getRadius());

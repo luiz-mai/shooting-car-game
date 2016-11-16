@@ -2,7 +2,9 @@
 
 GLuint LoadTextureRAW(const char *filename);
 
-Car::Car(){
+Car::Car(string id){
+
+        this->ID = id;
         XMLDocument car;
 
         vector<Rectangle> wheels;
@@ -198,6 +200,10 @@ GLfloat Car::getCannonAngle(){
         return this->cannonAngle;
 }
 
+GLfloat Car::getCannonZAngle(){
+        return this->cannonZAngle;
+}
+
 GLfloat Car::getAxisWidth(){
         return this->axisWidth;
 }
@@ -308,6 +314,12 @@ void Car::setWheelsAngle(GLfloat wheelsAngle){
 void Car::setCannonAngle(GLfloat cannonAngle){
         if(abs(cannonAngle) < 45)
                 this->cannonAngle = cannonAngle;
+        return;
+}
+
+void Car::setCannonZAngle(GLfloat cannonZAngle){
+        if(cannonZAngle >= 0 && cannonZAngle <= 45)
+                this->cannonZAngle = cannonZAngle;
         return;
 }
 
@@ -457,7 +469,7 @@ void Car::drawCarBody(){
         glTranslatef(100,118, 20);
 
         glColor3f(1,1,1);
-        texture = LoadTextureRAW("car_top.bmp");
+        texture = this->ID == "player" ? LoadTextureRAW("car_top.bmp") : LoadTextureRAW("foe_top.bmp");
         glBindTexture(GL_TEXTURE_2D, texture);
         glScalef(30, 75, 15);
 
@@ -474,7 +486,7 @@ void Car::drawCarBody(){
         glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);      // Bottom Left Of The Texture and Quad
         glEnd();
 
-        texture = LoadTextureRAW("car_back.bmp");
+        texture = this->ID == "player" ? LoadTextureRAW("car_back.bmp") : LoadTextureRAW("foe_back.bmp");
         glBindTexture(GL_TEXTURE_2D, texture);
         glBegin(GL_QUADS);
         // Top Face
@@ -485,7 +497,7 @@ void Car::drawCarBody(){
         glEnd();
 
 
-        texture = LoadTextureRAW("car_front.bmp");
+        texture = this->ID == "player" ? LoadTextureRAW("car_front.bmp") : LoadTextureRAW("foe_front.bmp");
         glBindTexture(GL_TEXTURE_2D, texture);
         glBegin(GL_QUADS);
         // Bottom Face
@@ -495,7 +507,7 @@ void Car::drawCarBody(){
         glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f,  1.0f);      // Bottom Right Of The Texture and Quad
         glEnd();
 
-        texture = LoadTextureRAW("car_side.bmp");
+        texture = this->ID == "player" ? LoadTextureRAW("car_side.bmp") : LoadTextureRAW("foe_side.bmp");
         glBindTexture(GL_TEXTURE_2D, texture);
         glBegin(GL_QUADS);
         // Right face
@@ -596,17 +608,13 @@ void Car::drawSingleWheel(){
 void Car::drawCarCannon(){
         glPushMatrix();
         glColor3f(0,0,0);
-        glTranslatef(100,50,15);
+        glTranslatef(100,50,10);
+        glRotatef(-this->getCannonZAngle(), 1, 0, 0);
         glRotatef(this->getCannonAngle(), 0, 0, 1);
         glRotatef(90, 1, 0, 0);
         GLUquadricObj *quadObj = gluNewQuadric();
         gluQuadricNormals(quadObj, GLU_SMOOTH);
-        gluCylinder(quadObj, 10, 10, 35, 10, 100);
-
-        glPushMatrix();
-        glTranslatef(0,0,30);
-        gluSphere(quadObj, 10, 50, 100);
-        glPopMatrix();
+        gluCylinder(quadObj, 5, 5, 35, 10, 100);
 
         glPopMatrix();
 }
@@ -621,7 +629,7 @@ void Car::drawShots(){
                 glTranslatef(
                         (*it).getCenterX(),
                         (*it).getCenterY(),
-                        10
+                        (*it).getCenterZ()
                         );
                 glRotatef((*it).getCarAngle(), 0, 0, 1);
                 glScalef(
@@ -640,6 +648,7 @@ void Car::drawShots(){
                         this->getCannon().getBeginY() + this->getCannon().getHeight(),
                         0
                         );
+                glRotatef(-(*it).getCannonZAngle(), 1, 0, 0);
                 glRotatef((*it).getCannonAngle(), 0, 0, 1);
                 glTranslatef(
                         0,
@@ -648,7 +657,7 @@ void Car::drawShots(){
                         );
                 GLUquadricObj *quadObj = gluNewQuadric();
                 gluQuadricNormals(quadObj, GLU_SMOOTH);
-                gluSphere(quadObj, 5, 50, 100);
+                gluSphere(quadObj, 3, 50, 100);
 
                 glPopMatrix();
         }
@@ -659,7 +668,7 @@ void Car::drawShots(){
 
 void Car::addShot(){
         Circle shotCircle = Circle("Shot", 12, 0, 0, "yellow");
-        Shot shot = Shot(shotCircle,this->getCenterX(),this->getCenterY(),this->getTheta(),this->getCannonAngle());
+        Shot shot = Shot(shotCircle,this->getCenterX(),this->getCenterY(), 8, this->getTheta(),this->getCannonAngle(), this->getCannonZAngle());
         this->shotsVector.push_back(shot);
         return;
 }
@@ -707,8 +716,10 @@ void Car::updateShots(GLdouble t){
         vector<Shot> playerShotsVector = this->getShotsVector();
         for(vector<Shot>::iterator it = playerShotsVector.begin(); it != playerShotsVector.end(); ++it) {
                 GLfloat angle = (*it).getCarAngle() + (*it).getCannonAngle();
+                GLfloat angleZ = (*it).getCannonZAngle();
                 (*it).setCenterX((*it).getCenterX() + t*this->getShotSpeed()*cos((angle-90)*M_PI/180));
                 (*it).setCenterY((*it).getCenterY() + t*this->getShotSpeed()*sin((angle-90)*M_PI/180));
+                (*it).setCenterZ((*it).getCenterZ() + t*this->getShotSpeed()*cos((angleZ-90)*M_PI/180));
         }
         this->setShotsVector(playerShotsVector);
         return;

@@ -28,6 +28,8 @@ using namespace std;
 using namespace tinyxml2;
 
 class Car {
+
+  string ID;
   vector<Rectangle> wheels; // Contains the rectangles of the car's body.
   vector<Rectangle>
       bodyRectangles; // Contains all the rectangles of the car's body.
@@ -41,14 +43,15 @@ class Car {
   GLfloat width;        // SVG's width
   GLfloat height;       // SVG's height
   GLfloat zHeight;
-  GLfloat theta;       // Angle of the car
-  GLfloat centerX;     // Coordinate X of the center of the car
-  GLfloat centerY;     // Coordinate Y of the center of the car
-  GLfloat speed;       // Speed of the car
-  GLfloat shotSpeed;   // Shooting speed of the car
-  GLfloat wheelsAngle; // Angle of the front wheels of the car (-45 ~ 45)
-  GLfloat cannonAngle; // Angle of the cannon of the car (-45 ~ 45)
-  GLfloat axisWidth;   // Width of the car axis
+  GLfloat theta;        // Angle of the car
+  GLfloat centerX;      // Coordinate X of the center of the car
+  GLfloat centerY;      // Coordinate Y of the center of the car
+  GLfloat speed;        // Speed of the car
+  GLfloat shotSpeed;    // Shooting speed of the car
+  GLfloat wheelsAngle;  // Angle of the front wheels of the car (-45 ~ 45)
+  GLfloat cannonAngle;  // Angle of the cannon of the car (-45 ~ 45)
+  GLfloat cannonZAngle; // Angle of the cannon of the car at the Z Axis (0 ~ 45)
+  GLfloat axisWidth;    // Width of the car axis
 
   int backwardCount;       // Counter used when the foes colide.
   int direction;           // Movement's direction (1:forward / -1: backward)
@@ -58,7 +61,7 @@ class Car {
 
 public:
   // CONSTRUCTOR
-  Car();
+  Car(string);
 
   // GETTERS
   vector<Rectangle> getWheels();
@@ -78,6 +81,7 @@ public:
   GLfloat getShotSpeed();
   GLfloat getWheelsAngle();
   GLfloat getCannonAngle();
+  GLfloat getCannonZAngle();
   GLfloat getAxisWidth();
   int getBackwardCount();
   int getDirection();
@@ -103,6 +107,7 @@ public:
   void setShotSpeed(GLfloat);
   void setWheelsAngle(GLfloat);
   void setCannonAngle(GLfloat);
+  void setCannonZAngle(GLfloat);
   void setAxisWidth(GLfloat);
   void setBackwardCount(int);
   void setDirection(int);
