@@ -124,6 +124,7 @@ void drawWalls(){
 								GLfloat x = pistaOut.getCenterX();
 								GLfloat y = pistaOut.getCenterY();
 								GLfloat altura = 100;
+								// GLfloat altura = 4*player->getZHeight();
 
 
 								glPushMatrix();
@@ -277,7 +278,10 @@ void display(){
 																// }
 
 																//Draws the start track
+																glPushMatrix();
+																glTranslatef(0,0,1);
 																startTrack->drawRectangle();
+																glPopMatrix();
 
 																//Draws the player's car
 																Circle* c = new Circle("id", player->getCircleRadius(), player->getCenterX(), player->getCenterY(), "green");
@@ -369,13 +373,13 @@ void idle(){
 
 																//Sets the angle of the wheels
 																c = 'a';
-																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 2.5);
+																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 5);
 																c = 'A';
-																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 2.5);
+																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() - 5);
 																c = 'd';
-																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 2.5);
+																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 5);
 																c = 'D';
-																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 2.5);
+																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 5);
 
 																c = '1';
 																if(i_status[c] == 1) cameraMode = 0;
