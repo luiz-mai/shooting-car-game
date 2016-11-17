@@ -46,6 +46,7 @@ class Car {
   GLfloat theta;        // Angle of the car
   GLfloat centerX;      // Coordinate X of the center of the car
   GLfloat centerY;      // Coordinate Y of the center of the car
+  GLfloat centerZ;      // Coordinate Z of the center of the car
   GLfloat speed;        // Speed of the car
   GLfloat shotSpeed;    // Shooting speed of the car
   GLfloat wheelsAngle;  // Angle of the front wheels of the car (-45 ~ 45)
@@ -77,6 +78,7 @@ public:
   GLfloat getTheta();
   GLfloat getCenterX();
   GLfloat getCenterY();
+  GLfloat getCenterZ();
   GLfloat getSpeed();
   GLfloat getShotSpeed();
   GLfloat getWheelsAngle();
@@ -103,6 +105,7 @@ public:
   void setTheta(GLfloat);
   void setCenterX(GLfloat);
   void setCenterY(GLfloat);
+  void setCenterZ(GLfloat);
   void setSpeed(GLfloat);
   void setShotSpeed(GLfloat);
   void setWheelsAngle(GLfloat);

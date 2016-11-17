@@ -3,124 +3,8 @@
 GLuint LoadTextureRAW(const char *filename);
 
 Car::Car(string id){
-
         this->ID = id;
-        XMLDocument car;
-
-        vector<Rectangle> wheels;
-        vector<Rectangle> bodyRectangles;
-        vector<Triangle> bodyTriangles;
-        vector<Circle> bodyCircles;
-        Rectangle cannon;
-
-        //Loads the car' SVG
-        car.LoadFile("car.svg");
-        XMLElement* svgElement = car.FirstChildElement("svg");
-
-        //Loads all the rectangular parts (Body, Wheels and Cannon)
-        for(XMLElement* rectElement = svgElement->FirstChildElement("rect"); rectElement != NULL; rectElement = rectElement->NextSiblingElement("rect"))
-        {
-                Rectangle* rect = new Rectangle(
-                        rectElement->Attribute("id"),
-                        rectElement->FloatAttribute("x"),
-                        rectElement->FloatAttribute("y"),
-                        rectElement->FloatAttribute("width"),
-                        rectElement->FloatAttribute("height"),
-                        rectElement->Attribute("fill")
-                        );
-
-                if(rect->getID() == "FrontWheels") {
-                        vector<Rectangle>::iterator it;
-                        it = wheels.begin();
-                        wheels.insert(it, *rect);
-                } else if(rect->getID() == "BackHeels") {
-                        wheels.push_back(*rect);
-                } else if(rect->getID() == "Cannon") {
-                        this->setCannon(*rect);
-                } else{
-                        bodyRectangles.push_back(*rect);
-                }
-        }
-        this->setBodyRectangles(bodyRectangles);
-        this->setWheels(wheels);
-
-        //Loads all the circular parts (Body)
-        for(XMLElement* circleElement = svgElement->FirstChildElement("circle"); circleElement != NULL; circleElement = circleElement->NextSiblingElement("circle"))
-        {
-                Circle* circle = new Circle(
-                        circleElement->Attribute("id"),
-                        circleElement->IntAttribute("r"),
-                        circleElement->IntAttribute("cx"),
-                        circleElement->IntAttribute("cy"),
-                        circleElement->Attribute("fill")
-                        );
-
-                bodyCircles.push_back(*circle);
-        }
-        this->setBodyCircles(bodyCircles);
-
-        //Loads all the triangular parts (Body)
-        for(XMLElement* triangleElement = svgElement->FirstChildElement("polygon"); triangleElement != NULL; triangleElement = triangleElement->NextSiblingElement("polygon"))
-        {
-                float pointsArray[6];
-                int pointPos = 0;
-                string s = triangleElement->Attribute("points");
-                string delim = " ";
-
-                int i = 0;
-                int pos = s.find(delim);
-                while (pos != string::npos) {
-                        string s2 = s.substr(i, pos-i);
-                        string delim2 = ",";
-
-                        int i2 = 0;
-                        int pos2 = s2.find(delim2);
-                        while (pos2 != string::npos) {
-                                pointsArray[pointPos++] = atof(s2.substr(i2, pos2-i2).c_str());
-                                i2 = ++pos2;
-                                pos2 = s2.find(delim2, pos2);
-
-                                if (pos2 == string::npos)
-                                        pointsArray[pointPos++] = atof(s2.substr(i2, s2.length()).c_str());
-                        }
-                        i = ++pos;
-                        pos = s.find(delim, pos);
-
-                        if (pos == string::npos) {
-                                string s2 =  s.substr(i, s.length());
-                                string delim2 = ",";
-
-                                int i2 = 0;
-                                int pos2 = s2.find(delim2);
-                                while (pos2 != string::npos) {
-                                        pointsArray[pointPos++] = atof(s2.substr(i2, pos2-i2).c_str());
-                                        i2 = ++pos2;
-                                        pos2 = s2.find(delim2, pos2);
-
-                                        if (pos2 == string::npos)
-                                                pointsArray[pointPos++] = atof(s2.substr(i2, s2.length()).c_str());
-                                }
-                        }
-
-                }
-                Triangle* triangle = new Triangle(
-                        triangleElement->Attribute("id"),
-                        pointsArray[0],
-                        pointsArray[1],
-                        pointsArray[2],
-                        pointsArray[3],
-                        pointsArray[4],
-                        pointsArray[5],
-                        triangleElement->Attribute("fill")
-                        );
-                bodyTriangles.push_back(*triangle);
-        }
-
-        //Sets the initial values to the car
-        this->setBodyTriangles(bodyTriangles);
-        this->setWidth(200);
-        this->setHeight(200);
-        this->setZHeight(100);
+        this->setCenterZ(25);
         this->setTheta(0);
         this->setCannonAngle(0);
         this->setWheelsAngle(0);
@@ -128,7 +12,6 @@ Car::Car(string id){
         this->setAxisWidth(58.5);
         this->setBackwardCount(0);
         this->setDirection(1);
-
         return;
 }
 
@@ -182,6 +65,10 @@ GLfloat Car::getCenterX(){
 
 GLfloat Car::getCenterY(){
         return this->centerY;
+}
+
+GLfloat Car::getCenterZ(){
+        return this->centerZ;
 }
 
 GLfloat Car::getSpeed(){
@@ -295,6 +182,11 @@ void Car::setCenterY(GLfloat centerY){
         return;
 }
 
+void Car::setCenterZ(GLfloat centerZ){
+        this->centerZ = centerZ;
+        return;
+}
+
 void Car::setSpeed(GLfloat speed){
         this->speed = speed;
         return;
@@ -357,10 +249,6 @@ void Car::drawCar(){
         bool moving = this->getMoving();
         GLfloat playerRadius = this->getCircleRadius();
 
-        vector<Circle> bodyCircles = this->getBodyCircles();
-        vector<Rectangle> bodyRectangles = this->getBodyRectangles();
-        vector<Rectangle> wheels = this->getWheels();
-
         float randomAngle = this->getIncrementalNumber();
         if(moving) {
                 //Does the moving effect to the wheels.
@@ -378,11 +266,7 @@ void Car::drawCar(){
                 0
                 );
         glRotatef(this->getTheta(), 0, 0, 1);
-        glScalef(
-                2*playerRadius/this->getWidth(),
-                2*playerRadius/this->getHeight(),
-                2*playerRadius/this->getZHeight()
-                );
+
 
         glTranslatef(
                 -this->getWidth()/2,
@@ -466,12 +350,11 @@ void Car::drawCarBody(){
         GLuint texture;
 
         glPushMatrix();
-        glTranslatef(100,118, 20);
-
+        glTranslatef(0.5*this->getWidth(),0.75*this->getHeight(), this->getZHeight());
         glColor3f(1,1,1);
         texture = this->ID == "player" ? LoadTextureRAW("car_top.bmp") : LoadTextureRAW("foe_top.bmp");
         glBindTexture(GL_TEXTURE_2D, texture);
-        glScalef(30, 75, 15);
+        glScalef(0.5*this->getWidth(), 0.75*this->getHeight(), 0.75*this->getZHeight());
 
         glBegin(GL_QUADS);
         // Front Face
@@ -529,30 +412,30 @@ void Car::drawCarBody(){
 void Car::drawCarAxis(){
         //Front axis
         glPushMatrix();
-        glTranslatef(70, 70, 0);
+        //glTranslatef(70, 70, 0);
         glRotatef(90, 0, 1, 0);
         GLUquadricObj *quadObj = gluNewQuadric();
         gluQuadricNormals(quadObj, GLU_SMOOTH);
-        gluCylinder(quadObj, 3, 3, 60, 10, 100);
+        gluCylinder(quadObj, 3, 3, 0.5*this->getWidth(), 10, 100);
         glPopMatrix();
 
         //Back Axis
         glPushMatrix();
-        glTranslatef(70, 160, 0);
+        //glTranslatef(70, 160, 0);
         glRotatef(90, 0, 1, 0);
         GLUquadricObj *quadObj2 = gluNewQuadric();
         gluQuadricNormals(quadObj2, GLU_SMOOTH);
-        gluCylinder(quadObj2, 3, 3, 60, 10, 100);
+        gluCylinder(quadObj2, 3, 3, 0.5*this->getWidth(), 10, 100);
         glPopMatrix();
 
         //Center axis
         glPushMatrix();
-        glTranslatef(100, 70, 0);
+        //glTranslatef(100, 70, 0);
         glRotatef(90, 0, 0, 1);
         glRotatef(90, 0, 1, 0);
         GLUquadricObj *quadObj3 = gluNewQuadric();
         gluQuadricNormals(quadObj3, GLU_SMOOTH);
-        gluCylinder(quadObj3, 3, 3, 100, 10, 100);
+        gluCylinder(quadObj3, 3, 3, 0.75*this->getHeight(), 10, 100);
         glPopMatrix();
 }
 
