@@ -45,10 +45,11 @@ int buttonDown;
 double camDist=10;
 double camXYAngle=0;
 double camXZAngle=0;
-
+//Texture variables
 GLuint parede;
 GLuint chao;
 GLuint teto;
+bool night_mode = false;
 
 int main(int argc, char** argv) {
 								start = time(0);
@@ -116,16 +117,15 @@ void drawWalls(){
 								// if(textura_ligada){
 								glColor3f(1,1,1);
 								glBindTexture (GL_TEXTURE_2D, texture);
-								double textureS = 1;
+								double textureS = 15;
 
 								float j = 0, i=0;
 								float definition = 0.1;
 								Circle pistaOut = trackVector.at(0);
 								GLfloat x = pistaOut.getCenterX();
 								GLfloat y = pistaOut.getCenterY();
-								GLfloat altura = 100;
-								// GLfloat altura = 4*player->getZHeight();
-
+								GLfloat escala = player->getCircleRadius()/player->getZHeight();
+								GLfloat altura = player->getZHeight() * 4 * escala;
 
 								glPushMatrix();
 								glTranslatef(x, y, 0);
@@ -138,15 +138,15 @@ void drawWalls(){
 																for(j = 0; j <= 2 * M_PI; j += definition) {
 																								const float tc = ( j / (float)( 2 * M_PI ) );
 																								glNormal3f(0,1,0);
-																								glTexCoord2f( tc, 0.0 );
+																								glTexCoord2f( textureS * tc, 0.0 );
 																								glVertex3f(raio*cos(j), raio*sin(j), altura);
-																								glTexCoord2f( tc, 1.0 );
+																								glTexCoord2f( textureS * tc, 1.0 );
 																								glVertex3f(raio*cos(j), raio*sin(j), 0);
 																}
 																glTexCoord2f( 0.0, 0.0 );
-																glVertex3f(raio, 0, 0);
+																glVertex3f(raio, 0, altura);
 																glTexCoord2f( 0.0, 1.0 );
-																glVertex3f(raio, altura, 0);
+																glVertex3f(raio, 0, 0);
 																glEnd();
 								}
 
@@ -173,7 +173,7 @@ void drawFloor(){
 								// if(textura_ligada){
 								glColor3f(1,1,1);
 								glBindTexture (GL_TEXTURE_2D, texture);
-								double textureS = 2;
+								double textureS = 5;
 								GLfloat height_window = 800; //é mil e quinhentox mas ela só ganha 750, a outra metade ela pegou na bolsa da amiga dela
 								GLfloat width_window = 800;
 								glBegin (GL_QUADS);
@@ -211,10 +211,11 @@ void drawSky()
 								// if(textura_ligada){
 								glColor3f(1,1,1);
 								glBindTexture (GL_TEXTURE_2D, texture);
-								double textureS = 1;
+								double textureS = 5;
 								GLfloat height_window = 800;
 								GLfloat width_window = 800;
-								GLfloat altura = 100;
+								GLfloat escala = player->getCircleRadius()/player->getZHeight();
+								GLfloat altura = player->getZHeight() * 4 * escala;
 								glBegin (GL_QUADS);
 								glNormal3f(0,1,0);
 								glTexCoord2f (0, 0);
@@ -387,6 +388,16 @@ void idle(){
 																if(i_status[c] == 1) cameraMode = 1;
 																c = '3';
 																if(i_status[c] == 1) cameraMode = 2;
+
+																if(i_status['n'] == 1 || i_status['N'] == 1){
+																	night_mode = !night_mode;
+
+																	if(night_mode) {
+																		teto = LoadTextureRAW("sky_night.bmp");
+																	} else {
+																		teto = LoadTextureRAW("sky.bmp");
+																	}
+																}
 
 																//Updates the position of all the shots
 																//Erases the shots that are outside the screen.
