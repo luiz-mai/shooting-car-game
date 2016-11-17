@@ -83,3 +83,42 @@ void Rectangle::drawRectangle(){
         glVertex3f(beginX,beginY+height,0);
         glEnd();
 }
+
+void Rectangle::drawRectangle(GLuint texture){
+	GLfloat beginX = this->beginX;
+	GLfloat beginY = this->beginY;
+	GLfloat width = this->width;
+	GLfloat height = this->height;
+
+
+	GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
+	GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
+	GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
+	GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
+	GLfloat mat_shininess[] = { 100.0 };
+	glColor3f(1,1,1);
+
+	glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+	glBindTexture(GL_TEXTURE_2D, texture);
+	double textureS = 1;
+
+	glBegin(GL_POLYGON);
+		glNormal3f(0,1,0);
+		glTexCoord2f (0, 0);
+		glVertex3f(beginX,beginY,0);
+		glNormal3f(0,1,0);
+		glTexCoord2f (0, textureS);
+		glVertex3f(beginX+width,beginY,0);
+		glNormal3f(0,1,0);
+		glTexCoord2f (textureS, textureS);
+		glVertex3f(beginX+width,beginY+height,0);
+		glNormal3f(0,1,0);
+		glTexCoord2f (textureS, 0);
+		glVertex3f(beginX,beginY+height,0);
+	glEnd();
+}

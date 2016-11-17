@@ -49,6 +49,7 @@ double camXZAngle=0;
 GLuint parede;
 GLuint chao;
 GLuint teto;
+GLuint largada;
 bool night_mode = false;
 
 int main(int argc, char** argv) {
@@ -80,6 +81,7 @@ int main(int argc, char** argv) {
 								chao = LoadTextureRAW( "floor.bmp" );
 								parede = LoadTextureRAW( "parede.bmp" );
 								teto = LoadTextureRAW( "sky.bmp" );
+								largada = LoadTextureRAW( "largada.bmp" );
 
 								glClearDepth(1.0f);
 								glDepthFunc(GL_LEQUAL);
@@ -281,7 +283,7 @@ void display(){
 																//Draws the start track
 																glPushMatrix();
 																glTranslatef(0,0,1);
-																startTrack->drawRectangle();
+																startTrack->drawRectangle(largada);
 																glPopMatrix();
 
 																//Draws the player's car

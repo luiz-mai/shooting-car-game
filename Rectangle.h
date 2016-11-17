@@ -45,6 +45,9 @@ void setFill(string);
 
 //Draws a rectangle at the position specified by its attributes.
 void drawRectangle();
+void drawRectangle(GLuint texture);
 };
+
+
 
 #endif //RECTANGLE_H
