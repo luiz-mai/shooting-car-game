@@ -52,6 +52,7 @@ GLuint teto;
 GLuint largada;
 bool night_mode;
 
+
 int main(int argc, char** argv) {
 								start = time(0);
 								player = new Car("player");
@@ -71,12 +72,13 @@ int main(int argc, char** argv) {
 
 								glClearColor(0,0,0,0);
 								glEnable(GL_DEPTH_TEST);
-								glEnable(GL_TEXTURE_2D);
+							    glEnable( GL_TEXTURE_2D );
+							    glEnable(GL_LIGHTING);
+								glShadeModel (GL_SMOOTH);
+
+							    glDepthFunc(GL_LEQUAL);
 								glViewport(0,0,500,500);
 
-								//Texture definitions
-								glEnable( GL_TEXTURE_2D );
-								glEnable(GL_DEPTH_TEST);
 
 								chao = LoadTextureRAW( "floor.bmp" );
 								parede = LoadTextureRAW( "parede.bmp" );
@@ -95,6 +97,9 @@ int main(int argc, char** argv) {
 								glutMouseFunc(mouseClick);
 								glutMotionFunc(moveCamera);
 								glutPassiveMotionFunc(mouseMotion);
+
+								glEnable(GL_LIGHT0);
+
 								glutDisplayFunc(display);
 
 								glutMainLoop();
@@ -236,8 +241,12 @@ void drawSky()
 
 
 void display(){
-								glLoadIdentity();
+								glClearColor (0.0,0.0,0.0,1.0);
 								glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+								glLoadIdentity();
+								trab.printCronometer(0.88,0.95);
+
+
 								//If player hasn't won or lost
 								if(gameState == 0) {
 
@@ -268,10 +277,19 @@ void display(){
 																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),60, 0,0,1);
 																}
 
-																drawFloor();
+																GLfloat light_position[] = { 0.0, 0.0, 0.0, 1.0 };
+															    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-																drawSky();
-																drawWalls();
+															   glEnable(GL_LIGHT1);
+															   GLfloat light_position1[] = { 400.0, 400.0, 0.0, 1.0 };
+															   GLfloat light1[] = {1,1,1,1};
+															   glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+															   glLightfv(GL_LIGHT1, GL_DIFFUSE, light1);
+
+																//Draw scenario
+																drawFloor();
+																// drawSky();
+																// drawWalls();
 
 
 																//Draws all the tracks
@@ -303,9 +321,10 @@ void display(){
 																								(*it).drawShots();
 																}
 																//Renders the cronometer at the corner of the screen
-																Utils utils;
-																utils.checkColor("white");
-																trab.printCronometer(60,70);
+																// Utils utils;
+																// utils.checkColor("white");
+																// trab.printCronometer(60,70);
+
 
 
 
@@ -673,18 +692,44 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> track
 								return trackVector;
 }
 
+void Trab3::RasterChars(GLfloat x, GLfloat y, GLfloat z, const char * text, double r, double g, double b)
+{
+    //Push to recover original attributes
+    glPushAttrib(GL_ENABLE_BIT);
+        glDisable(GL_LIGHTING);
+        glDisable(GL_TEXTURE_2D);
+        //Draw text in the x, y, z position
+        glColor3f(0,1,0);
+        glRasterPos3f(x, y, z);
+        const char* tmpStr;
+        tmpStr = text;
+        while( *tmpStr ){
+            glutBitmapCharacter(timer_font, *tmpStr);
+            tmpStr++;
+        }
+    glPopAttrib();
+}
+
+void Trab3::PrintText(GLfloat x, GLfloat y, const char * text, double r, double g, double b)
+{
+    //Draw text considering a 2D space (disable all 3d features)
+    glMatrixMode (GL_PROJECTION);
+    //Push to recover original PROJECTION MATRIX
+    glPushMatrix();
+        glLoadIdentity ();
+        glOrtho (0, 1, 0, 1, -1, 1);
+        trab.RasterChars(x, y, 0, text, r, g, b);
+    glPopMatrix();
+    glMatrixMode (GL_MODELVIEW);
+}
+
 void Trab3::printCronometer(GLfloat x, GLfloat y){
 								char *tmpStr;
 								int seconds_since_start = difftime( time(0), start);
 								int minutes = seconds_since_start / 60;
 								int seconds = seconds_since_start % 60;
 								sprintf(str, "%02d:%02d", minutes, seconds);
-								glRasterPos2f(x, y);
-								tmpStr = str;
-								while( *tmpStr ) {
-																glutBitmapCharacter(timer_font, *tmpStr);
-																tmpStr++;
-								}
+								trab.PrintText(x, y, str, 0, 1, 0);
 }
 
 void Trab3::printEndMessage(GLfloat x, GLfloat y){
@@ -695,12 +740,7 @@ void Trab3::printEndMessage(GLfloat x, GLfloat y){
 								} else if(gameState == -1) {
 																sprintf(str, "GAME OVER!");
 								}
-								glRasterPos2f(x, y);
-								tmpStr = str;
-								while( *tmpStr ) {
-																glutBitmapCharacter(end_font, *tmpStr);
-																tmpStr++;
-								}
+								this->PrintText(0.48, 0.5, str, 1, 1, 1);
 }
 
 void Trab3::drawAxes(double size){
