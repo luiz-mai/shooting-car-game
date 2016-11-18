@@ -412,37 +412,37 @@ void Car::drawCarBody(){
 void Car::drawCarAxis(){
         //Front axis
         glPushMatrix();
-        //glTranslatef(70, 70, 0);
+        glTranslatef(0, 0.2*this->getHeight(), 0); //0 = front of the car
         glRotatef(90, 0, 1, 0);
         GLUquadricObj *quadObj = gluNewQuadric();
         gluQuadricNormals(quadObj, GLU_SMOOTH);
-        gluCylinder(quadObj, 3, 3, 0.5*this->getWidth(), 10, 100);
+        gluCylinder(quadObj, 3, 3, this->getWidth(), 10, 100);
         glPopMatrix();
 
         //Back Axis
         glPushMatrix();
-        //glTranslatef(70, 160, 0);
+        glTranslatef(0, 1.3*this->getHeight(), 0);  //1.5 = back of the car
         glRotatef(90, 0, 1, 0);
         GLUquadricObj *quadObj2 = gluNewQuadric();
         gluQuadricNormals(quadObj2, GLU_SMOOTH);
-        gluCylinder(quadObj2, 3, 3, 0.5*this->getWidth(), 10, 100);
+        gluCylinder(quadObj2, 3, 3, this->getWidth(), 10, 100);
         glPopMatrix();
 
         //Center axis
         glPushMatrix();
-        //glTranslatef(100, 70, 0);
+        glTranslatef(0.5*this->getWidth(), 0.2*this->getHeight(), 0);
         glRotatef(90, 0, 0, 1);
         glRotatef(90, 0, 1, 0);
         GLUquadricObj *quadObj3 = gluNewQuadric();
         gluQuadricNormals(quadObj3, GLU_SMOOTH);
-        gluCylinder(quadObj3, 3, 3, 0.75*this->getHeight(), 10, 100);
+        gluCylinder(quadObj3, 3, 3, 1.2*this->getHeight(), 10, 100);
         glPopMatrix();
 }
 
 void Car::drawFrontWheels(){
 
         glPushMatrix();
-        glTranslatef(70,70,0);
+        glTranslatef(0,0.2*this->getHeight(),5);
         glRotatef(this->getWheelsAngle(), 0, 0, 1);
         glTranslatef(-5, 0, 0);
         glRotatef(this->getIncrementalNumber(), 1, 0, 0);
@@ -451,9 +451,8 @@ void Car::drawFrontWheels(){
         glPopMatrix();
 
         glPushMatrix();
-        glTranslatef(130,70,0);
+        glTranslatef(this->getWidth(),0.2*this->getHeight(),5);
         glRotatef(this->getWheelsAngle(), 0, 0, 1);
-        glTranslatef(-5, 0, 0);
         glRotatef(this->getIncrementalNumber(), 1, 0, 0);
         glRotatef(90, 0, 1, 0);
         this->drawSingleWheel();
@@ -462,15 +461,13 @@ void Car::drawFrontWheels(){
 
 void Car::drawBackWheels(){
         glPushMatrix();
-        glTranslatef(70,160,0);
-        glTranslatef(-5, 0, 0);
+        glTranslatef(-5,1.3*this->getHeight(),5);
         glRotatef(90, 0, 1, 0);
         this->drawSingleWheel();
         glPopMatrix();
 
         glPushMatrix();
-        glTranslatef(130,160,0);
-        glTranslatef(-5, 0, 0);
+        glTranslatef(this->getWidth(),1.3*this->getHeight(),5);
         glRotatef(90, 0, 1, 0);
         this->drawSingleWheel();
         glPopMatrix();
@@ -480,24 +477,24 @@ void Car::drawSingleWheel(){
         glColor3f(0,0,0);
         GLUquadricObj *quadObj = gluNewQuadric();
         gluQuadricNormals(quadObj, GLU_SMOOTH);
-        gluDisk(quadObj, 0, 10, 10, 100);
+        gluDisk(quadObj, 0, 5, 10, 100);
         glPushMatrix();
-        glTranslatef(0, 0, 10);
-        gluDisk(quadObj, 0, 10, 10, 100);
+        glTranslatef(0, 0, 5);
+        gluDisk(quadObj, 0, 5, 10, 100);
         glPopMatrix();
-        gluCylinder(quadObj, 10, 10, 10, 10, 100);
+        gluCylinder(quadObj, 5, 5, 5, 10, 100);
 }
 
 void Car::drawCarCannon(){
         glPushMatrix();
         glColor3f(0,0,0);
-        glTranslatef(100,50,10);
+        glTranslatef(0.5*this->getWidth(),0.1*this->getHeight(),0.5*this->getZHeight());
         glRotatef(-this->getCannonZAngle(), 1, 0, 0);
         glRotatef(this->getCannonAngle(), 0, 0, 1);
         glRotatef(90, 1, 0, 0);
         GLUquadricObj *quadObj = gluNewQuadric();
         gluQuadricNormals(quadObj, GLU_SMOOTH);
-        gluCylinder(quadObj, 5, 5, 35, 10, 100);
+        gluCylinder(quadObj, 3, 3, 0.5*this->getWidth(), 10, 100);
 
         glPopMatrix();
 }
