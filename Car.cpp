@@ -508,33 +508,11 @@ void Car::drawShots(){
                 glPushMatrix();
                 glTranslatef(
                         (*it).getCenterX(),
-                        (*it).getCenterY(),
+                        (*it).getCenterY() - 0.35*this->getHeight(),
                         (*it).getCenterZ()
                         );
-                glRotatef((*it).getCarAngle(), 0, 0, 1);
-                glScalef(
-                        2*this->getCircleRadius()/this->getWidth(),
-                        2*this->getCircleRadius()/this->getHeight(),
-                        1
-                        );
-
-                glTranslatef(
-                        -this->getWidth()/2,
-                        -this->getHeight()/2,
-                        0
-                        );
-                glTranslatef(
-                        this->getCannon().getBeginX() + this->getCannon().getWidth()/2,
-                        this->getCannon().getBeginY() + this->getCannon().getHeight(),
-                        0
-                        );
                 glRotatef(-(*it).getCannonZAngle(), 1, 0, 0);
-                glRotatef((*it).getCannonAngle(), 0, 0, 1);
-                glTranslatef(
-                        0,
-                        -this->getCannon().getHeight(),
-                        0
-                        );
+                glRotatef((*it).getCannonAngle() + (*it).getCarAngle(), 0, 0, 1);
                 GLUquadricObj *quadObj = gluNewQuadric();
                 gluQuadricNormals(quadObj, GLU_SMOOTH);
                 gluSphere(quadObj, 3, 50, 100);

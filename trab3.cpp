@@ -72,11 +72,11 @@ int main(int argc, char** argv) {
 
 								glClearColor(0,0,0,0);
 								glEnable(GL_DEPTH_TEST);
-							    glEnable( GL_TEXTURE_2D );
-							    glEnable(GL_LIGHTING);
+								glEnable( GL_TEXTURE_2D );
+								glEnable(GL_LIGHTING);
 								glShadeModel (GL_SMOOTH);
 
-							    glDepthFunc(GL_LEQUAL);
+								glDepthFunc(GL_LEQUAL);
 								glViewport(0,0,500,500);
 
 
@@ -254,11 +254,11 @@ void display(){
 																GLfloat scale = player->getCircleRadius()/player->getWidth();
 																if(cameraMode == 0) {
 																								cam1x=player->getCenterX()+t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
-																								cam1y=player->getCenterY()+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
-																								cam1z=15;
-																								centro_x=player->getCenterX()+5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
-																								centro_y=player->getCenterY()+5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
-																								centro_z=0;
+																								cam1y=player->getCenterY()-0.35*player->getHeight()+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																								cam1z=1.5*player->getZHeight();
+																								centro_x=cam1x+5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
+																								centro_y=cam1y+5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																								centro_z=cam1z;
 																								gluLookAt(cam1x, cam1y, cam1z, centro_x, centro_y, centro_z, 0, 0, 1);
 																} else if(cameraMode == 1) {
 																								GLfloat angulo = player->getTheta() + player->getCannonAngle();
@@ -271,20 +271,20 @@ void display(){
 																								centro_z = cam1z + sin(player->getCannonZAngle()*M_PI/180)*200;
 																								gluLookAt(cam1x,cam1y,cam1z, centro_x,centro_y,centro_z, 0,0,1);
 																} else if(cameraMode == 2) {
-																								cam1x = player->getCenterX() + 5*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
-																								cam1y = player->getCenterY() + 5*(player->getCircleRadius())*cos((camXYAngle)*M_PI/180)*cos((camXZAngle)*M_PI/180);
-																								cam1z= 80;
-																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),60, 0,0,1);
+																								cam1x = player->getCenterX() + 3*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*sin((camXZAngle)*M_PI/180);
+																								cam1y = player->getCenterY() - 3*(player->getCircleRadius())*cos((camXYAngle)*M_PI/180)*sin((camXZAngle)*M_PI/180);
+																								cam1z= player->getCenterZ() + 3*(player->getCircleRadius())*cos((camXZAngle)*M_PI/180);
+																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),player->getCenterZ(), 0,0,1);
 																}
 
 																GLfloat light_position[] = { 0.0, 0.0, 0.0, 1.0 };
-															    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-															   glEnable(GL_LIGHT1);
-															   GLfloat light_position1[] = { 400.0, 400.0, 0.0, 1.0 };
-															   GLfloat light1[] = {1,1,1,1};
-															   glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
-															   glLightfv(GL_LIGHT1, GL_DIFFUSE, light1);
+																glEnable(GL_LIGHT1);
+																GLfloat light_position1[] = { 400.0, 400.0, 0.0, 1.0 };
+																GLfloat light1[] = {1,1,1,1};
+																glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+																glLightfv(GL_LIGHT1, GL_DIFFUSE, light1);
 
 																//Draw scenario
 																drawFloor();
@@ -411,14 +411,14 @@ void idle(){
 																if(i_status[c] == 1) cameraMode = 2;
 
 																//ativa/desativa modo noturno
-																if(i_status['n'] == 1 || i_status['N'] == 1){
-																	night_mode = !night_mode;
+																if(i_status['n'] == 1 || i_status['N'] == 1) {
+																								night_mode = !night_mode;
 
-																	if(night_mode){
-																		teto = LoadTextureRAW("sky_night.bmp");
-																	} else {
-																		teto = LoadTextureRAW("sky.bmp");
-																	}
+																								if(night_mode) {
+																																teto = LoadTextureRAW("sky_night.bmp");
+																								} else {
+																																teto = LoadTextureRAW("sky.bmp");
+																								}
 
 																}
 
@@ -694,33 +694,33 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> track
 
 void Trab3::RasterChars(GLfloat x, GLfloat y, GLfloat z, const char * text, double r, double g, double b)
 {
-    //Push to recover original attributes
-    glPushAttrib(GL_ENABLE_BIT);
-        glDisable(GL_LIGHTING);
-        glDisable(GL_TEXTURE_2D);
-        //Draw text in the x, y, z position
-        glColor3f(0,1,0);
-        glRasterPos3f(x, y, z);
-        const char* tmpStr;
-        tmpStr = text;
-        while( *tmpStr ){
-            glutBitmapCharacter(timer_font, *tmpStr);
-            tmpStr++;
-        }
-    glPopAttrib();
+								//Push to recover original attributes
+								glPushAttrib(GL_ENABLE_BIT);
+								glDisable(GL_LIGHTING);
+								glDisable(GL_TEXTURE_2D);
+								//Draw text in the x, y, z position
+								glColor3f(0,1,0);
+								glRasterPos3f(x, y, z);
+								const char* tmpStr;
+								tmpStr = text;
+								while( *tmpStr ) {
+																glutBitmapCharacter(timer_font, *tmpStr);
+																tmpStr++;
+								}
+								glPopAttrib();
 }
 
 void Trab3::PrintText(GLfloat x, GLfloat y, const char * text, double r, double g, double b)
 {
-    //Draw text considering a 2D space (disable all 3d features)
-    glMatrixMode (GL_PROJECTION);
-    //Push to recover original PROJECTION MATRIX
-    glPushMatrix();
-        glLoadIdentity ();
-        glOrtho (0, 1, 0, 1, -1, 1);
-        trab.RasterChars(x, y, 0, text, r, g, b);
-    glPopMatrix();
-    glMatrixMode (GL_MODELVIEW);
+								//Draw text considering a 2D space (disable all 3d features)
+								glMatrixMode (GL_PROJECTION);
+								//Push to recover original PROJECTION MATRIX
+								glPushMatrix();
+								glLoadIdentity ();
+								glOrtho (0, 1, 0, 1, -1, 1);
+								trab.RasterChars(x, y, 0, text, r, g, b);
+								glPopMatrix();
+								glMatrixMode (GL_MODELVIEW);
 }
 
 void Trab3::printCronometer(GLfloat x, GLfloat y){
