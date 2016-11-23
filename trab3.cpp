@@ -16,6 +16,7 @@ using namespace std;
 
 Trab3 trab;
 int i_status[1000];
+bool started;
 //Arena variables
 vector<Circle> trackVector;
 Rectangle* startTrack;
@@ -55,7 +56,6 @@ bool night_mode;
 
 
 int main(int argc, char** argv) {
-								start = time(0);
 								player = new Car("player");
 
 								//Reads the config and arena files.
@@ -244,7 +244,9 @@ void display(){
 								glClearColor (0.0,0.0,0.0,1.0);
 								glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 								glLoadIdentity();
-								trab.printCronometer(0.88,0.95);
+								if(started) {
+																trab.printCronometer(0.88,0.95);
+								}
 
 
 								//If player hasn't won or lost
@@ -317,6 +319,10 @@ void idle(){
 																//Player movement
 																char c;
 																if(i_status['w'] == 1 || i_status['W'] == 1 || i_status['s'] == 1 || i_status['S'] == 1) {
+																								if(!started) {
+																																started = true;
+																																start = time(0);
+																								}
 																								player->setMoving(true);
 																								//Moves the carroInimigoFileElement
 																								if(i_status['w'] == 1 || i_status['W'] == 1) {
@@ -424,32 +430,34 @@ void idle(){
 																}
 
 																//Gives some AI to the foes
-																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+																if(started) {
+																								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
 
-																								int index = it - foesVector.begin();
-																								vector<Car> otherFoes = foesVector;
-																								otherFoes.erase(otherFoes.begin() + index);
+																																int index = it - foesVector.begin();
+																																vector<Car> otherFoes = foesVector;
+																																otherFoes.erase(otherFoes.begin() + index);
 
-																								vector<Shot> foeShotsVector = (*it).getShotsVector();
-																								(*it).updateShots(t);
+																																vector<Shot> foeShotsVector = (*it).getShotsVector();
+																																(*it).updateShots(t);
 
-																								foeShotsVector.erase(
-																																remove_if(foeShotsVector.begin(), foeShotsVector.end(), outOfScreen),
-																																foeShotsVector.end());
+																																foeShotsVector.erase(
+																																								remove_if(foeShotsVector.begin(), foeShotsVector.end(), outOfScreen),
+																																								foeShotsVector.end());
 
-																								GLfloat threshold = smallestRadius + (biggestRadius-smallestRadius)/2;
+																																GLfloat threshold = smallestRadius + (biggestRadius-smallestRadius)/2;
 
-																								if((*it).getBackwardCount() > 0) {
-																																(*it).foeMove(t, threshold);
-																																(*it).setBackwardCount((*it).getBackwardCount()-1);
-																								} else if ((*it).detectTrackColision(trackVector, biggestRadius) || (*it).detectCarColision(*player) || (*it).detectFoeColision(otherFoes)) {
-																																Utils utils;
-																																(*it).setDirection((*it).getDirection() * (-1));
-																																(*it).foeMove(t, threshold);
-																																(*it).setBackwardCount(utils.randomInt(10, 50));
-																								} else {
-																																(*it).setDirection(1);
-																																(*it).foeMove(t, threshold);
+																																if((*it).getBackwardCount() > 0) {
+																																								(*it).foeMove(t, threshold);
+																																								(*it).setBackwardCount((*it).getBackwardCount()-1);
+																																} else if ((*it).detectTrackColision(trackVector, biggestRadius) || (*it).detectCarColision(*player) || (*it).detectFoeColision(otherFoes)) {
+																																								Utils utils;
+																																								(*it).setDirection((*it).getDirection() * (-1));
+																																								(*it).foeMove(t, threshold);
+																																								(*it).setBackwardCount(utils.randomInt(10, 50));
+																																} else {
+																																								(*it).setDirection(1);
+																																								(*it).foeMove(t, threshold);
+																																}
 																								}
 																}
 								}
