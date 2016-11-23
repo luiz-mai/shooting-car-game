@@ -1,3 +1,4 @@
+
 /*****************************************************************************************
 **																						**
 **						UNIVERSIDADE FEDERAL DO ESPÍRITO SANTO							**
@@ -66,7 +67,7 @@ int main(int argc, char** argv) {
 								//OpenGL initializations
 								glutInit(&argc, argv);
 								glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);
-								glutInitWindowSize(500,500);
+								glutInitWindowSize(500,700);
 								glutInitWindowPosition(100,100);
 								glutCreateWindow("Trabalho Final de Computacao Grafica");
 
@@ -77,20 +78,18 @@ int main(int argc, char** argv) {
 								glShadeModel (GL_SMOOTH);
 
 								glDepthFunc(GL_LEQUAL);
-								glViewport(0,0,500,500);
 
 
 								chao = LoadTextureRAW( "floor.bmp" );
 								parede = LoadTextureRAW( "parede.bmp" );
 								teto = LoadTextureRAW( "sky.bmp" );
 								largada = LoadTextureRAW("largada.bmp");
-
-								glClearDepth(1.0f);
-								glDepthFunc(GL_LEQUAL);
 								glMatrixMode(GL_PROJECTION);
+								glLoadIdentity();
 								gluPerspective(60.0f, -1, 1, 1000);
 								glMatrixMode(GL_MODELVIEW);
-								glLoadIdentity();
+								glClearDepth(1.0f);
+								glDepthFunc(GL_LEQUAL);
 								glutIdleFunc(idle);
 								glutKeyboardFunc(keyPressed);
 								glutKeyboardUpFunc(keyUp);
@@ -241,6 +240,7 @@ void drawSky()
 
 
 void display(){
+
 								glClearColor (0.0,0.0,0.0,1.0);
 								glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 								glLoadIdentity();
@@ -250,11 +250,23 @@ void display(){
 								//If player hasn't won or lost
 								if(gameState == 0) {
 
-
 																GLfloat scale = player->getCircleRadius()/player->getWidth();
+																glViewport(0,500,500,700);
+																glLoadIdentity();
+																cam1x=player->getCenterX()-4.5*player->getCircleRadius()*cos((player->getTheta()-90)*M_PI/180)+t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
+																cam1y=player->getCenterY()-4.5*player->getCircleRadius()*sin((player->getTheta()-90)*M_PI/180)+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																cam1z=1.5*player->getZHeight();
+																centro_x=cam1x-5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
+																centro_y=cam1y-5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																centro_z=cam1z*8;
+																gluLookAt(cam1x, cam1y, cam1z, centro_x, centro_y, centro_z, 0, 0, 1);
+																trab.drawScene();
+
+																glViewport(0,0,500,500);
+																glLoadIdentity();
 																if(cameraMode == 0) {
 																								cam1x=player->getCenterX()+t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
-																								cam1y=player->getCenterY()-0.35*player->getHeight()+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																								cam1y=player->getCenterY()+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
 																								cam1z=1.5*player->getZHeight();
 																								centro_x=cam1x+5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
 																								centro_y=cam1y+5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
@@ -277,56 +289,7 @@ void display(){
 																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),player->getCenterZ(), 0,0,1);
 																}
 
-																GLfloat light_position[] = { 0.0, 0.0, 0.0, 1.0 };
-																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-																glEnable(GL_LIGHT1);
-																GLfloat light_position1[] = { 400.0, 400.0, 0.0, 1.0 };
-																GLfloat light1[] = {1,1,1,1};
-																glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
-																glLightfv(GL_LIGHT1, GL_DIFFUSE, light1);
-
-																//Draw scenario
-																drawFloor();
-																// drawSky();
-																// drawWalls();
-
-
-																//Draws all the tracks
-																vector<Circle>::iterator it = trackVector.begin();
-																// for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
-																// (*it).drawCircle();
-																// }
-
-																//Draws the start track
-																glPushMatrix();
-																glTranslatef(0,0,1);
-																startTrack->drawRectangle(largada);
-																glPopMatrix();
-
-																//Draws the player's car
-																Circle* c = new Circle("id", player->getCircleRadius(), player->getCenterX(), player->getCenterY(), "green");
-																c->drawCircle();
-																player->drawCar();
-
-
-																//Draws all the foes
-																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
-																								(*it).drawCar();
-																}
-
-																//Draws all the shots
-																player->drawShots();
-																for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
-																								(*it).drawShots();
-																}
-																//Renders the cronometer at the corner of the screen
-																// Utils utils;
-																// utils.checkColor("white");
-																// trab.printCronometer(60,70);
-
-
-
+																trab.drawScene();
 
 								} else{
 																//GAME OVER or YOU WIN
@@ -743,6 +706,55 @@ void Trab3::printEndMessage(GLfloat x, GLfloat y){
 								this->PrintText(0.48, 0.5, str, 1, 1, 1);
 }
 
+void Trab3::drawScene(){
+								GLfloat light_position[] = { 0.0, 0.0, 0.0, 1.0 };
+								glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+								glEnable(GL_LIGHT1);
+								GLfloat light_position1[] = { 400.0, 400.0, 0.0, 1.0 };
+								GLfloat light1[] = {1,1,1,1};
+								glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+								glLightfv(GL_LIGHT1, GL_DIFFUSE, light1);
+
+								//Draw scenario
+								drawFloor();
+								// drawSky();
+								// drawWalls();
+
+
+								//Draws all the tracks
+								vector<Circle>::iterator it = trackVector.begin();
+								// for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
+								// (*it).drawCircle();
+								// }
+
+								//Draws the start track
+								glPushMatrix();
+								glTranslatef(0,0,1);
+								startTrack->drawRectangle(largada);
+								glPopMatrix();
+
+								//Draws the player's car
+								Circle* c = new Circle("id", player->getCircleRadius(), player->getCenterX(), player->getCenterY(), "green");
+								c->drawCircle();
+								player->drawCar();
+
+
+								//Draws all the foes
+								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+																(*it).drawCar();
+								}
+
+								//Draws all the shots
+								player->drawShots();
+								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+																(*it).drawShots();
+								}
+								//Renders the cronometer at the corner of the screen
+								// Utils utils;
+								// utils.checkColor("white");
+								// trab.printCronometer(60,70);
+}
 void Trab3::drawAxes(double size){
 								GLfloat mat_ambient_r[] = { 1.0, 0.0, 0.0, 1.0 };
 								GLfloat mat_ambient_g[] = { 0.0, 1.0, 0.0, 1.0 };

@@ -55,10 +55,14 @@ public:
 
   void drawAxes(double);
 
-  void PrintText(GLfloat x, GLfloat y, const char * text, double r, double g, double b);
+  void drawScene();
+
+  void PrintText(GLfloat x, GLfloat y, const char *text, double r, double g,
+                 double b);
 
 private:
-  void RasterChars(GLfloat x, GLfloat y, GLfloat z, const char * text, double r, double g, double b);
+  void RasterChars(GLfloat x, GLfloat y, GLfloat z, const char *text, double r,
+                   double g, double b);
 };
 
 // OPENGL CALLBACKS
