@@ -266,11 +266,11 @@ void display(){
 																   glViewport(0,0,500,500);
 																   glLoadIdentity();*/
 																if(cameraMode == 0) {
-																								cam1x=player->getCenterX()+t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
-																								cam1y=player->getCenterY()+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																								cam1x=player->getCenterX()+(sin(player->getTheta()*M_PI/180)*player->getCircleRadius());
+																								cam1y=player->getCenterY()-(cos(player->getTheta()*M_PI/180)*player->getCircleRadius());
 																								cam1z=1.5*player->getZHeight();
-																								centro_x=cam1x+5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
-																								centro_y=cam1y+5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																								centro_x=player->getCenterX()+5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
+																								centro_y=player->getCenterY()+5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
 																								centro_z=cam1z;
 																								gluLookAt(cam1x, cam1y, cam1z, centro_x, centro_y, centro_z, 0, 0, 1);
 																} else if(cameraMode == 1) {
