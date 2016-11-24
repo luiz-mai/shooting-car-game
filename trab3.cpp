@@ -53,7 +53,8 @@ GLuint chao;
 GLuint teto;
 GLuint largada;
 bool night_mode;
-
+bool lightingEnebled = true;
+bool textureEnabled = true;
 
 int main(int argc, char** argv) {
 								player = new Car("player");
@@ -76,6 +77,7 @@ int main(int argc, char** argv) {
 								glEnable(GL_DEPTH_TEST);
 								glEnable( GL_TEXTURE_2D );
 								glEnable(GL_LIGHTING);
+								// glShadeModel (GL_FLAT);
 								glShadeModel (GL_SMOOTH);
 								glDepthFunc(GL_LEQUAL);
 
@@ -83,6 +85,10 @@ int main(int argc, char** argv) {
 								parede = LoadTextureRAW( "parede.bmp" );
 								teto = LoadTextureRAW( "sky.bmp" );
 								largada = LoadTextureRAW("largada.bmp");
+
+								//Light
+								glEnable(GL_LIGHT0);
+
 								glMatrixMode(GL_PROJECTION);
 								glLoadIdentity();
 								gluPerspective(60.0f, -1, 1, 1000);
@@ -388,6 +394,24 @@ void idle(){
 																																teto = LoadTextureRAW("sky.bmp");
 																								}
 
+																}
+
+																if(i_status['l'] == 1 || i_status['L'] == 1){
+																	if ( lightingEnebled ){
+											                glDisable( GL_LIGHTING );
+											            }else{
+											                glEnable( GL_LIGHTING );
+											            }
+											            lightingEnebled = !lightingEnebled;
+																}
+
+																if(i_status['t'] == 1 || i_status['T'] == 1){
+																	if ( textureEnabled ){
+										                	glDisable( GL_TEXTURE_2D );
+										            	}else{
+										                	glEnable( GL_TEXTURE_2D );
+										            	}
+										            	textureEnabled = !textureEnabled;
 																}
 
 																//Updates the position of all the shots
@@ -714,14 +738,14 @@ void Trab3::printEndMessage(GLfloat x, GLfloat y){
 }
 
 void Trab3::drawScene(){
-								GLfloat light_position[] = { 0.0, 0.0, 0.0, 1.0 };
-								glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+								GLfloat light_position[] = { 0.5, 0.5, 0.0, 1.0 };
+								glLightfv(GL_LIGHT0, GL_AMBIENT, light_position);
 
-								glEnable(GL_LIGHT1);
-								GLfloat light_position1[] = { 400.0, 400.0, 0.0, 1.0 };
-								GLfloat light1[] = {1,1,1,1};
-								glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
-								glLightfv(GL_LIGHT1, GL_DIFFUSE, light1);
+								// glEnable(GL_LIGHT1);
+								// GLfloat light_position1[] = { 400.0, 400.0, 0.0, 1.0 };
+								// GLfloat light1[] = {1,1,1,1};
+								// glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+								// glLightfv(GL_LIGHT1, GL_DIFFUSE, light1);
 
 								//Draw scenario
 								drawFloor();
@@ -766,39 +790,44 @@ void Trab3::drawAxes(double size){
 								GLfloat mat_ambient_r[] = { 1.0, 0.0, 0.0, 1.0 };
 								GLfloat mat_ambient_g[] = { 0.0, 1.0, 0.0, 1.0 };
 								GLfloat mat_ambient_b[] = { 0.0, 0.0, 1.0, 1.0 };
-								GLfloat no_mat[] = { 0.0, 0.0, 0.0, 1.0 };
-								glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE,
-																					no_mat);
-								glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
-								glMaterialfv(GL_FRONT, GL_SHININESS, no_mat);
+								// GLfloat no_mat[] = { 0.0, 0.0, 0.0, 1.0 };
+								// glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE,
+								// 													no_mat);
+								// glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
+								// glMaterialfv(GL_FRONT, GL_SHININESS, no_mat);
 
-								//x axis
-								glPushMatrix();
-								glMaterialfv(GL_FRONT, GL_EMISSION, mat_ambient_r);
-								glColor3fv(mat_ambient_r);
-								glScalef(size, size*0.1, size*0.1);
-								glTranslatef(0.5, 0, 0); // put in one end
-								glutSolidCube(1.0);
-								glPopMatrix();
+								glPushAttrib(GL_ENABLE_BIT);
+						        glDisable(GL_LIGHTING);
+						        glDisable(GL_TEXTURE_2D);
 
-								//y axis
-								glPushMatrix();
-								glMaterialfv(GL_FRONT, GL_EMISSION, mat_ambient_g);
-								glColor3fv(mat_ambient_g);
-								glRotatef(90,0,0,1);
-								glScalef(size, size*0.1, size*0.1);
-								glTranslatef(0.5, 0, 0); // put in one end
-								glutSolidCube(1.0);
-								glPopMatrix();
+										//x axis
+										glPushMatrix();
+										glMaterialfv(GL_FRONT, GL_EMISSION, mat_ambient_r);
+										glColor3fv(mat_ambient_r);
+										glScalef(size, size*0.1, size*0.1);
+										glTranslatef(0.5, 0, 0); // put in one end
+										glutSolidCube(1.0);
+										glPopMatrix();
 
-								//z axis
-								glPushMatrix();
-								glMaterialfv(GL_FRONT, GL_EMISSION, mat_ambient_b);
-								glColor3fv(mat_ambient_b);
-								glRotatef(-90,0,1,0);
-								glScalef(size, size*0.1, size*0.1);
-								glTranslatef(0.5, 0, 0); // put in one end
-								glutSolidCube(1.0);
-								glPopMatrix();
+										//y axis
+										glPushMatrix();
+										glMaterialfv(GL_FRONT, GL_EMISSION, mat_ambient_g);
+										glColor3fv(mat_ambient_g);
+										glRotatef(90,0,0,1);
+										glScalef(size, size*0.1, size*0.1);
+										glTranslatef(0.5, 0, 0); // put in one end
+										glutSolidCube(1.0);
+										glPopMatrix();
+
+										//z axis
+										glPushMatrix();
+										glMaterialfv(GL_FRONT, GL_EMISSION, mat_ambient_b);
+										glColor3fv(mat_ambient_b);
+										glRotatef(-90,0,1,0);
+										glScalef(size, size*0.1, size*0.1);
+										glTranslatef(0.5, 0, 0); // put in one end
+										glutSolidCube(1.0);
+										glPopMatrix();
+								glPopAttrib();
 
 }
