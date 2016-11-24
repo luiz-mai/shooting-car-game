@@ -67,7 +67,8 @@ int main(int argc, char** argv) {
 								//OpenGL initializations
 								glutInit(&argc, argv);
 								glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);
-								glutInitWindowSize(500,700);
+								/**RETROVISOR glutInitWindowSize(500,700); **/
+								glutInitWindowSize(500,500);
 								glutInitWindowPosition(100,100);
 								glutCreateWindow("Trabalho Final de Computacao Grafica");
 
@@ -76,9 +77,7 @@ int main(int argc, char** argv) {
 								glEnable( GL_TEXTURE_2D );
 								glEnable(GL_LIGHTING);
 								glShadeModel (GL_SMOOTH);
-
 								glDepthFunc(GL_LEQUAL);
-
 
 								chao = LoadTextureRAW( "floor.bmp" );
 								parede = LoadTextureRAW( "parede.bmp" );
@@ -252,10 +251,20 @@ void display(){
 								//If player hasn't won or lost
 								if(gameState == 0) {
 
+																/**RETROVISOR GLfloat scale = player->getCircleRadius()/player->getWidth();
+																   glViewport(0,500,500,700);
+																   glLoadIdentity();
+																   cam1x=player->getCenterX()-4.5*player->getCircleRadius()*cos((player->getTheta()-90)*M_PI/180)+t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
+																   cam1y=player->getCenterY()-4.5*player->getCircleRadius()*sin((player->getTheta()-90)*M_PI/180)+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																   cam1z=1.5*player->getZHeight();
+																   centro_x=cam1x-5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
+																   centro_y=cam1y-5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
+																   centro_z=cam1z*8;
+																   gluLookAt(cam1x, cam1y, cam1z, centro_x, centro_y, centro_z, 0, 0, 1);
+																   trab.drawScene();
 
-
-																// glViewport(0,0,500,700);
-																// glLoadIdentity();
+																   glViewport(0,0,500,500);
+																   glLoadIdentity();*/
 																if(cameraMode == 0) {
 																								cam1x=player->getCenterX()+t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
 																								cam1y=player->getCenterY()+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
@@ -281,28 +290,6 @@ void display(){
 																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),player->getCenterZ(), 0,0,1);
 																}
 
-																glMatrixMode(GL_PROJECTION);
-																glViewport(0,500,700,200);
-																glLoadIdentity();
-																gluPerspective(60.0f,-1,1,1000);
-																glMatrixMode(GL_MODELVIEW);
-
-																trab.drawScene();
-
-																GLfloat scale = player->getCircleRadius()/player->getWidth();
-																glMatrixMode(GL_PROJECTION);
-																glViewport(0,0,700,500);
-																glLoadIdentity();
-																gluPerspective(60.0f,-1,1,1000);
-																glMatrixMode(GL_MODELVIEW);
-																glLoadIdentity();
-																cam1x=player->getCenterX()-4.5*player->getCircleRadius()*cos((player->getTheta()-90)*M_PI/180)+t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
-																cam1y=player->getCenterY()-4.5*player->getCircleRadius()*sin((player->getTheta()-90)*M_PI/180)+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
-																cam1z=1.5*player->getZHeight();
-																centro_x=cam1x-5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
-																centro_y=cam1y-5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
-																centro_z=cam1z*8;
-																gluLookAt(cam1x, cam1y, cam1z, centro_x, centro_y, centro_z, 0, 0, 1);
 																trab.drawScene();
 
 								} else{
@@ -310,7 +297,7 @@ void display(){
 																trab.printEndMessage(width/2, height/2);
 								}
 								glutSwapBuffers();
-								// glFlush();
+								glFlush();
 								return;
 }
 
