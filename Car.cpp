@@ -253,9 +253,9 @@ void Car::drawCar(){
         if(moving) {
                 //Does the moving effect to the wheels.
                 if(this->getDirection() == 1)
-                        this->setIncrementalNumber(randomAngle + 2);
+                        this->setIncrementalNumber(randomAngle + 10);
                 else
-                        this->setIncrementalNumber(randomAngle - 2);
+                        this->setIncrementalNumber(randomAngle - 10);
         }
 
         //Does the positioning transformations
@@ -462,12 +462,14 @@ void Car::drawFrontWheels(){
 void Car::drawBackWheels(){
         glPushMatrix();
         glTranslatef(-5,1.3*this->getHeight(),5);
+        glRotatef(this->getIncrementalNumber(), 1, 0, 0);
         glRotatef(90, 0, 1, 0);
         this->drawSingleWheel();
         glPopMatrix();
 
         glPushMatrix();
         glTranslatef(this->getWidth(),1.3*this->getHeight(),5);
+        glRotatef(this->getIncrementalNumber(), 1, 0, 0);
         glRotatef(90, 0, 1, 0);
         this->drawSingleWheel();
         glPopMatrix();
@@ -477,12 +479,59 @@ void Car::drawSingleWheel(){
         glColor3f(0,0,0);
         GLUquadricObj *quadObj = gluNewQuadric();
         gluQuadricNormals(quadObj, GLU_SMOOTH);
-        gluDisk(quadObj, 0, 5, 10, 100);
+        this->drawWheelCircle(5);
         glPushMatrix();
         glTranslatef(0, 0, 5);
-        gluDisk(quadObj, 0, 5, 10, 100);
+        this->drawWheelCircle(5);
         glPopMatrix();
         gluCylinder(quadObj, 5, 5, 5, 10, 100);
+}
+
+void Car::drawWheelCircle(GLfloat radius){
+        GLfloat vertex[4];
+        GLfloat texcoord[2];
+        int num_vertex = 20;
+
+        const GLfloat delta_angle = 2.0*M_PI/num_vertex;
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, LoadTextureRAW("wheels.bmp"));
+        glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+        glBegin(GL_TRIANGLE_FAN);
+
+        //draw the vertex at the center of the circle
+        texcoord[0] = 0.5;
+        texcoord[1] = 0.5;
+        glTexCoord2fv(texcoord);
+
+        vertex[0] = vertex[1] = vertex[2] = 0.0;
+        vertex[3] = 1.0;
+        glVertex4fv(vertex);
+
+        for(int i = 0; i < num_vertex; i++)
+        {
+                texcoord[0] = (std::cos(delta_angle*i) + 1.0)*0.5;
+                texcoord[1] = (std::sin(delta_angle*i) + 1.0)*0.5;
+                glTexCoord2fv(texcoord);
+
+                vertex[0] = std::cos(delta_angle*i) * radius;
+                vertex[1] = std::sin(delta_angle*i) * radius;
+                vertex[2] = 0.0;
+                vertex[3] = 1.0;
+                glVertex4fv(vertex);
+        }
+
+        texcoord[0] = (1.0 + 1.0)*0.5;
+        texcoord[1] = (0.0 + 1.0)*0.5;
+        glTexCoord2fv(texcoord);
+
+        vertex[0] = 1.0 * radius;
+        vertex[1] = 0.0 * radius;
+        vertex[2] = 0.0;
+        vertex[3] = 1.0;
+        glVertex4fv(vertex);
+        glEnd();
+
 }
 
 void Car::drawCarCannon(){

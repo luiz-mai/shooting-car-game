@@ -45,8 +45,8 @@ GLfloat cam1x, cam1y, cam1z, cam2x, cam2y, cam2z, centro_x, centro_y, centro_z;
 int lastX, lastY;
 int buttonDown;
 double camDist=10;
-double camXYAngle=0;
-double camXZAngle=0;
+double camXYAngle=1;
+double camXZAngle=1;
 
 GLuint parede;
 GLuint chao;
@@ -76,6 +76,8 @@ int main(int argc, char** argv) {
 								glEnable(GL_DEPTH_TEST);
 								glEnable( GL_TEXTURE_2D );
 								glEnable(GL_LIGHTING);
+								glEnable(GL_BLEND);
+								glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 								glShadeModel (GL_SMOOTH);
 								glDepthFunc(GL_LEQUAL);
 
@@ -248,6 +250,7 @@ void display(){
 								}
 
 
+
 								//If player hasn't won or lost
 								if(gameState == 0) {
 
@@ -292,6 +295,8 @@ void display(){
 
 																trab.drawScene();
 
+
+																trab.drawMap();
 								} else{
 																//GAME OVER or YOU WIN
 																trab.printEndMessage(width/2, height/2);
@@ -762,6 +767,32 @@ void Trab3::drawScene(){
 								// utils.checkColor("white");
 								// trab.printCronometer(60,70);
 }
+
+void Trab3::drawMap(){
+								glMatrixMode(GL_PROJECTION);
+								glPushMatrix();
+								glLoadIdentity();
+								glOrtho(0, width, 0, height,  1, -1);
+								glMatrixMode(GL_MODELVIEW);
+								glPushMatrix();
+								glLoadIdentity();
+
+
+								Circle outerCircle = Circle("outer", trackVector.at(0).getRadius()/2, 0.75*width, 0.25*height, "blue", 0.2);
+								glColor4f(0,0,1,0.2);
+								outerCircle.drawCircle();
+
+								Circle innerCircle = Circle("inner", trackVector.at(1).getRadius()/2, 0.75*width, 0.25*height, "white", 0.2);
+								glColor4f(1,1,1,0.2);
+								innerCircle.drawCircle();
+
+
+								glPopMatrix();
+								glMatrixMode(GL_PROJECTION);
+								glPopMatrix();
+								glMatrixMode(GL_MODELVIEW);
+}
+
 void Trab3::drawAxes(double size){
 								GLfloat mat_ambient_r[] = { 1.0, 0.0, 0.0, 1.0 };
 								GLfloat mat_ambient_g[] = { 0.0, 1.0, 0.0, 1.0 };

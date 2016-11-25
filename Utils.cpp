@@ -1,34 +1,34 @@
 #include "Utils.h"
 
-void Utils::checkColor(string fill){
+void Utils::checkColor(string fill, GLfloat opacity){
 								if(fill == "blue")
-																glColor3f(0.0, 0.0, 1.0);
+																glColor4f(0.0, 0.0, 1.0, opacity);
 								else if(fill == "darkblue")
-																glColor3f(0.0, 0.0, 0.5);
+																glColor4f(0.0, 0.0, 0.5, opacity);
 								else if(fill == "red")
-																glColor3f(1.0, 0.0, 0.0);
+																glColor4f(1.0, 0.0, 0.0, opacity);
 								else if(fill == "darkred")
-																glColor3f(0.5, 0.0, 0.0);
+																glColor4f(0.5, 0.0, 0.0, opacity);
 								else if(fill == "green")
-																glColor3f(0.0, 1.0, 0.0);
+																glColor4f(0.0, 1.0, 0.0, opacity);
 								else if(fill == "darkgreen")
-																glColor3f(0.0, 0.5, 0.0);
+																glColor4f(0.0, 0.5, 0.0, opacity);
 								else if(fill == "cyan")
-																glColor3f(0.0, 1.0, 1.0);
+																glColor4f(0.0, 1.0, 1.0, opacity);
 								else if(fill == "darkcyan")
-																glColor3f(0.0, 0.5, 0.5);
+																glColor4f(0.0, 0.5, 0.5, opacity);
 								else if(fill == "magenta")
-																glColor3f(1.0, 0.0, 1.0);
+																glColor4f(1.0, 0.0, 1.0, opacity);
 								else if(fill == "darkmagenta")
-																glColor3f(0.5, 0.0, 0.5);
+																glColor4f(0.5, 0.0, 0.5, opacity);
 								else if(fill == "yellow")
-																glColor3f(1.0, 1.0, 0.0);
+																glColor4f(1.0, 1.0, 0.0, opacity);
 								else if(fill == "darkyellow")
-																glColor3f(0.5, 0.5, 0.0);
+																glColor4f(0.5, 0.5, 0.0, opacity);
 								else if(fill == "white")
-																glColor3f(1.0, 1.0, 1.0);
+																glColor4f(1.0, 1.0, 1.0, opacity);
 								else if(fill == "black")
-																glColor3f(0.0, 0.0, 0.0);
+																glColor4f(0.0, 0.0, 0.0, opacity);
 								return;
 }
 

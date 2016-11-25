@@ -4,12 +4,13 @@
 Circle::Circle(){
 }
 
-Circle::Circle(string id, GLfloat radius, GLfloat centerX, GLfloat centerY, string fill){
+Circle::Circle(string id, GLfloat radius, GLfloat centerX, GLfloat centerY, string fill, GLfloat opacity){
         this->ID = id;
         this->radius = radius;
         this->centerX = centerX;
         this->centerY = centerY;
         this->fill = fill;
+        this->opacity = opacity;
 }
 
 string Circle::getID(){
@@ -66,8 +67,6 @@ void Circle::drawCircle(){
         GLfloat centerY = this->centerY;
         GLfloat radius = this->radius;
 
-        Utils utils;
-        utils.checkColor(this->fill);
 
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(centerX, centerY); // center of circle

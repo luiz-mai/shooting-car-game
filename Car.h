@@ -126,6 +126,7 @@ public:
   void drawFrontWheels();
   void drawBackWheels();
   void drawSingleWheel();
+  void drawWheelCircle(GLfloat);
   void drawCarCannon();
 
   // Does all the transformations and draw the car.

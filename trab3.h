@@ -56,6 +56,7 @@ public:
   void drawAxes(double);
 
   void drawScene();
+  void drawMap();
 
   void PrintText(GLfloat x, GLfloat y, const char *text, double r, double g,
                  double b);
