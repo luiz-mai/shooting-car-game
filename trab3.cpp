@@ -114,11 +114,14 @@ void drawWalls(){
 								GLuint texture = parede;
 								GLfloat materialEmission[] = { 0.8, 0.8, 0.8, 1.0};
 								GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1.0};
-								GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
+								GLfloat materialColorD[] = { 0.75, 0.75, 0.75, 1};
 								GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1};
 								GLfloat mat_shininess[] = { 100.0 };
-								// if(textura_ligada==0)glColor3f(1,0,0);
-								glColor3f(1,1,1);
+
+								if(!textureEnabled)
+									glColor3f(0.75,0.75,0.75);
+								else
+									glColor3f(1,1,1);
 
 								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
 								glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
@@ -147,27 +150,45 @@ void drawWalls(){
 								glTranslatef(x, y, 0);
 
 								//desenha parede externa (cilindro oco)
-								for(i = 0; i < 2; i++) {
-																GLfloat raio = trackVector.at(i).getRadius();
+								GLfloat raio = trackVector.at(0).getRadius();
 
-																glBegin(GL_QUAD_STRIP);
-																	for(j = 0; j <= 2 * M_PI; j += definition) {
-																									const float tc = ( j / (float)( 2 * M_PI ) );
-																									glNormal3f(0,1,0);
-																									glTexCoord2f( textureS * tc, 0.0 );
-																									glVertex3f(raio*cos(j), raio*sin(j), altura);
-																									glNormal3f(0,1,0);
-																									glTexCoord2f( textureS * tc, 1.0 );
-																									glVertex3f(raio*cos(j), raio*sin(j), 0);
-																	}
-																	glNormal3f(0,1,0);
-																	glTexCoord2f( 0.0, 0.0 );
-																	glVertex3f(raio, 0, altura);
-																	glNormal3f(0,1,0);
-																	glTexCoord2f( 0.0, 1.0 );
-																	glVertex3f(raio, 0, 0);
-																glEnd();
+								glBegin(GL_QUAD_STRIP);
+								for(j = 0; j <= 2 * M_PI; j += definition) {
+									const float tc = ( j / (float)( 2 * M_PI ) );
+									glNormal3f(0,1,0);
+									glTexCoord2f( textureS * tc, 0.0 );
+									glVertex3f(raio*cos(j), raio*sin(j), altura);
+									glNormal3f(0,1,0);
+									glTexCoord2f( textureS * tc, 1.0 );
+									glVertex3f(raio*cos(j), raio*sin(j), 0);
 								}
+								glNormal3f(0,1,0);
+								glTexCoord2f( 0.0, 0.0 );
+								glVertex3f(raio, 0, altura);
+								glNormal3f(0,1,0);
+								glTexCoord2f( 0.0, 1.0 );
+								glVertex3f(raio, 0, 0);
+								glEnd();
+
+								raio = trackVector.at(1).getRadius();
+
+								glBegin(GL_QUAD_STRIP);
+								for(j = 0; j <= 2 * M_PI; j += definition) {
+									const float tc = ( j / (float)( 2 * M_PI ) );
+									glNormal3f(0,-1,0);
+									glTexCoord2f( textureS * tc, 0.0 );
+									glVertex3f(raio*cos(j), raio*sin(j), altura);
+									glNormal3f(0,-1,0);
+									glTexCoord2f( textureS * tc, 1.0 );
+									glVertex3f(raio*cos(j), raio*sin(j), 0);
+								}
+								glNormal3f(0,-1,0);
+								glTexCoord2f( 0.0, 0.0 );
+								glVertex3f(raio, 0, altura);
+								glNormal3f(0,-1,0);
+								glTexCoord2f( 0.0, 1.0 );
+								glVertex3f(raio, 0, 0);
+								glEnd();
 
 								glPopMatrix();
 
@@ -176,13 +197,11 @@ void drawWalls(){
 void drawFloor(){
 								GLuint texture = chao;
 
-								GLfloat materialEmission[] = { 1, 1, 1, 1};
+								GLfloat materialEmission[] = { 0.6, 0.6, 0.6, 1};
 							    GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
-							    GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
-							    GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+							    GLfloat materialColorD[] = { 0.5, 1.0, 0, 1};
+							    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1};
 							    GLfloat mat_shininess[] = { 100.0 };
-								// if(textura_ligada==0)glColor3f(1,1,0);
-								glColor3f(1,1,1);
 
 								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
 								glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
@@ -190,9 +209,16 @@ void drawFloor(){
 								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
+								if(!textureEnabled){
+									glColor3f(0.5,1.0,0);
+								} else {
+									glColor3f(1.0,1.0,1.0);
+									glBindTexture (GL_TEXTURE_2D, texture);
+								}
+
+
 								// if(textura_ligada){
 
-								glBindTexture (GL_TEXTURE_2D, texture);
 								double textureS = 10;
 								GLfloat height_window = 800; //é mil e quinhentox mas ela só ganha 750, a outra metade ela pegou na bolsa da amiga dela
 								GLfloat width_window = 800;
@@ -215,12 +241,18 @@ void drawFloor(){
 void drawSky()
 {
 								GLuint texture = teto;
-								GLfloat materialEmission[] = { 0.8, 0.8, 0.8, 1};
-								GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
-								GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
+								GLfloat materialEmission[] = { 0.8 , 0.8 , 0.8 , 1};
+								GLfloat materialColorA[] = { 0, 0, 1, 1};
+								GLfloat materialColorD[] = { 0, 0, 1, 1};
 								GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
 								GLfloat mat_shininess[] = { 100.0 };
-								// if(textura_ligada==0)glColor3f(1,0,0);
+
+								if(!textureEnabled)
+									glColor3f(0, 0, 1);
+								else {
+									glColor3f(1,1,1);
+									glBindTexture (GL_TEXTURE_2D, texture);
+								}
 
 								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
 								glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
@@ -229,23 +261,22 @@ void drawSky()
 								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
 								// if(textura_ligada){
-								glColor3f(1,1,1);
-								glBindTexture (GL_TEXTURE_2D, texture);
+
 								double textureS = 10;
 								GLfloat height_window = 800;
 								GLfloat width_window = 800;
 								GLfloat altura = 100;
 								glBegin (GL_QUADS);
-								glNormal3f(0,1,0);
+								glNormal3f(0,-1,0);
 								glTexCoord2f (0, 0);
 								glVertex3f (0,0,altura);
-								glNormal3f(0,1,0);
+								glNormal3f(0,-1,0);
 								glTexCoord2f (0, textureS);
 								glVertex3f (0, height_window,altura);
-								glNormal3f(0,1,0);
+								glNormal3f(0,-1,0);
 								glTexCoord2f (textureS, textureS);
 								glVertex3f (width_window, height_window,altura);
-								glNormal3f(0,1,0);
+								glNormal3f(0,-1,0);
 								glTexCoord2f (textureS, 0);
 								glVertex3f (width_window, 0,altura);
 								glEnd();
@@ -776,8 +807,8 @@ void Trab3::drawScene(){
 
 								//Draw scenario
 								drawFloor();
-								// drawSky();
-								// drawWalls();
+								drawSky();
+								drawWalls();
 
 
 								//Draws all the tracks
