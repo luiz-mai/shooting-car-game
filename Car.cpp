@@ -245,7 +245,9 @@ void Car::setColor(string color){
         return;
 }
 
-void Car::drawCar(){
+void Car::drawCar(unsigned int dpvNumVerts, float* dpvVerts, float* dpvNormals, float* dpvTexCoords){
+
+
         bool moving = this->getMoving();
         GLfloat playerRadius = this->getCircleRadius();
 
@@ -274,13 +276,34 @@ void Car::drawCar(){
                 0
                 );
 
-        this->drawFrontWheels();
-        this->drawBackWheels();
-        this->drawCarAxis();
-        this->drawCarBody();
-        this->drawCarCannon();
+        // this->drawFrontWheels();
+        // this->drawBackWheels();
+        // this->drawCarAxis();
+        // this->drawCarBody();
+        // this->drawCarCannon();
+        GLuint carTex = LoadTextureRAW("car.bmp");
+        glBindTexture (GL_TEXTURE_2D, carTex);
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
+        glVertexPointer(3, GL_FLOAT, 0, dpvVerts);
+        glNormalPointer(GL_FLOAT, 0, dpvNormals);
+        glTexCoordPointer(2, GL_FLOAT, 0, dpvTexCoords);
+
+        glPushMatrix();
+        glTranslatef(0,0,10);
+        glScalef(50, 50, 50);
+        glRotatef(180, 0, 0, 1);
+        glDrawArrays(GL_TRIANGLES, 0, dpvNumVerts);
+        glPopMatrix();
+
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
 
         glPopMatrix();
+
         return;
 }
 
@@ -348,7 +371,6 @@ void Car::drawCar(){
 
 void Car::drawCarBody(){
         GLuint texture;
-
         glPushMatrix();
         glTranslatef(0.5*this->getWidth(),0.75*this->getHeight(), this->getZHeight());
         glColor3f(1,1,1);

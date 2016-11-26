@@ -120,7 +120,7 @@ public:
 
   // Does all the transformations and draws the car.
 
-  void drawCar();
+  void drawCar(unsigned int, float *, float *, float *);
   void drawCarBody();
   void drawCarAxis();
   void drawFrontWheels();

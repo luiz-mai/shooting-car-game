@@ -53,8 +53,9 @@ GLuint chao;
 GLuint teto;
 GLuint largada;
 bool night_mode;
-bool lightingEnebled = true;
+bool lightingEnabled = true;
 bool textureEnabled = true;
+bool minimap = false;
 
 int main(int argc, char** argv) {
 								player = new Car("player");
@@ -77,17 +78,18 @@ int main(int argc, char** argv) {
 								glEnable(GL_DEPTH_TEST);
 								glEnable( GL_TEXTURE_2D );
 								glEnable(GL_LIGHTING);
+								glEnable(GL_LIGHT0);
 								glEnable(GL_BLEND);
 								glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-								// glShadeModel (GL_FLAT);
-								glShadeModel (GL_SMOOTH);
+								glShadeModel (GL_FLAT);
+								// glShadeModel (GL_SMOOTH);
 								glDepthFunc(GL_LEQUAL);
 
 								chao = LoadTextureRAW( "floor.bmp" );
 								parede = LoadTextureRAW( "parede.bmp" );
 								teto = LoadTextureRAW( "sky.bmp" );
 								largada = LoadTextureRAW("largada.bmp");
-
+								glEnable(GL_NORMALIZE);
 								//Light
 								// glEnable(GL_LIGHT0);
 
@@ -225,16 +227,16 @@ void drawFloor(){
 								GLfloat height_window = 800; //é mil e quinhentox mas ela só ganha 750, a outra metade ela pegou na bolsa da amiga dela
 								GLfloat width_window = 800;
 								glBegin (GL_QUADS);
-								glNormal3f(0,1,0);
+								glNormal3f(0,0,1);
 								glTexCoord2f (0, 0);
 								glVertex3f (0, 0, 0);
-								glNormal3f(0,1,0);
+								glNormal3f(0,0,1);
 								glTexCoord2f (0, textureS);
 								glVertex3f (0, height_window, 0);
-								glNormal3f(0,1,0);
+								glNormal3f(0,0,1);
 								glTexCoord2f (textureS, textureS);
 								glVertex3f (width_window, height_window,0);
-								glNormal3f(0,1,0);
+								glNormal3f(0,0,1);
 								glTexCoord2f (textureS, 0);
 								glVertex3f (width_window, 0,0);
 								glEnd();
@@ -287,11 +289,15 @@ void drawSky()
 
 void display(){
 
-								glClearColor (0.0,0.0,0.0,1.0);
+								if(!textureEnabled)
+																glDisable(GL_TEXTURE_2D);
+								else
+																glEnable(GL_TEXTURE_2D);
+
+								glClearColor (0.0,0.0,0.0,0.0);
 								glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 								glMatrixMode (GL_MODELVIEW);
 								glLoadIdentity();
-
 
 
 								if(started) {
@@ -344,16 +350,16 @@ void display(){
 
 																// Luz
 																vector<Circle>::iterator it = trackVector.begin();
-																glDisable(GL_LIGHT0);
-																glDisable(GL_LIGHT1);
+																// glDisable(GL_LIGHT0);
 
 																GLfloat light[] = {1, 1, 1, 1};
-																GLfloat lightPosition[] = {0, 0, 0, 1};
+																GLfloat lightPosition[] = {0, 0, 1, 1};
 																GLfloat lightDirection[] = {0, 0, -1};
 																GLfloat lightAngle[] = {180};
 
 																glPushMatrix();
 																glTranslatef((it)->getCenterX(),(it)->getCenterY(),100);
+																glLightfv(GL_LIGHT0, GL_AMBIENT, light);
 																glLightfv(GL_LIGHT0, GL_SPECULAR, light);
 																glLightfv(GL_LIGHT0, GL_DIFFUSE, light);
 																glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
@@ -364,18 +370,21 @@ void display(){
 
 																trab.drawScene();
 
-
-																trab.drawMap();
+																if(minimap) {
+																								trab.drawMap();
+																}
 								} else{
 																//GAME OVER or YOU WIN
 																trab.printEndMessage(width/2, height/2);
 								}
+								glutPostRedisplay();
 								glutSwapBuffers();
 								glFlush();
 								return;
 }
 
 void idle(){
+
 								//If player hasn't won or lost
 								if(gameState == 0) {
 																//Position before moving (used in case of colision)
@@ -465,15 +474,16 @@ void idle(){
 																}
 
 																if(i_status['l'] == 1 || i_status['L'] == 1) {
-																								if ( lightingEnebled ) {
+																								if ( lightingEnabled ) {
 																																glDisable( GL_LIGHTING );
 																																printf("Luz off\n" );
 																								}else{
 																																glEnable( GL_LIGHTING );
 																																printf("Luz on\n" );
 																								}
-																								lightingEnebled = !lightingEnebled;
+																								lightingEnabled = !lightingEnabled;
 																}
+
 
 																if(i_status['t'] == 1 || i_status['T'] == 1) {
 																								if ( textureEnabled ) {
@@ -483,6 +493,12 @@ void idle(){
 																								}
 																								textureEnabled = !textureEnabled;
 																}
+
+																if(i_status['m'] == 1 || i_status['M'] == 1) {
+																								minimap = !minimap;
+																}
+
+
 
 																//Updates the position of all the shots
 																//Erases the shots that are outside the screen.
@@ -830,13 +846,14 @@ void Trab3::drawScene(){
 
 								//Draws the player's car
 								Circle* c = new Circle("id", player->getCircleRadius(), player->getCenterX(), player->getCenterY(), "green");
-								c->drawCircle();
-								player->drawCar();
+								// c->drawCircle();
+
+								player->drawCar(carNumVerts, carVerts, carNormals, carTexCoords);
 
 
 								//Draws all the foes
 								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
-																(*it).drawCar();
+																//(*it).drawCar(dpvNumVerts, dpvVerts, dpvNormals, dpvTexCoords);
 								}
 
 								//Draws all the shots
@@ -851,28 +868,62 @@ void Trab3::drawScene(){
 }
 
 void Trab3::drawMap(){
+
+								glDisable(GL_TEXTURE_2D);
+								glClearColor (0.0,0.0,0.0,0.0);
 								glMatrixMode(GL_PROJECTION);
 								glPushMatrix();
 								glLoadIdentity();
-								glOrtho(0, width, 0, height,  1, -1);
+								glOrtho(
+																arenaCenterX - biggestRadius, arenaCenterX + biggestRadius,
+																arenaCenterY - biggestRadius, arenaCenterY + biggestRadius,
+																-1, 1
+																);
 								glMatrixMode(GL_MODELVIEW);
 								glPushMatrix();
 								glLoadIdentity();
 
-
-								Circle outerCircle = Circle("outer", trackVector.at(0).getRadius()/2, 0.75*width, 0.25*height, "blue", 0.2);
-								glColor4f(0,0,1,0.2);
+								Circle outerCircle = Circle("outer", trackVector.at(0).getRadius()/2, arenaCenterX+biggestRadius/2, arenaCenterY-biggestRadius/2, "blue", 0.2);
+								glColor4f(0,0,1,0.3);
 								outerCircle.drawCircle();
 
-								Circle innerCircle = Circle("inner", trackVector.at(1).getRadius()/2, 0.75*width, 0.25*height, "white", 0.2);
-								glColor4f(1,1,1,0.2);
+								Circle innerCircle = Circle("inner", trackVector.at(1).getRadius()/2, arenaCenterX+biggestRadius/2, arenaCenterY-biggestRadius/2, "white", 0.2);
+								glColor4f(1,1,1,0.3);
 								innerCircle.drawCircle();
 
 
+								GLfloat trackBeginX = arenaCenterX + (startTrack->getBeginX() - (arenaCenterX - biggestRadius))/2;
+								GLfloat trackBeginY = arenaCenterY - (startTrack->getBeginY() - startTrack->getHeight() + (arenaCenterY - biggestRadius))/2;
+								glColor4f(0,0,1,1);
+								glBegin(GL_POLYGON);
+								glVertex3f(trackBeginX,trackBeginY,0);
+								glVertex3f(trackBeginX+startTrack->getWidth()/2,trackBeginY,0);
+								glVertex3f(trackBeginX+startTrack->getWidth()/2,trackBeginY+startTrack->getHeight()/2,0);
+								glVertex3f(trackBeginX,trackBeginY+startTrack->getHeight()/2,0);
+								glEnd();
+
+								GLfloat playerPosX = arenaCenterX + (player->getCenterX() - (arenaCenterX - biggestRadius))/2;
+								GLfloat playerPosY = arenaCenterY - (player->getCenterY() - (arenaCenterY - biggestRadius))/2;
+								Circle playerCircle = Circle("player", 10, playerPosX, playerPosY, "green", 1.0);
+								glColor4f(0,1,0,1);
+								playerCircle.drawCircle();
+
+
+								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+																GLfloat foePosX = arenaCenterX + ((*it).getCenterX() - (arenaCenterX - biggestRadius))/2;
+																GLfloat foePosY = arenaCenterY - ((*it).getCenterY() - (arenaCenterY - biggestRadius))/2;
+																Circle foeCircle = Circle("foe", 10, foePosX, foePosY, "green", 1.0);
+																glColor4f(1,0,0,1);
+																foeCircle.drawCircle();
+								}
+
 								glPopMatrix();
 								glMatrixMode(GL_PROJECTION);
 								glPopMatrix();
 								glMatrixMode(GL_MODELVIEW);
+
+								if(textureEnabled)
+																glEnable(GL_TEXTURE_2D);
 }
 
 void Trab3::drawAxes(double size){

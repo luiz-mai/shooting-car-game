@@ -15,6 +15,7 @@
 #include "Circle.h"
 #include "Rectangle.h"
 #include "Shot.h"
+#include "carbody.h"
 #include "tinyxml2.h"
 #include <algorithm>
 #include <cmath>
