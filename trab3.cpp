@@ -54,6 +54,8 @@ GLuint teto;
 GLuint largada;
 bool night_mode;
 bool lightingEnabled = true;
+bool light0Enabled = true;
+bool light1Enabled = true;
 bool textureEnabled = true;
 bool minimap = false;
 
@@ -81,21 +83,42 @@ int main(int argc, char** argv) {
 								glEnable(GL_LIGHT0);
 								glEnable(GL_BLEND);
 								glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-								glShadeModel (GL_FLAT);
-								// glShadeModel (GL_SMOOTH);
+								// glShadeModel (GL_FLAT);
+								glShadeModel (GL_SMOOTH);
 								glDepthFunc(GL_LEQUAL);
 
 								chao = LoadTextureRAW( "floor.bmp" );
 								parede = LoadTextureRAW( "parede.bmp" );
 								teto = LoadTextureRAW( "sky.bmp" );
 								largada = LoadTextureRAW("largada.bmp");
-								glEnable(GL_NORMALIZE);
-								//Light
-								// glEnable(GL_LIGHT0);
+
+								//luz1
+								GLfloat light_ambient0[] = { 0.15, 0.15, 0.15, 1.0 };
+								GLfloat light_diffuse0[] = { 1.0, 1.0, 1.0, 1.0 };
+								GLfloat light_specular0[] = { 1.0, 1.0, 1.0, 1.0 };
+
+								glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient0);
+								glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse0);
+								glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular0);
+
+
+								GLfloat light_ambient1[] = { 0.0, 0.0, 0.0, 1.0 };
+								GLfloat light_diffuse1[] = { 1.0, 1.0, 1.0, 1.0 };
+								GLfloat light_specular1[] = { 1.0, 1.0, 1.0, 1.0 };
+								glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient1);
+								glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse1);
+								glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular1);
+								glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.5);
+								glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.5);
+								glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.2);
+								glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 15.0);
+								glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
+
+								glEnable(GL_LIGHT1);
 
 								glMatrixMode(GL_PROJECTION);
 								glLoadIdentity();
-								gluPerspective(60.0f, -1, 1, 1000);
+								gluPerspective(60.0f, -1, 3, 3000);
 								glMatrixMode(GL_MODELVIEW);
 								glClearDepth(1.0f);
 								glDepthFunc(GL_LEQUAL);
@@ -116,11 +139,10 @@ int main(int argc, char** argv) {
 
 void drawWalls(){
 								GLuint texture = parede;
-								GLfloat materialEmission[] = { 0.8, 0.8, 0.8, 1.0};
-								GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1.0};
-								GLfloat materialColorD[] = { 0.75, 0.75, 0.75, 1};
-								GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1};
-								GLfloat mat_shininess[] = { 80.0 };
+								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
+								GLfloat materialColor[] = { 1.0, 1.0, 1.0, 1.0};
+								GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+								GLfloat mat_shininess[] = { 128.0 };
 
 								if(!textureEnabled) {
 																glColor3f(0.75,0.75,0.75);
@@ -130,8 +152,7 @@ void drawWalls(){
 								}
 
 								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-								glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
-								glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+								glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialColor);
 								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
@@ -159,8 +180,6 @@ void drawWalls(){
 								gluQuadricOrientation(quadratic, GLU_OUTSIDE);
 								gluQuadricTexture(quadratic, GL_TRUE);
 								gluCylinder(quadratic,raio,raio,altura,100,100);
-
-
 								glPopMatrix();
 
 }
@@ -168,15 +187,14 @@ void drawWalls(){
 void drawFloor(){
 								GLuint texture = chao;
 
-								GLfloat materialEmission[] = { 0.6, 0.6, 0.6, 1};
-								GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
-								GLfloat materialColorD[] = { 0.5, 1.0, 0, 1};
-								GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1};
-								GLfloat mat_shininess[] = { 100.0 };
+
+								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
+								GLfloat materialColor[] = { 1.0, 1.0, 1.0, 1.0};
+								GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+								GLfloat mat_shininess[] = { 128.0 };
 
 								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-								glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
-								glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+								glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialColor);
 								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
@@ -194,16 +212,16 @@ void drawFloor(){
 								GLfloat height_window = 800; //é mil e quinhentox mas ela só ganha 750, a outra metade ela pegou na bolsa da amiga dela
 								GLfloat width_window = 800;
 								glBegin (GL_QUADS);
-								glNormal3f(0,0,1);
+								glNormal3f(0,0,-1);
 								glTexCoord2f (0, 0);
 								glVertex3f (0, 0, 0);
-								glNormal3f(0,0,1);
+								glNormal3f(0,0,-1);
 								glTexCoord2f (0, textureS);
 								glVertex3f (0, height_window, 0);
-								glNormal3f(0,0,1);
+								glNormal3f(0,0,-1);
 								glTexCoord2f (textureS, textureS);
 								glVertex3f (width_window, height_window,0);
-								glNormal3f(0,0,1);
+								glNormal3f(0,0,-1);
 								glTexCoord2f (textureS, 0);
 								glVertex3f (width_window, 0,0);
 								glEnd();
@@ -212,11 +230,11 @@ void drawFloor(){
 void drawSky()
 {
 								GLuint texture = teto;
-								GLfloat materialEmission[] = { 0.8, 0.8, 0.8, 1};
-								GLfloat materialColorA[] = { 0, 0, 1, 1};
-								GLfloat materialColorD[] = { 0, 0, 1, 1};
-								GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
-								GLfloat mat_shininess[] = { 100.0 };
+
+								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
+								GLfloat materialColor[] = { 1.0, 1.0, 1.0, 1.0};
+								GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+								GLfloat mat_shininess[] = { 128.0 };
 
 								if(!textureEnabled)
 																glColor3f(0, 0, 1);
@@ -226,8 +244,7 @@ void drawSky()
 								}
 
 								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-								glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
-								glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+								glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialColor);
 								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
@@ -261,9 +278,7 @@ void display(){
 								else
 																glEnable(GL_TEXTURE_2D);
 
-								glClearColor (0.0,0.0,0.0,0.0);
 								glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-								glMatrixMode (GL_MODELVIEW);
 								glLoadIdentity();
 
 
@@ -317,32 +332,17 @@ void display(){
 
 																// Luz
 																vector<Circle>::iterator it = trackVector.begin();
-																glDisable(GL_LIGHT0);
-// glDisable(GL_LIGHT1);
 
-																GLfloat light[] = {1, 1, 1, 1};
-																GLfloat light2[] = {0.1,0.1,0.1,1};
-																GLfloat lightPosition[] = {0, 1, 0, 0};
-																GLfloat lightDirection[] = {0, -1, 0};
-																GLfloat lightAngle[] = {180};
+																float lx = 400;
+																float ly = 400;
+																float lz = 10*player->getZHeight();
+																float light_position[] = { lx, ly, lz, 1 };
+																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-																glPushMatrix();
-																glLoadIdentity();
-																glTranslatef(400,400, 2*player->getZHeight());
-																Circle* c = new Circle("id", 5, 0, 0, "blue");
-																c->drawCircle();
-//    glLightfv(GL_LIGHT0, GL_AMBIENT, light2);
-																glLightfv(GL_LIGHT0, GL_SPECULAR, light);
-																glLightfv(GL_LIGHT0, GL_DIFFUSE, light);
-																glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-																glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightDirection);
-																glLightfv(GL_LIGHT0, GL_SPOT_CUTOFF, lightAngle);
-																//do outro menino
-																glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.5);
-																glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.5);
-																glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.2);
-																glEnable(GL_LIGHT0);
-																glPopMatrix();
+																// GLfloat light1_position[] = { 400, 400, 10, 1.0 };
+																// GLfloat spot_direction[] = { 1, 0, 0 };
+																// glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+																// glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
 
 																trab.drawScene();
 
@@ -451,13 +451,35 @@ void idle(){
 
 																if(i_status['l'] == 1 || i_status['L'] == 1) {
 																								if ( lightingEnabled ) {
+																																cout << "lighting off" << endl;
 																																glDisable( GL_LIGHTING );
-																																printf("Luz off\n" );
 																								}else{
+																																cout << "lighting on" << endl;
 																																glEnable( GL_LIGHTING );
-																																printf("Luz on\n" );
 																								}
 																								lightingEnabled = !lightingEnabled;
+																}
+
+																if(i_status['j'] == 1 || i_status['J'] == 1) {
+																								if ( light0Enabled ) {
+																																cout << "light0 off" << endl;
+																																glDisable( GL_LIGHT0 );
+																								}else{
+																																cout << "light0 on" << endl;
+																																glEnable( GL_LIGHT0 );
+																								}
+																								light0Enabled = !light0Enabled;
+																}
+
+																if(i_status['k'] == 1 || i_status['K'] == 1) {
+																								if ( light1Enabled ) {
+																																cout << "light1 off" << endl;
+																																glDisable( GL_LIGHT1 );
+																								}else{
+																																cout << "light1 on" << endl;
+																																glEnable( GL_LIGHT1 );
+																								}
+																								light1Enabled = !light1Enabled;
 																}
 
 
