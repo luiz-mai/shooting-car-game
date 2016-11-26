@@ -120,12 +120,14 @@ void drawWalls(){
 								GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1.0};
 								GLfloat materialColorD[] = { 0.75, 0.75, 0.75, 1};
 								GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1};
-								GLfloat mat_shininess[] = { 100.0 };
+								GLfloat mat_shininess[] = { 80.0 };
 
-								if(!textureEnabled)
+								if(!textureEnabled) {
 																glColor3f(0.75,0.75,0.75);
-								else
+								} else {
 																glColor3f(1,1,1);
+																glBindTexture (GL_TEXTURE_2D, texture);
+								}
 
 								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
 								glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
@@ -133,21 +135,12 @@ void drawWalls(){
 								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-								glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT  ); //X
-								glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );   //Y
-
-								// if(textura_ligada){
-
-								glBindTexture (GL_TEXTURE_2D, texture);
 								double textureS = 15;
 
-								float j = 0, i=0;
-								float definition = 0.1;
 								Circle pistaOut = trackVector.at(0);
 								GLfloat x = pistaOut.getCenterX();
 								GLfloat y = pistaOut.getCenterY();
-								GLfloat altura = 50;
-								// GLfloat altura = 4*player->getZHeight();
+								GLfloat altura = 4*player->getZHeight();
 
 
 								glPushMatrix();
@@ -155,44 +148,18 @@ void drawWalls(){
 
 								//desenha parede externa (cilindro oco)
 								GLfloat raio = trackVector.at(0).getRadius();
+								GLUquadricObj* quadratic=gluNewQuadric();           // Create A Pointer To The Quadric Object ( NEW )
+								gluQuadricNormals(quadratic, GLU_SMOOTH);
+								gluQuadricOrientation(quadratic, GLU_INSIDE);   // Create Smooth Normals ( NEW )
+								gluQuadricTexture(quadratic, GL_TRUE);
+								gluCylinder(quadratic,raio,raio,altura,100,100);
 
-								glBegin(GL_QUAD_STRIP);
-								for(j = 0; j <= 2 * M_PI; j += definition) {
-																const float tc = ( j / (float)( 2 * M_PI ) );
-																glNormal3f(0,1,0);
-																glTexCoord2f( textureS * tc, 0.0 );
-																glVertex3f(raio*cos(j), raio*sin(j), altura);
-																glNormal3f(0,1,0);
-																glTexCoord2f( textureS * tc, 1.0 );
-																glVertex3f(raio*cos(j), raio*sin(j), 0);
-								}
-								glNormal3f(0,1,0);
-								glTexCoord2f( 0.0, 0.0 );
-								glVertex3f(raio, 0, altura);
-								glNormal3f(0,1,0);
-								glTexCoord2f( 0.0, 1.0 );
-								glVertex3f(raio, 0, 0);
-								glEnd();
-
+								//desenha parede interna (cilindro oco)
 								raio = trackVector.at(1).getRadius();
+								gluQuadricOrientation(quadratic, GLU_OUTSIDE);
+								gluQuadricTexture(quadratic, GL_TRUE);
+								gluCylinder(quadratic,raio,raio,altura,100,100);
 
-								glBegin(GL_QUAD_STRIP);
-								for(j = 0; j <= 2 * M_PI; j += definition) {
-																const float tc = ( j / (float)( 2 * M_PI ) );
-																glNormal3f(0,-1,0);
-																glTexCoord2f( textureS * tc, 0.0 );
-																glVertex3f(raio*cos(j), raio*sin(j), altura);
-																glNormal3f(0,-1,0);
-																glTexCoord2f( textureS * tc, 1.0 );
-																glVertex3f(raio*cos(j), raio*sin(j), 0);
-								}
-								glNormal3f(0,-1,0);
-								glTexCoord2f( 0.0, 0.0 );
-								glVertex3f(raio, 0, altura);
-								glNormal3f(0,-1,0);
-								glTexCoord2f( 0.0, 1.0 );
-								glVertex3f(raio, 0, 0);
-								glEnd();
 
 								glPopMatrix();
 
@@ -350,21 +317,30 @@ void display(){
 
 																// Luz
 																vector<Circle>::iterator it = trackVector.begin();
-																// glDisable(GL_LIGHT0);
+																glDisable(GL_LIGHT0);
+// glDisable(GL_LIGHT1);
 
 																GLfloat light[] = {1, 1, 1, 1};
-																GLfloat lightPosition[] = {0, 0, 1, 1};
-																GLfloat lightDirection[] = {0, 0, -1};
+																GLfloat light2[] = {0.1,0.1,0.1,1};
+																GLfloat lightPosition[] = {0, 1, 0, 0};
+																GLfloat lightDirection[] = {0, -1, 0};
 																GLfloat lightAngle[] = {180};
 
 																glPushMatrix();
-																glTranslatef((it)->getCenterX(),(it)->getCenterY(),100);
-																glLightfv(GL_LIGHT0, GL_AMBIENT, light);
+																glLoadIdentity();
+																glTranslatef(400,400, 2*player->getZHeight());
+																Circle* c = new Circle("id", 5, 0, 0, "blue");
+																c->drawCircle();
+//    glLightfv(GL_LIGHT0, GL_AMBIENT, light2);
 																glLightfv(GL_LIGHT0, GL_SPECULAR, light);
 																glLightfv(GL_LIGHT0, GL_DIFFUSE, light);
 																glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 																glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightDirection);
 																glLightfv(GL_LIGHT0, GL_SPOT_CUTOFF, lightAngle);
+																//do outro menino
+																glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.5);
+																glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.5);
+																glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.2);
 																glEnable(GL_LIGHT0);
 																glPopMatrix();
 
