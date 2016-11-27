@@ -119,19 +119,23 @@ int main(int argc, char** argv) {
 
 								//Luz do farol
 								GLfloat light_ambient2[] = { 0.2, 0.2, 0.2	, 1.0 };
-								GLfloat light_diffuse2[] = { 0.5, 0.5, 0.5, 1.0 };
+								GLfloat light_diffuse2[] = { 1.0, 1.0, 1.0, 1.0 };
 								GLfloat light_specular2[] = { 1.0, 1.0, 1.0, 1.0 };
 								// GLfloat light_position2[] = { 1.0, 1.0, 1.0, 0.0 };
+
+								//se mover canhao pra cima, chao fica mais brilhoso
+								//verificar
+								
 
 								glLightfv(GL_LIGHT2, GL_AMBIENT, light_ambient2);
 								glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse2);
 								glLightfv(GL_LIGHT2, GL_SPECULAR, light_specular2);
 								// glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
-								glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 3.5);
-								glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 1.5);
-								glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 1.2);
-								glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 10.0);
-								glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 0.5);
+								// glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 3.5);
+								// glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 1.5);
+								// glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 1.2);
+								glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 5.0);
+								// glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 0.5);
 
 								// glDisable(GL_LIGHT2);
 
@@ -316,7 +320,9 @@ void display(){
 									float theta = player->getTheta();
 									float light2_position[] = { 0, 0, 1, 0 };
 									glPushMatrix();
-										glTranslatef(lx, ly, 0);
+										glLoadIdentity();
+										glRotatef(theta, 0, 0, 1);
+										glTranslatef(lx, ly, lz);
 										glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
 									glPopMatrix();
 
