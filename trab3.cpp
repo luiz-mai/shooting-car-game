@@ -116,6 +116,24 @@ int main(int argc, char** argv) {
 
 								glEnable(GL_LIGHT1);
 
+								//Luz do farol
+								GLfloat light_ambient2[] = { 0.2, 0.2, 0.2	, 1.0 };
+								GLfloat light_diffuse2[] = { 0.5, 0.5, 0.5, 1.0 };
+								GLfloat light_specular2[] = { 1.0, 1.0, 1.0, 1.0 };
+								// GLfloat light_position2[] = { 1.0, 1.0, 1.0, 0.0 };
+
+								glLightfv(GL_LIGHT2, GL_AMBIENT, light_ambient2);
+								glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse2);
+								glLightfv(GL_LIGHT2, GL_SPECULAR, light_specular2);
+								// glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
+								glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 3.5);
+								glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 1.5);
+								glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 1.2);
+								glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 10.0);
+								glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 0.5);
+
+								// glDisable(GL_LIGHT2);
+
 								glMatrixMode(GL_PROJECTION);
 								glLoadIdentity();
 								gluPerspective(60.0f, -1, 3, 3000);
@@ -253,7 +271,7 @@ void drawSky()
 								double textureS = 10;
 								GLfloat height_window = 800;
 								GLfloat width_window = 800;
-								GLfloat altura = 100;
+								GLfloat altura = 4*player->getZHeight() + 5;
 								glBegin (GL_QUADS);
 								glNormal3f(0,-1,0);
 								glTexCoord2f (0, 0);
@@ -290,6 +308,16 @@ void display(){
 
 								//If player hasn't won or lost
 								if(gameState == 0) {
+									//Luz do farolzíneo do carro
+									float lx = player->getCenterX();
+									float ly = player->getCenterY();
+									float lz = player->getZHeight()/2;
+									float theta = player->getTheta();
+									float light2_position[] = { 0, 0, 1, 0 };
+									glPushMatrix();
+										glTranslatef(lx, ly, 0);
+										glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
+									glPopMatrix();
 
 																/**RETROVISOR GLfloat scale = player->getCircleRadius()/player->getWidth();
 																   glViewport(0,500,500,700);
@@ -333,16 +361,19 @@ void display(){
 																// Luz
 																vector<Circle>::iterator it = trackVector.begin();
 
-																float lx = 400;
-																float ly = 400;
-																float lz = 10*player->getZHeight();
-																float light_position[] = { lx, ly, lz, 1 };
+																 lx = 400;
+																 ly = 400;
+																 lz = 10*player->getZHeight();
+																 float light_position[] = { lx, ly, lz, 1 };
 																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
 
 																// GLfloat light1_position[] = { 400, 400, 10, 1.0 };
 																// GLfloat spot_direction[] = { 1, 0, 0 };
 																// glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
 																// glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
+
+
 
 																trab.drawScene();
 
@@ -443,8 +474,14 @@ void idle(){
 
 																								if(night_mode) {
 																																teto = LoadTextureRAW("sky_night.bmp");
+																																glDisable( GL_LIGHT0 );
+																																glDisable( GL_LIGHT1 );
+																																glEnable( GL_LIGHT2 );
 																								} else {
 																																teto = LoadTextureRAW("sky.bmp");
+																																glEnable( GL_LIGHT0 );
+																																glEnable( GL_LIGHT1 );
+																																glDisable( GL_LIGHT2 );
 																								}
 
 																}

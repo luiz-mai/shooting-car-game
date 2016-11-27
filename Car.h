@@ -11,6 +11,7 @@
 #include <GLUT/glut.h>
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
+#define GL_TEXTURE_COORD_ARRAY_EXT        0x8078
 #else
 #include <GL/freeglut.h>
 #endif
