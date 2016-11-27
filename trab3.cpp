@@ -82,6 +82,7 @@ int main(int argc, char** argv) {
 								glEnable(GL_LIGHTING);
 								glEnable(GL_LIGHT0);
 								glEnable(GL_BLEND);
+								glEnable(GL_NORMALIZE);
 								glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 								// glShadeModel (GL_FLAT);
 								glShadeModel (GL_SMOOTH);
@@ -429,6 +430,14 @@ void idle(){
 																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 5);
 																c = 'D';
 																if(i_status[c] == 1) player->setWheelsAngle(player->getWheelsAngle() + 5);
+
+																if(!i_status['a'] && !i_status['A'] && !i_status['d'] && !i_status['D']) {
+																								if(player->getWheelsAngle() > 0) {
+																																player->setWheelsAngle(player->getWheelsAngle() - 2.5);
+																								} else if(player->getWheelsAngle() < 0) {
+																																player->setWheelsAngle(player->getWheelsAngle() + 2.5);
+																								}
+																}
 
 																c = '1';
 																if(i_status[c] == 1) cameraMode = 0;
@@ -844,14 +853,17 @@ void Trab3::drawScene(){
 
 								//Draws the player's car
 								Circle* c = new Circle("id", player->getCircleRadius(), player->getCenterX(), player->getCenterY(), "green");
-								// c->drawCircle();
+								glPushMatrix();
+								glTranslatef(0,0,2);
+								c->drawCircle();
+								glPopMatrix();
 
-								player->drawCar(carNumVerts, carVerts, carNormals, carTexCoords);
+								player->drawCar();
 
 
 								//Draws all the foes
 								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
-																//(*it).drawCar(dpvNumVerts, dpvVerts, dpvNormals, dpvTexCoords);
+																//(*it).drawCar();
 								}
 
 								//Draws all the shots
