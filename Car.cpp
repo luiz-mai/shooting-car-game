@@ -1,4 +1,7 @@
 #include "Car.h"
+#include "carBody.h"
+#include "carCannon.h"
+#include "carWheel.h"
 
 GLuint LoadTextureRAW(const char *filename);
 
@@ -245,7 +248,7 @@ void Car::setColor(string color){
         return;
 }
 
-void Car::drawCar(unsigned int dpvNumVerts, float* dpvVerts, float* dpvNormals, float* dpvTexCoords){
+void Car::drawCar(){
 
 
         bool moving = this->getMoving();
@@ -276,298 +279,137 @@ void Car::drawCar(unsigned int dpvNumVerts, float* dpvVerts, float* dpvNormals, 
                 0
                 );
 
-        // this->drawFrontWheels();
-        // this->drawBackWheels();
-        // this->drawCarAxis();
-        // this->drawCarBody();
-        // this->drawCarCannon();
-        GLuint carTex = LoadTextureRAW("car.bmp");
-        glBindTexture (GL_TEXTURE_2D, carTex);
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
-        glVertexPointer(3, GL_FLOAT, 0, dpvVerts);
-        glNormalPointer(GL_FLOAT, 0, dpvNormals);
-        glTexCoordPointer(2, GL_FLOAT, 0, dpvTexCoords);
-
         glPushMatrix();
-        glTranslatef(0,0,10);
-        glScalef(50, 50, 50);
-        glRotatef(180, 0, 0, 1);
-        glDrawArrays(GL_TRIANGLES, 0, dpvNumVerts);
+        glTranslatef(0,0,15);
+        this->drawFrontWheels();
+        this->drawBackWheels();
+        this->drawCarBody();
+        this->drawCarCannon();
         glPopMatrix();
 
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
-        glDisableClientState(GL_NORMAL_ARRAY);
-        glDisableClientState(GL_VERTEX_ARRAY);
 
         glPopMatrix();
 
         return;
 }
 
-// static void drawBox(GLfloat size, GLenum type, const char* texture)
-// {
-//  GLuint carro = LoadTextureRAW(texture);
-//
-//  GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
-//  GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
-//  GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
-//  GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1};
-//  GLfloat mat_shininess[] = { 100.0 };
-//  // if(textura_ligada==0)glColor3f(1,0,0);
-//
-//  glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-//  glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
-//  glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
-//  glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-//  glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-//
-//  glColor3f(1,1,1);
-//  glBindTexture (GL_TEXTURE_2D, carro);
-//  double textureS = 1;
-//
-//
-//   static GLfloat n[6][3] =
-//   {
-//     {-1.0, 0.0, 0.0},
-//     {0.0, 1.0, 0.0},
-//     {1.0, 0.0, 0.0},
-//     {0.0, -1.0, 0.0},
-//     {0.0, 0.0, 1.0},
-//     {0.0, 0.0, -1.0}
-//   };
-//   static GLint faces[6][4] =
-//   {
-//     {0, 1, 2, 3},
-//     {3, 2, 6, 7},
-//     {7, 6, 5, 4},
-//     {4, 5, 1, 0},
-//     {5, 6, 2, 1},
-//     {7, 4, 0, 3}
-//   };
-//   GLfloat v[8][3];
-//   GLint i;
-//
-//   v[0][0] = v[1][0] = v[2][0] = v[3][0] = -size / 2;
-//   v[4][0] = v[5][0] = v[6][0] = v[7][0] = size / 2;
-//   v[0][1] = v[1][1] = v[4][1] = v[5][1] = -size / 2;
-//   v[2][1] = v[3][1] = v[6][1] = v[7][1] = size / 2;
-//   v[0][2] = v[3][2] = v[4][2] = v[7][2] = -size / 2;
-//   v[1][2] = v[2][2] = v[5][2] = v[6][2] = size / 2;
-//
-//   for (i = 5; i >= 0; i--) {
-//     glBegin(type);
-//     glNormal3fv(&n[i][0]);
-//     glVertex3fv(&v[faces[i][0]][0]);
-//     glVertex3fv(&v[faces[i][1]][0]);
-//     glVertex3fv(&v[faces[i][2]][0]);
-//     glVertex3fv(&v[faces[i][3]][0]);
-//     glEnd();
-//   }
-// }
 
 
 void Car::drawCarBody(){
-        GLuint texture;
+
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
+        GLuint carTex = LoadTextureRAW("car.bmp");
+        glBindTexture (GL_TEXTURE_2D, carTex);
+        glVertexPointer(3, GL_FLOAT, 0, carBodyVerts);
+        glNormalPointer(GL_FLOAT, 0, carBodyNormals);
+        glTexCoordPointer(2, GL_FLOAT, 0, carBodyTexCoords);
+
         glPushMatrix();
-        glTranslatef(0.5*this->getWidth(),0.75*this->getHeight(), this->getZHeight());
-        glColor3f(1,1,1);
-        texture = this->ID == "player" ? LoadTextureRAW("car_top.bmp") : LoadTextureRAW("foe_top.bmp");
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glScalef(0.5*this->getWidth(), 0.75*this->getHeight(), 0.75*this->getZHeight());
+        glTranslatef(15, 15, 0);
+        glScalef(55, 55, 55);
+        glRotatef(180, 0, 0, 1);
 
-        glBegin(GL_QUADS);
-        // Front Face
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);      // Bottom Left Of The Texture and Quad
-        glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);      // Bottom Right Of The Texture and Quad
-        glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);      // Top Right Of The Texture and Quad
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);      // Top Left Of The Texture and Quad
-        // Back Face
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);      // Bottom Right Of The Texture and Quad
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);      // Top Right Of The Texture and Quad
-        glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);      // Top Left Of The Texture and Quad
-        glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);      // Bottom Left Of The Texture and Quad
-        glEnd();
+        glDrawArrays(GL_TRIANGLES, 0, carBodyNumVerts);
 
-        texture = this->ID == "player" ? LoadTextureRAW("car_back.bmp") : LoadTextureRAW("foe_back.bmp");
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glBegin(GL_QUADS);
-        // Top Face
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f,  1.0f, -1.0f);      // Top Left Of The Texture and Quad
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);      // Bottom Left Of The Texture and Quad
-        glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);      // Bottom Right Of The Texture and Quad
-        glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f, -1.0f);      // Top Right Of The Texture and Quad
-        glEnd();
-
-
-        texture = this->ID == "player" ? LoadTextureRAW("car_front.bmp") : LoadTextureRAW("foe_front.bmp");
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glBegin(GL_QUADS);
-        // Bottom Face
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);      // Top Right Of The Texture and Quad
-        glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);      // Top Left Of The Texture and Quad
-        glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f,  1.0f);      // Bottom Left Of The Texture and Quad
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f,  1.0f);      // Bottom Right Of The Texture and Quad
-        glEnd();
-
-        texture = this->ID == "player" ? LoadTextureRAW("car_side.bmp") : LoadTextureRAW("foe_side.bmp");
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glBegin(GL_QUADS);
-        // Right face
-        glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);      // Bottom Right Of The Texture and Quad
-        glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f, -1.0f);      // Top Right Of The Texture and Quad
-        glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);      // Top Left Of The Texture and Quad
-        glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f,  1.0f);      // Bottom Left Of The Texture and Quad
-        // Left Face
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);      // Bottom Left Of The Texture and Quad
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f, -1.0f,  1.0f);      // Bottom Right Of The Texture and Quad
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);      // Top Right Of The Texture and Quad
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f,  1.0f, -1.0f);      // Top Left Of The Texture and Quad
-        glEnd();
-
-        // drawBox(1, GL_QUADS, "carro.bmp");
         glPopMatrix();
+
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void Car::drawCarAxis(){
-        //Front axis
-        glPushMatrix();
-        glTranslatef(0, 0.2*this->getHeight(), 0); //0 = front of the car
-        glRotatef(90, 0, 1, 0);
-        GLUquadricObj *quadObj = gluNewQuadric();
-        gluQuadricNormals(quadObj, GLU_SMOOTH);
-        gluCylinder(quadObj, 3, 3, this->getWidth(), 10, 100);
-        glPopMatrix();
 
-        //Back Axis
-        glPushMatrix();
-        glTranslatef(0, 1.3*this->getHeight(), 0);  //1.5 = back of the car
-        glRotatef(90, 0, 1, 0);
-        GLUquadricObj *quadObj2 = gluNewQuadric();
-        gluQuadricNormals(quadObj2, GLU_SMOOTH);
-        gluCylinder(quadObj2, 3, 3, this->getWidth(), 10, 100);
-        glPopMatrix();
-
-        //Center axis
-        glPushMatrix();
-        glTranslatef(0.5*this->getWidth(), 0.2*this->getHeight(), 0);
-        glRotatef(90, 0, 0, 1);
-        glRotatef(90, 0, 1, 0);
-        GLUquadricObj *quadObj3 = gluNewQuadric();
-        gluQuadricNormals(quadObj3, GLU_SMOOTH);
-        gluCylinder(quadObj3, 3, 3, 1.2*this->getHeight(), 10, 100);
-        glPopMatrix();
 }
 
 void Car::drawFrontWheels(){
 
         glPushMatrix();
-        glTranslatef(0,0.2*this->getHeight(),5);
+        glTranslatef(7,-3,-6);
         glRotatef(this->getWheelsAngle(), 0, 0, 1);
         glTranslatef(-5, 0, 0);
         glRotatef(this->getIncrementalNumber(), 1, 0, 0);
-        glRotatef(90, 0, 1, 0);
+        glScalef(14,14,14);
         this->drawSingleWheel();
         glPopMatrix();
 
         glPushMatrix();
-        glTranslatef(this->getWidth(),0.2*this->getHeight(),5);
+        glTranslatef(28,-3,-6);
         glRotatef(this->getWheelsAngle(), 0, 0, 1);
         glRotatef(this->getIncrementalNumber(), 1, 0, 0);
-        glRotatef(90, 0, 1, 0);
+        glScalef(14,14,14);
         this->drawSingleWheel();
         glPopMatrix();
 }
 
 void Car::drawBackWheels(){
         glPushMatrix();
-        glTranslatef(-5,1.3*this->getHeight(),5);
+        glTranslatef(2,30,-4);
         glRotatef(this->getIncrementalNumber(), 1, 0, 0);
-        glRotatef(90, 0, 1, 0);
+        glScalef(18,18,18);
         this->drawSingleWheel();
         glPopMatrix();
 
         glPushMatrix();
-        glTranslatef(this->getWidth(),1.3*this->getHeight(),5);
+        glTranslatef(28,30,-4);
         glRotatef(this->getIncrementalNumber(), 1, 0, 0);
-        glRotatef(90, 0, 1, 0);
+        glScalef(18,18,18);
         this->drawSingleWheel();
         glPopMatrix();
 }
 
 void Car::drawSingleWheel(){
-        glColor3f(0,0,0);
-        GLUquadricObj *quadObj = gluNewQuadric();
-        gluQuadricNormals(quadObj, GLU_SMOOTH);
-        this->drawWheelCircle(5);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
+
         glPushMatrix();
-        glTranslatef(0, 0, 5);
-        this->drawWheelCircle(5);
+
+        GLuint carTex = LoadTextureRAW("car.bmp");
+        glBindTexture (GL_TEXTURE_2D, carTex);
+        glVertexPointer(3, GL_FLOAT, 0, carWheelVerts);
+        glNormalPointer(GL_FLOAT, 0, carWheelNormals);
+        glTexCoordPointer(2, GL_FLOAT, 0, carWheelTexCoords);
+        glDrawArrays(GL_TRIANGLES, 0, carWheelNumVerts);
+
         glPopMatrix();
-        gluCylinder(quadObj, 5, 5, 5, 10, 100);
+
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void Car::drawWheelCircle(GLfloat radius){
-        GLfloat vertex[4];
-        GLfloat texcoord[2];
-        int num_vertex = 20;
-
-        const GLfloat delta_angle = 2.0*M_PI/num_vertex;
-
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, LoadTextureRAW("wheels.bmp"));
-        glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-        glBegin(GL_TRIANGLE_FAN);
-
-        //draw the vertex at the center of the circle
-        texcoord[0] = 0.5;
-        texcoord[1] = 0.5;
-        glTexCoord2fv(texcoord);
-
-        vertex[0] = vertex[1] = vertex[2] = 0.0;
-        vertex[3] = 1.0;
-        glVertex4fv(vertex);
-
-        for(int i = 0; i < num_vertex; i++)
-        {
-                texcoord[0] = (std::cos(delta_angle*i) + 1.0)*0.5;
-                texcoord[1] = (std::sin(delta_angle*i) + 1.0)*0.5;
-                glTexCoord2fv(texcoord);
-
-                vertex[0] = std::cos(delta_angle*i) * radius;
-                vertex[1] = std::sin(delta_angle*i) * radius;
-                vertex[2] = 0.0;
-                vertex[3] = 1.0;
-                glVertex4fv(vertex);
-        }
-
-        texcoord[0] = (1.0 + 1.0)*0.5;
-        texcoord[1] = (0.0 + 1.0)*0.5;
-        glTexCoord2fv(texcoord);
-
-        vertex[0] = 1.0 * radius;
-        vertex[1] = 0.0 * radius;
-        vertex[2] = 0.0;
-        vertex[3] = 1.0;
-        glVertex4fv(vertex);
-        glEnd();
 
 }
 
 void Car::drawCarCannon(){
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
+
         glPushMatrix();
-        glColor3f(0,0,0);
-        glTranslatef(0.5*this->getWidth(),0.1*this->getHeight(),0.5*this->getZHeight());
-        glRotatef(-this->getCannonZAngle(), 1, 0, 0);
+
+        glTranslatef(15,20,15);
+        glRotatef(-(this->getCannonZAngle()-10), 1, 0, 0);
         glRotatef(this->getCannonAngle(), 0, 0, 1);
-        glRotatef(90, 1, 0, 0);
-        GLUquadricObj *quadObj = gluNewQuadric();
-        gluQuadricNormals(quadObj, GLU_SMOOTH);
-        gluCylinder(quadObj, 3, 3, 0.5*this->getWidth(), 10, 100);
+        glScalef(20,20,20);
+        glRotatef(180,0,0,1);
+        GLuint carTex = LoadTextureRAW("car.bmp");
+        glBindTexture (GL_TEXTURE_2D, carTex);
+        glVertexPointer(3, GL_FLOAT, 0, carCannonVerts);
+        glNormalPointer(GL_FLOAT, 0, carCannonNormals);
+        glTexCoordPointer(2, GL_FLOAT, 0, carCannonTexCoords);
+        glDrawArrays(GL_TRIANGLES, 0, carCannonNumVerts);
 
         glPopMatrix();
+
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 

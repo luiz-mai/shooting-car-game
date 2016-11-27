@@ -25,6 +25,7 @@
 #include "Shot.h"
 #include "Triangle.h"
 #include "tinyxml2.h"
+
 using namespace std;
 using namespace tinyxml2;
 
@@ -121,7 +122,7 @@ public:
 
   // Does all the transformations and draws the car.
 
-  void drawCar(unsigned int, float *, float *, float *);
+  void drawCar();
   void drawCarBody();
   void drawCarAxis();
   void drawFrontWheels();
