@@ -285,7 +285,7 @@ void drawSky()
 
 								// if(textura_ligada){
 
-								double textureS = 10;
+								double textureS = 15;
 								GLfloat height_window = 800;
 								GLfloat width_window = 800;
 								GLfloat altura = 4*player->getZHeight() + 5;
@@ -370,9 +370,9 @@ void display(){
 																								centro_z = cam1z + sin(player->getCannonZAngle()*M_PI/180)*200;
 																								gluLookAt(cam1x,cam1y,cam1z, centro_x,centro_y,centro_z, 0,0,1);
 																} else if(cameraMode == 2) {
-																								cam1x = player->getCenterX() + 3*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*sin((camXZAngle)*M_PI/180);
-																								cam1y = player->getCenterY() - 3*(player->getCircleRadius())*cos((camXYAngle)*M_PI/180)*sin((camXZAngle)*M_PI/180);
-																								cam1z= player->getCenterZ() + 3*(player->getCircleRadius())*cos((camXZAngle)*M_PI/180);
+																								cam1x = player->getCenterX() + 2*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*sin((camXZAngle)*M_PI/180);
+																								cam1y = player->getCenterY() - 2*(player->getCircleRadius())*cos((camXYAngle)*M_PI/180)*sin((camXZAngle)*M_PI/180);
+																								cam1z= player->getCenterZ() + 1*(player->getCircleRadius())*cos((camXZAngle)*M_PI/180);
 																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),player->getCenterZ(), 0,0,1);
 																}
 
@@ -934,6 +934,7 @@ void Trab3::drawScene(){
 void Trab3::drawMap(){
 
 								glDisable(GL_TEXTURE_2D);
+								glDisable(GL_LIGHTING);
 								glClearColor (0.0,0.0,0.0,0.0);
 								glMatrixMode(GL_PROJECTION);
 								glPushMatrix();
@@ -988,6 +989,8 @@ void Trab3::drawMap(){
 
 								if(textureEnabled)
 																glEnable(GL_TEXTURE_2D);
+								if(lightingEnabled)
+																glEnable(GL_LIGHTING);
 }
 
 void Trab3::drawAxes(double size){
