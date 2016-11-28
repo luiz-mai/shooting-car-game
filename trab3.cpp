@@ -118,14 +118,14 @@ int main(int argc, char** argv) {
 								glEnable(GL_LIGHT1);
 
 								//Luz do farol
-								GLfloat light_ambient2[] = { 0.2, 0.2, 0.2	, 1.0 };
+								GLfloat light_ambient2[] = { 0.2, 0.2, 0.2, 1.0 };
 								GLfloat light_diffuse2[] = { 1.0, 1.0, 1.0, 1.0 };
 								GLfloat light_specular2[] = { 1.0, 1.0, 1.0, 1.0 };
 								// GLfloat light_position2[] = { 1.0, 1.0, 1.0, 0.0 };
 
 								//se mover canhao pra cima, chao fica mais brilhoso
 								//verificar
-								
+
 
 								glLightfv(GL_LIGHT2, GL_AMBIENT, light_ambient2);
 								glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse2);
@@ -179,8 +179,13 @@ void drawWalls(){
 								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-								double textureS = 15;
 
+								glColor3f(1,1,1);
+								glBindTexture (GL_TEXTURE_2D, texture);
+								double textureS = 40;
+
+								float j = 0, i=0;
+								float definition = 0.1;
 								Circle pistaOut = trackVector.at(0);
 								GLfloat x = pistaOut.getCenterX();
 								GLfloat y = pistaOut.getCenterY();
@@ -191,18 +196,25 @@ void drawWalls(){
 								glTranslatef(x, y, 0);
 
 								//desenha parede externa (cilindro oco)
-								GLfloat raio = trackVector.at(0).getRadius();
-								GLUquadricObj* quadratic=gluNewQuadric();           // Create A Pointer To The Quadric Object ( NEW )
-								gluQuadricNormals(quadratic, GLU_SMOOTH);
-								gluQuadricOrientation(quadratic, GLU_INSIDE);   // Create Smooth Normals ( NEW )
-								gluQuadricTexture(quadratic, GL_TRUE);
-								gluCylinder(quadratic,raio,raio,altura,100,100);
+								for(i = 0; i < 2; i++) {
+																GLfloat raio = trackVector.at(i).getRadius();
 
-								//desenha parede interna (cilindro oco)
-								raio = trackVector.at(1).getRadius();
-								gluQuadricOrientation(quadratic, GLU_OUTSIDE);
-								gluQuadricTexture(quadratic, GL_TRUE);
-								gluCylinder(quadratic,raio,raio,altura,100,100);
+																glBegin(GL_QUAD_STRIP);
+																for(j = 0; j <= 2 * M_PI; j += definition) {
+																								const float tc = ( j / (float)( 2 * M_PI ) );
+																								glNormal3f(0,1,0);
+																								glTexCoord2f( textureS * tc, 1.0 );
+																								glVertex3f(raio*cos(j), raio*sin(j), altura);
+																								glTexCoord2f( textureS * tc, 0.0 );
+																								glVertex3f(raio*cos(j), raio*sin(j), 0);
+																}
+																glTexCoord2f( 0.0, 1.0 );
+																glVertex3f(raio, 0, altura);
+																glTexCoord2f( 0.0, 0.0 );
+																glVertex3f(raio, 0, 0);
+																glEnd();
+								}
+
 								glPopMatrix();
 
 }
@@ -231,7 +243,7 @@ void drawFloor(){
 
 								// if(textura_ligada){
 
-								double textureS = 10;
+								double textureS = 60;
 								GLfloat height_window = 800; //é mil e quinhentox mas ela só ganha 750, a outra metade ela pegou na bolsa da amiga dela
 								GLfloat width_window = 800;
 								glBegin (GL_QUADS);
@@ -313,18 +325,17 @@ void display(){
 
 								//If player hasn't won or lost
 								if(gameState == 0) {
-									//Luz do farolzíneo do carro
-									float lx = player->getCenterX();
-									float ly = player->getCenterY();
-									float lz = player->getZHeight()/2;
-									float theta = player->getTheta();
-									float light2_position[] = { 0, 0, 1, 0 };
-									glPushMatrix();
-										glLoadIdentity();
-										glRotatef(theta, 0, 0, 1);
-										glTranslatef(lx, ly, lz);
-										glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
-									glPopMatrix();
+																float lx = player->getCenterX();
+																float ly = player->getCenterY();
+																float lz = player->getZHeight()/2;
+																float theta = player->getTheta();
+																float light2_position[] = { 0, 0, 1, 0 };
+																glPushMatrix();
+																glLoadIdentity();
+																glRotatef(theta, 0, 0, 1);
+																glTranslatef(lx, ly, lz);
+																glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
+																glPopMatrix();
 
 																/**RETROVISOR GLfloat scale = player->getCircleRadius()/player->getWidth();
 																   glViewport(0,500,500,700);
@@ -368,10 +379,10 @@ void display(){
 																// Luz
 																vector<Circle>::iterator it = trackVector.begin();
 
-																 lx = 400;
-																 ly = 400;
-																 lz = 10*player->getZHeight();
-																 float light_position[] = { lx, ly, lz, 1 };
+																lx = 400;
+																ly = 400;
+																lz = 10*player->getZHeight();
+																float light_position[] = { lx, ly, lz, 1 };
 																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
 
@@ -490,12 +501,12 @@ void idle(){
 																								if(night_mode) {
 																																teto = LoadTextureRAW("sky_night.bmp");
 																																glDisable( GL_LIGHT0 );
-																																glDisable( GL_LIGHT1 );
-																																glEnable( GL_LIGHT2 );
+																																glDisable( GL_LIGHT2 );
+																																glEnable( GL_LIGHT1 );
 																								} else {
 																																teto = LoadTextureRAW("sky.bmp");
 																																glEnable( GL_LIGHT0 );
-																																glEnable( GL_LIGHT1 );
+																																glDisable( GL_LIGHT1 );
 																																glDisable( GL_LIGHT2 );
 																								}
 

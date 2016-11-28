@@ -301,17 +301,17 @@ void Car::drawCarBody(){
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
-        GLuint carTex = LoadTextureRAW("car.bmp");
-        glBindTexture (GL_TEXTURE_2D, carTex);
-        glVertexPointer(3, GL_FLOAT, 0, carBodyVerts);
-        glNormalPointer(GL_FLOAT, 0, carBodyNormals);
-        glTexCoordPointer(2, GL_FLOAT, 0, carBodyTexCoords);
+
 
         glPushMatrix();
         glTranslatef(15, 15, 0);
         glScalef(55, 55, 55);
         glRotatef(180, 0, 0, 1);
-
+        GLuint carTex = LoadTextureRAW("car.bmp");
+        glBindTexture (GL_TEXTURE_2D, carTex);
+        glVertexPointer(3, GL_FLOAT, 0, carBodyVerts);
+        glNormalPointer(GL_FLOAT, 0, carBodyNormals);
+        glTexCoordPointer(2, GL_FLOAT, 0, carBodyTexCoords);
         glDrawArrays(GL_TRIANGLES, 0, carBodyNumVerts);
 
         glPopMatrix();
