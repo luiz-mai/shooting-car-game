@@ -162,15 +162,15 @@ int main(int argc, char** argv) {
 
 void farolzineo() {
   GLfloat white[4] = { 1, 1, 1, 0 };
-  GLfloat dir[4] = {0, -1, -0.1, 0};
-  GLfloat zero[4] = {0, 0.1, 0, 1};
-  GLfloat x = player->getCenterX();
-  GLfloat y = player->getCenterY();
+  GLfloat dir[4] = {0, -1, 0};
+  GLfloat zero[4] = {0, 1, 0, 1};
+  GLfloat x=player->getCenterX();
+  GLfloat y=player->getCenterY();
   GLfloat angle = player->getTheta();
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glTranslatef(x, y, 0.6);
-  glRotatef(angle*180/M_PI, 0, 0, 1);
+  glRotatef((angle), 0, 0, 1);
     glPushMatrix();
     glTranslatef(0.88877, -2.0, 0.18182);
       glLightfv(GL_LIGHT2, GL_POSITION, zero);
@@ -367,21 +367,7 @@ void display(){
 																// glTranslatef(lx, ly, lz);
 																// glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
 																// glPopMatrix();
-																farolzineo();
 
-																// Luz
-																vector<Circle>::iterator it = trackVector.begin();
-
-																float lx = 400;
-																float ly = 400;
-																float lz = 10*player->getZHeight();
-																glPushMatrix();
-																glTranslatef(lx, ly, lz);
-
-																float light_position[] = { 0, 0, -1, 0 };
-
-																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-																glPopMatrix();
 
 																/**RETROVISOR GLfloat scale = player->getCircleRadius()/player->getWidth();
 																   glViewport(0,500,500,700);
@@ -423,7 +409,21 @@ void display(){
 																}
 
 
+																farolzineo();
 
+																// Luz
+																vector<Circle>::iterator it = trackVector.begin();
+
+																float lx = 400;
+																float ly = 400;
+																float lz = 10*player->getZHeight();
+
+																glPushMatrix();
+																glTranslatef(lx, ly, lz);
+																float light_position[] = { 0, 0, 1, 0 };
+																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+																glLightfv(GL_LIGHT1, GL_POSITION, light_position);
+																glPopMatrix();
 
 																// GLfloat light1_position[] = { 400, 400, 10, 1.0 };
 																// GLfloat spot_direction[] = { 1, 0, 0 };
