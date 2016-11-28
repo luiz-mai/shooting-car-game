@@ -378,6 +378,7 @@ void display(){
 																GLfloat dir[4] = {0, -1, 0, 0};
 																GLfloat zero[4] = {0, 0, 0, 1};
 																glMatrixMode(GL_MODELVIEW);
+
 																glPushMatrix();
 																glTranslatef(player->getCenterX(), player->getCenterY(), 0);
 																glRotatef(player->getTheta(), 0, 0, 1);
@@ -390,22 +391,12 @@ void display(){
 																glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0);
 																glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0);
 																glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
+																glLightfv(GL_LIGHT1, GL_SPECULAR, white);
 																glPopMatrix();
 
-
 																glPopMatrix();
-																// Luz
+
 																vector<Circle>::iterator it = trackVector.begin();
-
-
-																glPushMatrix();
-																glTranslatef(lx, ly, lz);
-																float light_position[] = { 0, 0, 1, 0 };
-																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-																glLightfv(GL_LIGHT1, GL_POSITION, light_position);
-																glPopMatrix();
-
-
 
 
 																trab.drawScene();
