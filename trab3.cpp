@@ -116,6 +116,37 @@ int main(int argc, char** argv) {
 								return 0;
 }
 
+void farolzineo() {
+								GLfloat white[4] = { 1, 1, 1, 0 };
+								GLfloat dir[4] = {0, -1, 0};
+								GLfloat zero[4] = {0, 1, 0, 1};
+								GLfloat x=player->getCenterX();
+								GLfloat y=player->getCenterY();
+								GLfloat angle = player->getTheta();
+								glMatrixMode(GL_MODELVIEW);
+								glPushMatrix();
+								glTranslatef(x, y, 0.6);
+								glRotatef((angle), 0, 0, 1);
+								glPushMatrix();
+								glTranslatef(0.88877, -2.0, 0.18182);
+								glLightfv(GL_LIGHT2, GL_POSITION, zero);
+								glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, dir);
+								glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 50);
+								glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 5);
+								glLightfv(GL_LIGHT2, GL_DIFFUSE, white);
+								glPopMatrix();
+
+								glPushMatrix();
+								glTranslatef(-0.88877, -2.0, 0.18182);
+								glLightfv(GL_LIGHT3, GL_POSITION, zero);
+								glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, dir);
+								glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 50);
+								glLightf(GL_LIGHT3, GL_SPOT_EXPONENT, 5);
+								glLightfv(GL_LIGHT3, GL_DIFFUSE, white);
+								glPopMatrix();
+								glPopMatrix();
+}
+
 void drawWalls(){
 								GLuint texture = parede;
 								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
@@ -287,7 +318,6 @@ void display(){
 								if(gameState == 0) {
 
 
-
 																/**RETROVISOR GLfloat scale = player->getCircleRadius()/player->getWidth();
 																   glViewport(0,500,500,700);
 																   glLoadIdentity();
@@ -368,6 +398,12 @@ void display(){
 																vector<Circle>::iterator it = trackVector.begin();
 
 
+																glPushMatrix();
+																glTranslatef(lx, ly, lz);
+																float light_position[] = { 0, 0, 1, 0 };
+																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+																glLightfv(GL_LIGHT1, GL_POSITION, light_position);
+																glPopMatrix();
 
 
 
@@ -480,13 +516,15 @@ void idle(){
 																								if(night_mode) {
 																																teto = LoadTextureRAW("sky_night.bmp");
 																																glDisable( GL_LIGHT0 );
-																																glDisable( GL_LIGHT2 );
-																																glEnable( GL_LIGHT1 );
+																																glDisable( GL_LIGHT1 );
+																																glEnable( GL_LIGHT2 );
+																																glEnable( GL_LIGHT3 );
 																								} else {
 																																teto = LoadTextureRAW("sky.bmp");
 																																glEnable( GL_LIGHT0 );
-																																glDisable( GL_LIGHT1 );
+																																glEnable( GL_LIGHT1 );
 																																glDisable( GL_LIGHT2 );
+																																glDisable( GL_LIGHT3 );
 																								}
 
 																}
@@ -879,7 +917,7 @@ void Trab3::drawScene(){
 
 								//Draws all the foes
 								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
-																//(*it).drawCar();
+																// (*it).drawCar();
 								}
 
 								//Draws all the shots
