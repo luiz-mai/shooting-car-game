@@ -81,11 +81,12 @@ int main(int argc, char** argv) {
 								glEnable( GL_TEXTURE_2D );
 								glEnable(GL_LIGHTING);
 								glEnable(GL_LIGHT0);
+								glEnable(GL_LIGHT1);
 								glEnable(GL_BLEND);
 								glEnable(GL_NORMALIZE);
 								glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-								// glShadeModel (GL_FLAT);
-								glShadeModel (GL_SMOOTH);
+								glShadeModel (GL_FLAT);
+								// glShadeModel (GL_SMOOTH);
 								glDepthFunc(GL_LEQUAL);
 
 								chao = LoadTextureRAW( "floor.bmp" );
@@ -93,51 +94,6 @@ int main(int argc, char** argv) {
 								teto = LoadTextureRAW( "sky.bmp" );
 								largada = LoadTextureRAW("largada.bmp");
 
-								//luz1
-								GLfloat light_ambient0[] = { 0.15, 0.15, 0.15, 1.0 };
-								GLfloat light_diffuse0[] = { 1.0, 1.0, 1.0, 1.0 };
-								GLfloat light_specular0[] = { 1.0, 1.0, 1.0, 1.0 };
-
-								glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient0);
-								glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse0);
-								glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular0);
-
-
-								GLfloat light_ambient1[] = { 0.0, 0.0, 0.0, 1.0 };
-								GLfloat light_diffuse1[] = { 1.0, 1.0, 1.0, 1.0 };
-								GLfloat light_specular1[] = { 1.0, 1.0, 1.0, 1.0 };
-								glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient1);
-								glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse1);
-								glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular1);
-								glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.5);
-								glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.5);
-								glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.2);
-								glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 15.0);
-								glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
-
-								glEnable(GL_LIGHT1);
-
-								//Luz do farol
-								GLfloat light_ambient2[] = { 0.2, 0.2, 0.2, 1.0 };
-								GLfloat light_diffuse2[] = { 1.0, 1.0, 1.0, 1.0 };
-								GLfloat light_specular2[] = { 1.0, 1.0, 1.0, 1.0 };
-								// GLfloat light_position2[] = { 1.0, 1.0, 1.0, 0.0 };
-
-								//se mover canhao pra cima, chao fica mais brilhoso
-								//verificar
-
-
-								glLightfv(GL_LIGHT2, GL_AMBIENT, light_ambient2);
-								glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse2);
-								glLightfv(GL_LIGHT2, GL_SPECULAR, light_specular2);
-								// glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
-								// glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 3.5);
-								// glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 1.5);
-								// glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 1.2);
-								glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 5.0);
-								// glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 0.5);
-
-								// glDisable(GL_LIGHT2);
 
 								glMatrixMode(GL_PROJECTION);
 								glLoadIdentity();
@@ -163,7 +119,7 @@ int main(int argc, char** argv) {
 void drawWalls(){
 								GLuint texture = parede;
 								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
-								GLfloat materialColor[] = { 1.0, 1.0, 1.0, 1.0};
+								GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
 								GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
 								GLfloat mat_shininess[] = { 128.0 };
 
@@ -202,7 +158,7 @@ void drawWalls(){
 																glBegin(GL_QUAD_STRIP);
 																for(j = 0; j <= 2 * M_PI; j += definition) {
 																								const float tc = ( j / (float)( 2 * M_PI ) );
-																								glNormal3f(0,1,0);
+																								if(i == 0) glNormal3f(0,1,0); else glNormal3f(0,-1,0);
 																								glTexCoord2f( textureS * tc, 1.0 );
 																								glVertex3f(raio*cos(j), raio*sin(j), altura);
 																								glTexCoord2f( textureS * tc, 0.0 );
@@ -220,11 +176,12 @@ void drawWalls(){
 }
 
 void drawFloor(){
+
 								GLuint texture = chao;
 
 
 								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
-								GLfloat materialColor[] = { 1.0, 1.0, 1.0, 1.0};
+								GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
 								GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
 								GLfloat mat_shininess[] = { 128.0 };
 
@@ -243,6 +200,9 @@ void drawFloor(){
 
 								// if(textura_ligada){
 
+								glColor3f(1,1,1);
+								glBindTexture (GL_TEXTURE_2D, texture);
+
 								double textureS = 60;
 								GLfloat height_window = 800; //é mil e quinhentox mas ela só ganha 750, a outra metade ela pegou na bolsa da amiga dela
 								GLfloat width_window = 800;
@@ -251,14 +211,14 @@ void drawFloor(){
 								glTexCoord2f (0, 0);
 								glVertex3f (0, 0, 0);
 								glNormal3f(0,0,-1);
-								glTexCoord2f (0, textureS);
-								glVertex3f (0, height_window, 0);
+								glTexCoord2f (textureS, 0);
+								glVertex3f (width_window, 0,0);
 								glNormal3f(0,0,-1);
 								glTexCoord2f (textureS, textureS);
 								glVertex3f (width_window, height_window,0);
 								glNormal3f(0,0,-1);
-								glTexCoord2f (textureS, 0);
-								glVertex3f (width_window, 0,0);
+								glTexCoord2f (0, textureS);
+								glVertex3f (0, height_window, 0);
 								glEnd();
 }
 
@@ -267,7 +227,7 @@ void drawSky()
 								GLuint texture = teto;
 
 								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
-								GLfloat materialColor[] = { 1.0, 1.0, 1.0, 1.0};
+								GLfloat materialColor[] = { 0.5, 0.5, 0.5, 1.0};
 								GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
 								GLfloat mat_shininess[] = { 128.0 };
 
@@ -325,17 +285,8 @@ void display(){
 
 								//If player hasn't won or lost
 								if(gameState == 0) {
-																float lx = player->getCenterX();
-																float ly = player->getCenterY();
-																float lz = player->getZHeight()/2;
-																float theta = player->getTheta();
-																float light2_position[] = { 0, 0, 1, 0 };
-																glPushMatrix();
-																glLoadIdentity();
-																glRotatef(theta, 0, 0, 1);
-																glTranslatef(lx, ly, lz);
-																glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
-																glPopMatrix();
+
+
 
 																/**RETROVISOR GLfloat scale = player->getCircleRadius()/player->getWidth();
 																   glViewport(0,500,500,700);
@@ -351,6 +302,22 @@ void display(){
 
 																   glViewport(0,0,500,500);
 																   glLoadIdentity();*/
+
+																//luz1
+																GLfloat nightmode_coeficient = night_mode ? 1 : 0;
+																GLfloat light_ambient0[] = { 0.8 - nightmode_coeficient*0.7, 0.8 - nightmode_coeficient*0.7, 0.8 - nightmode_coeficient*0.7, 1.0 };
+																GLfloat light_diffuse0[] = { 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 };
+																GLfloat light_specular0[] = { 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 };
+
+
+																//AMBIENT LIGHT
+																Circle pistaOut = trackVector.at(0);
+																float light_position[] = {pistaOut.getCenterX(), pistaOut.getCenterY(), 5*player->getZHeight(),1 };
+																glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient0);
+																glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse0);
+																glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular0);
+																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
 																if(cameraMode == 0) {
 																								cam1x=player->getCenterX()+(sin(player->getTheta()*M_PI/180)*player->getCircleRadius());
 																								cam1y=player->getCenterY()-(cos(player->getTheta()*M_PI/180)*player->getCircleRadius());
@@ -376,20 +343,32 @@ void display(){
 																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),player->getCenterZ(), 0,0,1);
 																}
 
+
+																GLfloat white[4] = { 1, 1, 1, 0 };
+																GLfloat dir[4] = {0, -1, 0, 0};
+																GLfloat zero[4] = {0, 0, 0, 1};
+																glMatrixMode(GL_MODELVIEW);
+																glPushMatrix();
+																glTranslatef(player->getCenterX(), player->getCenterY(), 0);
+																glRotatef(player->getTheta(), 0, 0, 1);
+																glPushMatrix();
+																glLightfv(GL_LIGHT1, GL_POSITION, zero);
+																glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, dir);
+																glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45);
+																glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 5);
+																glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1);
+																glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0);
+																glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0);
+																glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
+																glPopMatrix();
+
+
+																glPopMatrix();
 																// Luz
 																vector<Circle>::iterator it = trackVector.begin();
 
-																lx = 400;
-																ly = 400;
-																lz = 10*player->getZHeight();
-																float light_position[] = { lx, ly, lz, 1 };
-																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
 
-																// GLfloat light1_position[] = { 400, 400, 10, 1.0 };
-																// GLfloat spot_direction[] = { 1, 0, 0 };
-																// glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
-																// glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
 
 
 
@@ -892,28 +871,11 @@ void Trab3::drawScene(){
 								drawSky();
 								drawWalls();
 
-
-								//Draws all the tracks
-								vector<Circle>::iterator it = trackVector.begin();
-								// for(vector<Circle>::iterator it = trackVector.begin(); it != trackVector.end(); ++it) {
-								// (*it).drawCircle();
-								// }
-
-								//Draws the start track
-								glPushMatrix();
-								glTranslatef(0,0,1);
-								startTrack->drawRectangle(largada);
-								glPopMatrix();
-
 								//Draws the player's car
-								Circle* c = new Circle("id", player->getCircleRadius(), player->getCenterX(), player->getCenterY(), "green");
-								glPushMatrix();
-								glTranslatef(0,0,2);
-								c->drawCircle();
-								glPopMatrix();
-
 								player->drawCar();
 
+								//Draws the start track
+								startTrack->drawRectangle(largada);
 
 								//Draws all the foes
 								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
@@ -925,10 +887,7 @@ void Trab3::drawScene(){
 								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
 																(*it).drawShots();
 								}
-								//Renders the cronometer at the corner of the screen
-								// Utils utils;
-								// utils.checkColor("white");
-								// trab.printCronometer(60,70);
+
 }
 
 void Trab3::drawMap(){

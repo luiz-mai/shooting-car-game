@@ -250,7 +250,6 @@ void Car::setColor(string color){
 
 void Car::drawCar(){
 
-
         bool moving = this->getMoving();
         GLfloat playerRadius = this->getCircleRadius();
 
