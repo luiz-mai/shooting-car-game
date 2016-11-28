@@ -160,6 +160,37 @@ int main(int argc, char** argv) {
 								return 0;
 }
 
+void farolzineo() {
+  GLfloat white[4] = { 1, 1, 1, 0 };
+  GLfloat dir[4] = {0, -1, -0.1, 0};
+  GLfloat zero[4] = {0, 0.1, 0, 1};
+  GLfloat x = player->getCenterX();
+  GLfloat y = player->getCenterY();
+  GLfloat angle = player->getTheta();
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glTranslatef(x, y, 0.6);
+  glRotatef(angle*180/M_PI, 0, 0, 1);
+    glPushMatrix();
+    glTranslatef(0.88877, -2.0, 0.18182);
+      glLightfv(GL_LIGHT2, GL_POSITION, zero);
+      glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, dir);
+      glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 50);
+      glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 5);
+      glLightfv(GL_LIGHT2, GL_DIFFUSE, white);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-0.88877, -2.0, 0.18182);
+      glLightfv(GL_LIGHT3, GL_POSITION, zero);
+      glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, dir);
+      glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 50);
+      glLightf(GL_LIGHT3, GL_SPOT_EXPONENT, 5);
+      glLightfv(GL_LIGHT3, GL_DIFFUSE, white);
+    glPopMatrix();
+  glPopMatrix();
+}
+
 void drawWalls(){
 								GLuint texture = parede;
 								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
@@ -325,16 +356,31 @@ void display(){
 
 								//If player hasn't won or lost
 								if(gameState == 0) {
-																float lx = player->getCenterX();
-																float ly = player->getCenterY();
-																float lz = player->getZHeight()/2;
-																float theta = player->getTheta();
-																float light2_position[] = { 0, 0, 1, 0 };
+																// float lx = player->getCenterX();
+																// float ly = player->getCenterY();
+																// float lz = player->getZHeight()/2;
+																// float theta = player->getTheta();
+																// float light2_position[] = { 0, 0, 1, 0 };
+																// glPushMatrix();
+																// glLoadIdentity();
+																// glRotatef(theta, 0, 0, 1);
+																// glTranslatef(lx, ly, lz);
+																// glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
+																// glPopMatrix();
+																farolzineo();
+
+																// Luz
+																vector<Circle>::iterator it = trackVector.begin();
+
+																float lx = 400;
+																float ly = 400;
+																float lz = 10*player->getZHeight();
 																glPushMatrix();
-																glLoadIdentity();
-																glRotatef(theta, 0, 0, 1);
 																glTranslatef(lx, ly, lz);
-																glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
+
+																float light_position[] = { 0, 0, -1, 0 };
+
+																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 																glPopMatrix();
 
 																/**RETROVISOR GLfloat scale = player->getCircleRadius()/player->getWidth();
@@ -376,14 +422,7 @@ void display(){
 																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),player->getCenterZ(), 0,0,1);
 																}
 
-																// Luz
-																vector<Circle>::iterator it = trackVector.begin();
 
-																lx = 400;
-																ly = 400;
-																lz = 10*player->getZHeight();
-																float light_position[] = { lx, ly, lz, 1 };
-																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
 
 																// GLfloat light1_position[] = { 400, 400, 10, 1.0 };
@@ -501,13 +540,15 @@ void idle(){
 																								if(night_mode) {
 																																teto = LoadTextureRAW("sky_night.bmp");
 																																glDisable( GL_LIGHT0 );
-																																glDisable( GL_LIGHT2 );
-																																glEnable( GL_LIGHT1 );
+																																glDisable( GL_LIGHT1 );
+																																glEnable( GL_LIGHT2 );
+																																glEnable( GL_LIGHT3 );
 																								} else {
 																																teto = LoadTextureRAW("sky.bmp");
 																																glEnable( GL_LIGHT0 );
-																																glDisable( GL_LIGHT1 );
+																																glEnable( GL_LIGHT1 );
 																																glDisable( GL_LIGHT2 );
+																																glDisable( GL_LIGHT3 );
 																								}
 
 																}
@@ -917,7 +958,7 @@ void Trab3::drawScene(){
 
 								//Draws all the foes
 								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
-																//(*it).drawCar();
+																// (*it).drawCar();
 								}
 
 								//Draws all the shots
