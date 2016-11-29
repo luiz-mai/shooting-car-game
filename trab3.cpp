@@ -192,9 +192,8 @@ void drawWalls(){
 									gluQuadricTexture(quadratic, GL_TRUE);
 									gluCylinder(quadratic,raio,raio,altura,100,100);
 									glLoadIdentity();
+									glMatrixMode(GL_MODELVIEW);
 									glPopMatrix();
-
-
 
 									//desenha parede interna (cilindro oco)
 									raio = trackVector.at(1).getRadius();
@@ -206,10 +205,9 @@ void drawWalls(){
 									gluQuadricTexture(quadratic, GL_TRUE);
 									gluCylinder(quadratic,raio,raio,altura,100,100);
 									glLoadIdentity();
+									glMatrixMode(GL_MODELVIEW);
 									glPopMatrix();
 
-
-									glMatrixMode(GL_MODELVIEW);
 								glPopMatrix();
 
 }
@@ -217,7 +215,6 @@ void drawWalls(){
 void drawFloor(){
 
 								GLuint texture = chao;
-
 
 								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
 								GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
@@ -229,17 +226,10 @@ void drawFloor(){
 								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-								if(!textureEnabled) {
-																glColor3f(0.5,1.0,0);
-								} else {
-																glColor3f(1.0,1.0,1.0);
-																glBindTexture (GL_TEXTURE_2D, texture);
+								if(textureEnabled) {
+									glBindTexture (GL_TEXTURE_2D, texture);
 								}
 
-
-								// if(textura_ligada){
-
-								glColor3f(1,1,1);
 								glBindTexture (GL_TEXTURE_2D, texture);
 
 								float j = 0, i=0;
@@ -249,40 +239,23 @@ void drawFloor(){
 								GLfloat y = pistaOut.getCenterY();
 								GLfloat altura = 4*player->getZHeight();
 
-
 								glPushMatrix();
-								// glTranslatef(x, y, 0);
+								glTranslatef(x, y, 0);
 
-								double textureS = 60;
-								GLfloat height_window = 800; //é mil e quinhentox mas ela só ganha 750, a outra metade ela pegou na bolsa da amiga dela
-								GLfloat width_window = 800;
-								glBegin (GL_QUADS);
-								glNormal3f(0,1,0);
-								glTexCoord2f (0, 0);
-								glVertex3f (0, 0, 0);
-								glNormal3f(0,1,0);
-								glTexCoord2f (textureS, 0);
-								glVertex3f (width_window, 0,0);
-								glNormal3f(0,1,0);
-								glTexCoord2f (textureS, textureS);
-								glVertex3f (width_window, height_window,0);
-								glNormal3f(0,1,0);
-								glTexCoord2f (0, textureS);
-								glVertex3f (0, height_window, 0);
-								glEnd();
-								// GLfloat raioOut = trackVector.at(0).getRadius();
-								// GLfloat raioIn = trackVector.at(1).getRadius();
-								// GLUquadricObj* quadratic=gluNewQuadric();          // Create A Pointer To The Quadric Object ( NEW )
-								// gluQuadricNormals(quadratic, GLU_SMOOTH);
-								// glPushMatrix();
-								// glMatrixMode(GL_TEXTURE);
-								// glLoadIdentity();
-								// glScalef(5.0f, 5.0f, 1.0f);
-								// gluQuadricTexture(quadratic, GL_TRUE);
-								// gluQuadricOrientation(quadratic, GLU_INSIDE);
-								// gluDisk(quadratic,raioIn, raioOut, 100,1);
-								// glLoadIdentity();
-								// glPopMatrix();
+								GLfloat raioOut = trackVector.at(0).getRadius();
+								GLfloat raioIn = trackVector.at(1).getRadius();
+								GLUquadricObj* quadratic = gluNewQuadric();          // Create A Pointer To The Quadric Object ( NEW )
+								gluQuadricNormals(quadratic, GLU_SMOOTH);
+								glPushMatrix();
+								glMatrixMode(GL_TEXTURE);
+								glLoadIdentity();
+								glScalef(25.0f, 25.0f, 1.0f);
+								gluQuadricTexture(quadratic, GL_TRUE);
+								gluQuadricOrientation(quadratic, GLU_OUTSIDE);
+								gluDisk(quadratic,raioIn, raioOut, 100,20);
+								glLoadIdentity();
+								glMatrixMode(GL_MODELVIEW);
+								glPopMatrix();
 								glPopMatrix();
 
 
@@ -311,24 +284,31 @@ void drawSky()
 
 								// if(textura_ligada){
 
-								double textureS = 15;
-								GLfloat height_window = 800;
-								GLfloat width_window = 800;
-								GLfloat altura = 4*player->getZHeight() + 5;
-								glBegin (GL_QUADS);
-								glNormal3f(0,-1,0);
-								glTexCoord2f (0, 0);
-								glVertex3f (0,0,altura);
-								glNormal3f(0,-1,0);
-								glTexCoord2f (0, textureS);
-								glVertex3f (0, height_window,altura);
-								glNormal3f(0,-1,0);
-								glTexCoord2f (textureS, textureS);
-								glVertex3f (width_window, height_window,altura);
-								glNormal3f(0,-1,0);
-								glTexCoord2f (textureS, 0);
-								glVertex3f (width_window, 0,altura);
-								glEnd();
+								float j = 0, i=0;
+								float definition = 0.1;
+								Circle pistaOut = trackVector.at(0);
+								GLfloat x = pistaOut.getCenterX();
+								GLfloat y = pistaOut.getCenterY();
+								GLfloat altura = 4*player->getZHeight();
+
+								glPushMatrix();
+								glTranslatef(x, y, altura);
+
+								GLfloat raioOut = trackVector.at(0).getRadius();
+								GLfloat raioIn = trackVector.at(1).getRadius();
+								GLUquadricObj* quadratic = gluNewQuadric();          // Create A Pointer To The Quadric Object ( NEW )
+								gluQuadricNormals(quadratic, GLU_SMOOTH);
+								glPushMatrix();
+								glMatrixMode(GL_TEXTURE);
+								glLoadIdentity();
+								glScalef(15.0f, 15.0f, 1.0f);
+								gluQuadricTexture(quadratic, GL_TRUE);
+								gluQuadricOrientation(quadratic, GLU_INSIDE);
+								gluDisk(quadratic,raioIn, raioOut, 100,20);
+								glLoadIdentity();
+								glMatrixMode(GL_MODELVIEW);
+								glPopMatrix();
+								glPopMatrix();
 }
 
 
@@ -368,20 +348,7 @@ void display(){
 																   glViewport(0,0,500,500);
 																   glLoadIdentity();*/
 
-																//luz1
-																GLfloat nightmode_coeficient = night_mode ? 1 : 0;
-																GLfloat light_ambient0[] = { 0.8 - nightmode_coeficient*0.7, 0.8 - nightmode_coeficient*0.7, 0.8 - nightmode_coeficient*0.7, 1.0 };
-																GLfloat light_diffuse0[] = { 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 };
-																GLfloat light_specular0[] = { 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 };
 
-
-																//AMBIENT LIGHT
-																Circle pistaOut = trackVector.at(0);
-																float light_position[] = {pistaOut.getCenterX(), pistaOut.getCenterY(), 5*player->getZHeight(),1 };
-																glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient0);
-																glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse0);
-																glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular0);
-																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
 																if(cameraMode == 0) {
 																								cam1x=player->getCenterX()+(sin(player->getTheta()*M_PI/180)*player->getCircleRadius());
@@ -409,20 +376,38 @@ void display(){
 																}
 
 
+																//luz1
+																GLfloat nightmode_coeficient = night_mode ? 1 : 0;
+																GLfloat light_ambient0[] = { 0.8 - nightmode_coeficient*0.6, 0.8 - nightmode_coeficient*0.6, 0.8 - nightmode_coeficient*0.6, 1.0 };
+																GLfloat light_diffuse0[] = { 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 };
+																GLfloat light_specular0[] = { 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 };
+
+
+																//AMBIENT LIGHT
+																Circle pistaOut = trackVector.at(0);
+																float light_position[] = {pistaOut.getCenterX(), pistaOut.getCenterY(), 5*player->getZHeight(), 1 };
+																glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient0);
+																glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse0);
+																glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular0);
+																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+
+
+
 																GLfloat white[4] = { 1, 1, 1, 0 };
-																GLfloat dir[4] = {0, -1, -0.1, 0};
+																GLfloat dir[4] = {0, -1, -0.2, 0};
 																GLfloat zero[4] = {0, 0, 0, 1};
-																glMatrixMode(GL_MODELVIEW);
 
 																glPushMatrix();
-																glTranslatef(player->getCenterX(), player->getCenterY(), 0.5);
+																glMatrixMode(GL_MODELVIEW);
+																glTranslatef(player->getCenterX(), player->getCenterY(), 25);
 																glRotatef(player->getTheta(), 0, 0, 1);
 																glPushMatrix();
 																glLightfv(GL_LIGHT1, GL_POSITION, zero);
 																glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, dir);
-																glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45);
-																glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 15);
-																glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.5);
+																glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30);
+																glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 32);
+																glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.2);
 																glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0);
 																glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0);
 																glLightfv(GL_LIGHT1, GL_DIFFUSE, white);

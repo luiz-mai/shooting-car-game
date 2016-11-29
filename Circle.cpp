@@ -60,7 +60,7 @@ void Circle::setFill(string fill){
 
 void Circle::drawCircle(){
         int i;
-        int triangleAmount = 50; //# of triangles used to draw circle
+        int triangleAmount = 100; //# of triangles used to draw circle
         GLfloat twicePi = 2.0f * M_PI;
 
         GLfloat centerX = this->centerX;
@@ -69,8 +69,10 @@ void Circle::drawCircle(){
 
 
         glBegin(GL_TRIANGLE_FAN);
+        glNormal3f(0,0,1);
         glVertex2f(centerX, centerY); // center of circle
         for(i = 0; i <= triangleAmount; i++) {
+              glNormal3f(0,0,1);
                 glVertex2f(
                         centerX + (radius * cos(i *  twicePi / triangleAmount)),
                         centerY + (radius * sin(i * twicePi / triangleAmount))
