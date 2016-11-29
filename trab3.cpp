@@ -81,12 +81,12 @@ int main(int argc, char** argv) {
 								glEnable( GL_TEXTURE_2D );
 								glEnable(GL_LIGHTING);
 								glEnable(GL_LIGHT0);
-								glEnable(GL_LIGHT1);
+								// glEnable(GL_LIGHT1);
 								glEnable(GL_BLEND);
 								glEnable(GL_NORMALIZE);
 								glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-								glShadeModel (GL_FLAT);
-								// glShadeModel (GL_SMOOTH);
+								// glShadeModel (GL_FLAT);
+								glShadeModel (GL_SMOOTH);
 								glDepthFunc(GL_LEQUAL);
 
 								chao = LoadTextureRAW( "floor.bmp" );
@@ -116,36 +116,6 @@ int main(int argc, char** argv) {
 								return 0;
 }
 
-void farolzineo() {
-								GLfloat white[4] = { 1, 1, 1, 0 };
-								GLfloat dir[4] = {0, -1, 0};
-								GLfloat zero[4] = {0, 1, 0, 1};
-								GLfloat x=player->getCenterX();
-								GLfloat y=player->getCenterY();
-								GLfloat angle = player->getTheta();
-								glMatrixMode(GL_MODELVIEW);
-								glPushMatrix();
-								glTranslatef(x, y, 0.6);
-								glRotatef((angle), 0, 0, 1);
-								glPushMatrix();
-								glTranslatef(0.88877, -2.0, 0.18182);
-								glLightfv(GL_LIGHT2, GL_POSITION, zero);
-								glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, dir);
-								glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 50);
-								glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 5);
-								glLightfv(GL_LIGHT2, GL_DIFFUSE, white);
-								glPopMatrix();
-
-								glPushMatrix();
-								glTranslatef(-0.88877, -2.0, 0.18182);
-								glLightfv(GL_LIGHT3, GL_POSITION, zero);
-								glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, dir);
-								glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 50);
-								glLightf(GL_LIGHT3, GL_SPOT_EXPONENT, 5);
-								glLightfv(GL_LIGHT3, GL_DIFFUSE, white);
-								glPopMatrix();
-								glPopMatrix();
-}
 
 void drawWalls(){
 								GLuint texture = parede;
@@ -183,25 +153,63 @@ void drawWalls(){
 								glTranslatef(x, y, 0);
 
 								//desenha parede externa (cilindro oco)
-								for(i = 0; i < 2; i++) {
-																GLfloat raio = trackVector.at(i).getRadius();
+								// for(i = 0; i < 2; i++) {
+								// 								GLfloat raio = trackVector.at(i).getRadius();
+								//
+								// 								glBegin(GL_QUAD_STRIP);
+								// 								for(j = 0; j < M_PI; j += definition) {
+								// 																const float tc = ( j / (float)( 2 * M_PI ) );
+								// 																if(i == 0) glNormal3f(0,-1,0); else glNormal3f(0,1,0);
+								// 																glTexCoord2f( textureS * tc, 1.0 );
+								// 																glVertex3f(raio*cos(j), raio*sin(j), altura);
+								// 																glTexCoord2f( textureS * tc, 0.0 );
+								// 																glVertex3f(raio*cos(j), raio*sin(j), 0);
+								// 								}
+								// 								for(; j <= 2 * M_PI; j += definition) {
+								// 																const float tc = ( j / (float)( 2 * M_PI ) );
+								// 																if(i == 0) glNormal3f(0,1,0); else glNormal3f(0,-1,0);
+								// 																glTexCoord2f( textureS * tc, 1.0 );
+								// 																glVertex3f(raio*cos(j), raio*sin(j), altura);
+								// 																glTexCoord2f( textureS * tc, 0.0 );
+								// 																glVertex3f(raio*cos(j), raio*sin(j), 0);
+								// 								}
+								// 								// glTexCoord2f( 0.0, 1.0 );
+								// 								// glVertex3f(raio, 0, altura);
+								// 								// glTexCoord2f( 0.0, 0.0 );
+								// 								// glVertex3f(raio, 0, 0);
+								// 								glEnd();
+								// }
+								//desenha parede externa (cilindro oco)
 
-																glBegin(GL_QUAD_STRIP);
-																for(j = 0; j <= 2 * M_PI; j += definition) {
-																								const float tc = ( j / (float)( 2 * M_PI ) );
-																								if(i == 0) glNormal3f(0,1,0); else glNormal3f(0,-1,0);
-																								glTexCoord2f( textureS * tc, 1.0 );
-																								glVertex3f(raio*cos(j), raio*sin(j), altura);
-																								glTexCoord2f( textureS * tc, 0.0 );
-																								glVertex3f(raio*cos(j), raio*sin(j), 0);
-																}
-																glTexCoord2f( 0.0, 1.0 );
-																glVertex3f(raio, 0, altura);
-																glTexCoord2f( 0.0, 0.0 );
-																glVertex3f(raio, 0, 0);
-																glEnd();
-								}
+									GLfloat raio = trackVector.at(0).getRadius();
+									GLUquadricObj* quadratic=gluNewQuadric();          // Create A Pointer To The Quadric Object ( NEW )
+									gluQuadricNormals(quadratic, GLU_SMOOTH);
+									gluQuadricOrientation(quadratic, GLU_INSIDE);  // Create Smooth Normals ( NEW )
+									glPushMatrix();
+									glMatrixMode(GL_TEXTURE);
+									glLoadIdentity();
+									glScalef(25.0f, 1.0f, 1.0f);
+									gluQuadricTexture(quadratic, GL_TRUE);
+									gluCylinder(quadratic,raio,raio,altura,100,100);
+									glLoadIdentity();
+									glPopMatrix();
 
+
+
+									//desenha parede interna (cilindro oco)
+									raio = trackVector.at(1).getRadius();
+									gluQuadricOrientation(quadratic, GLU_OUTSIDE);
+									glPushMatrix();
+									glMatrixMode(GL_TEXTURE);
+									glLoadIdentity();
+									glScalef(25.0f, 1.0f, 1.0f);
+									gluQuadricTexture(quadratic, GL_TRUE);
+									gluCylinder(quadratic,raio,raio,altura,100,100);
+									glLoadIdentity();
+									glPopMatrix();
+
+
+									glMatrixMode(GL_MODELVIEW);
 								glPopMatrix();
 
 }
@@ -234,23 +242,50 @@ void drawFloor(){
 								glColor3f(1,1,1);
 								glBindTexture (GL_TEXTURE_2D, texture);
 
+								float j = 0, i=0;
+								float definition = 0.1;
+								Circle pistaOut = trackVector.at(0);
+								GLfloat x = pistaOut.getCenterX();
+								GLfloat y = pistaOut.getCenterY();
+								GLfloat altura = 4*player->getZHeight();
+
+
+								glPushMatrix();
+								// glTranslatef(x, y, 0);
+
 								double textureS = 60;
 								GLfloat height_window = 800; //é mil e quinhentox mas ela só ganha 750, a outra metade ela pegou na bolsa da amiga dela
 								GLfloat width_window = 800;
 								glBegin (GL_QUADS);
-								glNormal3f(0,0,-1);
+								glNormal3f(0,1,0);
 								glTexCoord2f (0, 0);
 								glVertex3f (0, 0, 0);
-								glNormal3f(0,0,-1);
+								glNormal3f(0,1,0);
 								glTexCoord2f (textureS, 0);
 								glVertex3f (width_window, 0,0);
-								glNormal3f(0,0,-1);
+								glNormal3f(0,1,0);
 								glTexCoord2f (textureS, textureS);
 								glVertex3f (width_window, height_window,0);
-								glNormal3f(0,0,-1);
+								glNormal3f(0,1,0);
 								glTexCoord2f (0, textureS);
 								glVertex3f (0, height_window, 0);
 								glEnd();
+								// GLfloat raioOut = trackVector.at(0).getRadius();
+								// GLfloat raioIn = trackVector.at(1).getRadius();
+								// GLUquadricObj* quadratic=gluNewQuadric();          // Create A Pointer To The Quadric Object ( NEW )
+								// gluQuadricNormals(quadratic, GLU_SMOOTH);
+								// glPushMatrix();
+								// glMatrixMode(GL_TEXTURE);
+								// glLoadIdentity();
+								// glScalef(5.0f, 5.0f, 1.0f);
+								// gluQuadricTexture(quadratic, GL_TRUE);
+								// gluQuadricOrientation(quadratic, GLU_INSIDE);
+								// gluDisk(quadratic,raioIn, raioOut, 100,1);
+								// glLoadIdentity();
+								// glPopMatrix();
+								glPopMatrix();
+
+
 }
 
 void drawSky()
@@ -375,19 +410,19 @@ void display(){
 
 
 																GLfloat white[4] = { 1, 1, 1, 0 };
-																GLfloat dir[4] = {0, -1, 0, 0};
+																GLfloat dir[4] = {0, -1, -0.1, 0};
 																GLfloat zero[4] = {0, 0, 0, 1};
 																glMatrixMode(GL_MODELVIEW);
 
 																glPushMatrix();
-																glTranslatef(player->getCenterX(), player->getCenterY(), 0);
+																glTranslatef(player->getCenterX(), player->getCenterY(), 0.5);
 																glRotatef(player->getTheta(), 0, 0, 1);
 																glPushMatrix();
 																glLightfv(GL_LIGHT1, GL_POSITION, zero);
 																glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, dir);
 																glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45);
-																glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 5);
-																glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1);
+																glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 15);
+																glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.5);
 																glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0);
 																glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0);
 																glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
@@ -507,15 +542,11 @@ void idle(){
 																								if(night_mode) {
 																																teto = LoadTextureRAW("sky_night.bmp");
 																																glDisable( GL_LIGHT0 );
-																																glDisable( GL_LIGHT1 );
-																																glEnable( GL_LIGHT2 );
-																																glEnable( GL_LIGHT3 );
+																																glEnable( GL_LIGHT1 );
 																								} else {
 																																teto = LoadTextureRAW("sky.bmp");
 																																glEnable( GL_LIGHT0 );
-																																glEnable( GL_LIGHT1 );
-																																glDisable( GL_LIGHT2 );
-																																glDisable( GL_LIGHT3 );
+																																glDisable( GL_LIGHT1 );
 																								}
 
 																}
