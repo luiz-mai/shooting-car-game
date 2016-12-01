@@ -53,8 +53,6 @@ public:
   // Prints the Win/Lose message at the end of the game.
   void printEndMessage(GLfloat x, GLfloat y);
 
-  void drawAxes(double);
-
   void drawScene();
   void drawMap();
 

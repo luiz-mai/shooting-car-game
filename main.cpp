@@ -8,7 +8,7 @@
 **																						**
 *****************************************************************************************/
 
-#include "trab3.h"
+#include "main.h"
 
 GLuint LoadTextureRAW(const char *filename);
 
@@ -47,16 +47,18 @@ int buttonDown;
 double camDist=10;
 double camXYAngle=1;
 double camXZAngle=1;
-
+//Texture variables
 GLuint parede;
 GLuint chao;
 GLuint teto;
 GLuint largada;
+//Features variables
 bool night_mode;
 bool lightingEnabled = true;
 bool light0Enabled = true;
 bool light1Enabled = true;
 bool textureEnabled = true;
+bool foesEnabled = false;
 bool minimap = false;
 
 int main(int argc, char** argv) {
@@ -81,19 +83,17 @@ int main(int argc, char** argv) {
 								glEnable( GL_TEXTURE_2D );
 								glEnable(GL_LIGHTING);
 								glEnable(GL_LIGHT0);
-								// glEnable(GL_LIGHT1);
 								glEnable(GL_BLEND);
 								glEnable(GL_NORMALIZE);
 								glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-								// glShadeModel (GL_FLAT);
-								glShadeModel (GL_SMOOTH);
+								glShadeModel (GL_FLAT);
+								// glShadeModel (GL_SMOOTH);
 								glDepthFunc(GL_LEQUAL);
 
 								chao = LoadTextureRAW( "floor.bmp" );
 								parede = LoadTextureRAW( "parede.bmp" );
 								teto = LoadTextureRAW( "sky.bmp" );
 								largada = LoadTextureRAW("largada.bmp");
-
 
 								glMatrixMode(GL_PROJECTION);
 								glLoadIdentity();
@@ -107,8 +107,6 @@ int main(int argc, char** argv) {
 								glutMouseFunc(mouseClick);
 								glutMotionFunc(moveCamera);
 								glutPassiveMotionFunc(mouseMotion);
-
-								// glEnable(GL_LIGHT0);
 
 								glutDisplayFunc(display);
 
@@ -136,7 +134,6 @@ void drawWalls(){
 								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-
 								glColor3f(1,1,1);
 								glBindTexture (GL_TEXTURE_2D, texture);
 								double textureS = 40;
@@ -148,65 +145,36 @@ void drawWalls(){
 								GLfloat y = pistaOut.getCenterY();
 								GLfloat altura = 4*player->getZHeight();
 
-
 								glPushMatrix();
 								glTranslatef(x, y, 0);
 
-								//desenha parede externa (cilindro oco)
-								// for(i = 0; i < 2; i++) {
-								// 								GLfloat raio = trackVector.at(i).getRadius();
-								//
-								// 								glBegin(GL_QUAD_STRIP);
-								// 								for(j = 0; j < M_PI; j += definition) {
-								// 																const float tc = ( j / (float)( 2 * M_PI ) );
-								// 																if(i == 0) glNormal3f(0,-1,0); else glNormal3f(0,1,0);
-								// 																glTexCoord2f( textureS * tc, 1.0 );
-								// 																glVertex3f(raio*cos(j), raio*sin(j), altura);
-								// 																glTexCoord2f( textureS * tc, 0.0 );
-								// 																glVertex3f(raio*cos(j), raio*sin(j), 0);
-								// 								}
-								// 								for(; j <= 2 * M_PI; j += definition) {
-								// 																const float tc = ( j / (float)( 2 * M_PI ) );
-								// 																if(i == 0) glNormal3f(0,1,0); else glNormal3f(0,-1,0);
-								// 																glTexCoord2f( textureS * tc, 1.0 );
-								// 																glVertex3f(raio*cos(j), raio*sin(j), altura);
-								// 																glTexCoord2f( textureS * tc, 0.0 );
-								// 																glVertex3f(raio*cos(j), raio*sin(j), 0);
-								// 								}
-								// 								// glTexCoord2f( 0.0, 1.0 );
-								// 								// glVertex3f(raio, 0, altura);
-								// 								// glTexCoord2f( 0.0, 0.0 );
-								// 								// glVertex3f(raio, 0, 0);
-								// 								glEnd();
-								// }
-								//desenha parede externa (cilindro oco)
+								//External wall
+								GLfloat raio = trackVector.at(0).getRadius();
+								GLUquadricObj* quadratic=gluNewQuadric();           // Create A Pointer To The Quadric Object ( NEW )
+								gluQuadricNormals(quadratic, GLU_SMOOTH);
+								gluQuadricOrientation(quadratic, GLU_INSIDE);   // Create Smooth Normals ( NEW )
+								glPushMatrix();
+								glMatrixMode(GL_TEXTURE);
+								glLoadIdentity();
+								glScalef(25.0f, 1.0f, 1.0f);
+								gluQuadricTexture(quadratic, GL_TRUE);
+								gluCylinder(quadratic,raio,raio,altura,100,100);
+								glLoadIdentity();
+								glMatrixMode(GL_MODELVIEW);
+								glPopMatrix();
 
-									GLfloat raio = trackVector.at(0).getRadius();
-									GLUquadricObj* quadratic=gluNewQuadric();          // Create A Pointer To The Quadric Object ( NEW )
-									gluQuadricNormals(quadratic, GLU_SMOOTH);
-									gluQuadricOrientation(quadratic, GLU_INSIDE);  // Create Smooth Normals ( NEW )
-									glPushMatrix();
-									glMatrixMode(GL_TEXTURE);
-									glLoadIdentity();
-									glScalef(25.0f, 1.0f, 1.0f);
-									gluQuadricTexture(quadratic, GL_TRUE);
-									gluCylinder(quadratic,raio,raio,altura,100,100);
-									glLoadIdentity();
-									glMatrixMode(GL_MODELVIEW);
-									glPopMatrix();
-
-									//desenha parede interna (cilindro oco)
-									raio = trackVector.at(1).getRadius();
-									gluQuadricOrientation(quadratic, GLU_OUTSIDE);
-									glPushMatrix();
-									glMatrixMode(GL_TEXTURE);
-									glLoadIdentity();
-									glScalef(25.0f, 1.0f, 1.0f);
-									gluQuadricTexture(quadratic, GL_TRUE);
-									gluCylinder(quadratic,raio,raio,altura,100,100);
-									glLoadIdentity();
-									glMatrixMode(GL_MODELVIEW);
-									glPopMatrix();
+								//Internal wall
+								raio = trackVector.at(1).getRadius();
+								gluQuadricOrientation(quadratic, GLU_OUTSIDE);
+								glPushMatrix();
+								glMatrixMode(GL_TEXTURE);
+								glLoadIdentity();
+								glScalef(25.0f, 1.0f, 1.0f);
+								gluQuadricTexture(quadratic, GL_TRUE);
+								gluCylinder(quadratic,raio,raio,altura,100,100);
+								glLoadIdentity();
+								glMatrixMode(GL_MODELVIEW);
+								glPopMatrix();
 
 								glPopMatrix();
 
@@ -227,7 +195,7 @@ void drawFloor(){
 								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
 								if(textureEnabled) {
-									glBindTexture (GL_TEXTURE_2D, texture);
+																glBindTexture (GL_TEXTURE_2D, texture);
 								}
 
 								glBindTexture (GL_TEXTURE_2D, texture);
@@ -244,7 +212,7 @@ void drawFloor(){
 
 								GLfloat raioOut = trackVector.at(0).getRadius();
 								GLfloat raioIn = trackVector.at(1).getRadius();
-								GLUquadricObj* quadratic = gluNewQuadric();          // Create A Pointer To The Quadric Object ( NEW )
+								GLUquadricObj* quadratic = gluNewQuadric();
 								gluQuadricNormals(quadratic, GLU_SMOOTH);
 								glPushMatrix();
 								glMatrixMode(GL_TEXTURE);
@@ -282,8 +250,6 @@ void drawSky()
 								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-								// if(textura_ligada){
-
 								float j = 0, i=0;
 								float definition = 0.1;
 								Circle pistaOut = trackVector.at(0);
@@ -296,7 +262,7 @@ void drawSky()
 
 								GLfloat raioOut = trackVector.at(0).getRadius();
 								GLfloat raioIn = trackVector.at(1).getRadius();
-								GLUquadricObj* quadratic = gluNewQuadric();          // Create A Pointer To The Quadric Object ( NEW )
+								GLUquadricObj* quadratic = gluNewQuadric();
 								gluQuadricNormals(quadratic, GLU_SMOOTH);
 								glPushMatrix();
 								glMatrixMode(GL_TEXTURE);
@@ -327,11 +293,8 @@ void display(){
 																trab.printCronometer(0.88,0.95);
 								}
 
-
-
 								//If player hasn't won or lost
 								if(gameState == 0) {
-
 
 																/**RETROVISOR GLfloat scale = player->getCircleRadius()/player->getWidth();
 																   glViewport(0,500,500,700);
@@ -348,25 +311,23 @@ void display(){
 																   glViewport(0,0,500,500);
 																   glLoadIdentity();*/
 
-
-
 																if(cameraMode == 0) {
-																								cam1x=player->getCenterX()+(sin(player->getTheta()*M_PI/180)*player->getCircleRadius());
-																								cam1y=player->getCenterY()-(cos(player->getTheta()*M_PI/180)*player->getCircleRadius());
-																								cam1z=1.5*player->getZHeight();
-																								centro_x=player->getCenterX()+5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
-																								centro_y=player->getCenterY()+5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
-																								centro_z=cam1z;
+																								cam1x = player->getCenterX() + 20*sin(player->getTheta()*M_PI/180);
+																								cam1y = player->getCenterY() - 20*cos(player->getTheta()*M_PI/180);
+																								cam1z = 20;
+																								centro_x = cam1x + 50*cos((player->getTheta()-90)*M_PI/180);
+																								centro_y = cam1y + 50*sin((player->getTheta()-90)*M_PI/180);
+																								centro_z = cam1z/2;
 																								gluLookAt(cam1x, cam1y, cam1z, centro_x, centro_y, centro_z, 0, 0, 1);
 																} else if(cameraMode == 1) {
 																								GLfloat angulo = player->getTheta() + player->getCannonAngle();
-																								GLfloat scale = player->getCircleRadius()/player->getHeight();
-																								cam1x = player->getCenterX()+(sin(player->getTheta()*M_PI/180)*player->getCircleRadius())+(sin(angulo*M_PI/180)*player->getCannon().getHeight()*scale);
-																								cam1y = player->getCenterY()-(cos(player->getTheta()*M_PI/180)*player->getCircleRadius())-(cos(angulo*M_PI/180)*player->getCannon().getHeight()*scale);
-																								cam1z = 25+sin(player->getCannonZAngle()*M_PI/180)*player->getCannon().getHeight()*scale;
+
+																								cam1x = player->getCenterX()-(sin(player->getTheta()*M_PI/180)*4)+(sin(angulo*M_PI/180));
+																								cam1y = player->getCenterY()+(cos(player->getTheta()*M_PI/180)*4)-(cos(angulo*M_PI/180));
+																								cam1z = 30+sin((player->getCannonZAngle()-10)*M_PI/180);
 																								centro_x = cam1x + sin(angulo*M_PI/180)*200;
 																								centro_y = cam1y - cos(angulo*M_PI/180)*200;
-																								centro_z = cam1z + sin(player->getCannonZAngle()*M_PI/180)*200;
+																								centro_z = cam1z + sin((player->getCannonZAngle()-10)*M_PI/180)*200;
 																								gluLookAt(cam1x,cam1y,cam1z, centro_x,centro_y,centro_z, 0,0,1);
 																} else if(cameraMode == 2) {
 																								cam1x = player->getCenterX() + 2*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*sin((camXZAngle)*M_PI/180);
@@ -390,9 +351,6 @@ void display(){
 																glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse0);
 																glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular0);
 																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-
-
 
 																GLfloat white[4] = { 1, 1, 1, 0 };
 																GLfloat dir[4] = {0, -1, -0.2, 0};
@@ -583,7 +541,9 @@ void idle(){
 																								minimap = !minimap;
 																}
 
-
+																if(i_status['f'] == 1 || i_status['F'] == 1) {
+																								foesEnabled = !foesEnabled;
+																}
 
 																//Updates the position of all the shots
 																//Erases the shots that are outside the screen.
@@ -924,7 +884,20 @@ void Trab3::drawScene(){
 
 								//Draws all the foes
 								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
-																// (*it).drawCar();
+																if(foesEnabled) {
+																								(*it).drawCar();
+																} else{
+																								glPushMatrix();
+																								glTranslatef(
+																																(*it).getCenterX(),
+																																(*it).getCenterY(),
+																																0
+																																);
+																								glColor3f(1,1,1);
+																								glTranslatef(0,0,(*it).getCircleRadius()/2);
+																								glutSolidCube((*it).getCircleRadius());
+																								glPopMatrix();
+																}
 								}
 
 								//Draws all the shots
@@ -995,50 +968,4 @@ void Trab3::drawMap(){
 																glEnable(GL_TEXTURE_2D);
 								if(lightingEnabled)
 																glEnable(GL_LIGHTING);
-}
-
-void Trab3::drawAxes(double size){
-								GLfloat mat_ambient_r[] = { 1.0, 0.0, 0.0, 1.0 };
-								GLfloat mat_ambient_g[] = { 0.0, 1.0, 0.0, 1.0 };
-								GLfloat mat_ambient_b[] = { 0.0, 0.0, 1.0, 1.0 };
-								// GLfloat no_mat[] = { 0.0, 0.0, 0.0, 1.0 };
-								// glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE,
-								//              no_mat);
-								// glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
-								// glMaterialfv(GL_FRONT, GL_SHININESS, no_mat);
-
-								glPushAttrib(GL_ENABLE_BIT);
-								glDisable(GL_LIGHTING);
-								glDisable(GL_TEXTURE_2D);
-
-								//x axis
-								glPushMatrix();
-								// glMaterialfv(GL_FRONT, GL_EMISSION, mat_ambient_r);
-								glColor3fv(mat_ambient_r);
-								glScalef(size, size*0.1, size*0.1);
-								glTranslatef(0.5, 0, 0);    // put in one end
-								glutSolidCube(1.0);
-								glPopMatrix();
-
-								//y axis
-								glPushMatrix();
-								// glMaterialfv(GL_FRONT, GL_EMISSION, mat_ambient_g);
-								glColor3fv(mat_ambient_g);
-								glRotatef(90,0,0,1);
-								glScalef(size, size*0.1, size*0.1);
-								glTranslatef(0.5, 0, 0);    // put in one end
-								glutSolidCube(1.0);
-								glPopMatrix();
-
-								//z axis
-								glPushMatrix();
-								// glMaterialfv(GL_FRONT, GL_EMISSION, mat_ambient_b);
-								glColor3fv(mat_ambient_b);
-								glRotatef(-90,0,1,0);
-								glScalef(size, size*0.1, size*0.1);
-								glTranslatef(0.5, 0, 0);    // put in one end
-								glutSolidCube(1.0);
-								glPopMatrix();
-								glPopAttrib();
-
 }

@@ -420,14 +420,15 @@ void Car::drawShots(){
                 glPushMatrix();
                 glTranslatef(
                         (*it).getCenterX(),
-                        (*it).getCenterY() - 0.35*this->getHeight(),
+                        (*it).getCenterY(),
                         (*it).getCenterZ()
                         );
                 glRotatef(-(*it).getCannonZAngle(), 1, 0, 0);
                 glRotatef((*it).getCannonAngle() + (*it).getCarAngle(), 0, 0, 1);
                 GLUquadricObj *quadObj = gluNewQuadric();
                 gluQuadricNormals(quadObj, GLU_SMOOTH);
-                gluSphere(quadObj, 3, 50, 100);
+                glColor3f(1, 0, 1);
+                gluSphere(quadObj, 1.5, 50, 100);
 
                 glPopMatrix();
         }
@@ -438,7 +439,10 @@ void Car::drawShots(){
 
 void Car::addShot(){
         Circle shotCircle = Circle("Shot", 12, 0, 0, "yellow");
-        Shot shot = Shot(shotCircle,this->getCenterX(),this->getCenterY(), 8, this->getTheta(),this->getCannonAngle(), this->getCannonZAngle());
+        GLfloat angulo = this->getTheta() + this->getCannonAngle();
+        GLfloat shotX = this->getCenterX()-(sin(this->getTheta()*M_PI/180)*4)+(sin(angulo*M_PI/180));
+        GLfloat shotY = this->getCenterY()+(cos(this->getTheta()*M_PI/180)*4)-(cos(angulo*M_PI/180));
+        Shot shot = Shot(shotCircle,shotX,shotY, 28+sin(this->getCannonZAngle()*M_PI/180)*10, this->getTheta(),this->getCannonAngle(), this->getCannonZAngle());
         this->shotsVector.push_back(shot);
         return;
 }
@@ -486,7 +490,7 @@ void Car::updateShots(GLdouble t){
         vector<Shot> playerShotsVector = this->getShotsVector();
         for(vector<Shot>::iterator it = playerShotsVector.begin(); it != playerShotsVector.end(); ++it) {
                 GLfloat angle = (*it).getCarAngle() + (*it).getCannonAngle();
-                GLfloat angleZ = (*it).getCannonZAngle();
+                GLfloat angleZ = (*it).getCannonZAngle() - 10;
                 (*it).setCenterX((*it).getCenterX() + t*this->getShotSpeed()*cos((angle-90)*M_PI/180));
                 (*it).setCenterY((*it).getCenterY() + t*this->getShotSpeed()*sin((angle-90)*M_PI/180));
                 (*it).setCenterZ((*it).getCenterZ() + t*this->getShotSpeed()*cos((angleZ-90)*M_PI/180));
