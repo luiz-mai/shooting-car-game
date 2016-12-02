@@ -2,9 +2,9 @@
 /*****************************************************************************************
 **																						**
 **						UNIVERSIDADE FEDERAL DO ESPÍRITO SANTO							**
-**							   Luiz Felipe Ferreira Mai               **
-**																						**
-**						   Trabalho 3 de Computação Gráfica								**
+**							   Luiz Felipe Ferreira Mai                    **
+**								César Henrique Bernabé									**
+**						   Trabalho Final de Computação Gráfica							**
 **																						**
 *****************************************************************************************/
 
@@ -14,17 +14,18 @@ GLuint LoadTextureRAW(const char *filename);
 
 using namespace std;
 
-Trab3 trab;
-int i_status[1000];
-bool started;
-//Arena variables
-vector<Circle> trackVector;
-Rectangle* startTrack;
-Car* player;
-int biggestRadius = 0, smallestRadius = 99999;
-int width, height;
-int arenaCenterX = 0, arenaCenterY = 0;
-//Foes variables
+TrabCG trab;
+
+int i_status[1000]; //Variable used to key monitoring
+bool started; //Game has started or not
+// ******** Arena variables
+vector<Circle> trackVector; //
+Rectangle* startTrack; //Start track line
+Car* player; //Car class
+int biggestRadius = 0, smallestRadius = 99999; //Arena biggest and smallest radius (used to control foes IA)
+int width, height; //Screen's width and height
+int arenaCenterX = 0, arenaCenterY = 0; //Arena ceter positions
+// ******** Foes variables
 vector<Car> foesVector;
 GLfloat foeSpeed;
 GLfloat foeShootingSpeed;
@@ -36,14 +37,14 @@ static char str[2000];
 void * timer_font = GLUT_BITMAP_9_BY_15;
 void * end_font = GLUT_BITMAP_TIMES_ROMAN_24;
 time_t start;
-//End of the game variables
-int gameState = 0;
+
+int gameState = 0; //zero if player hasn't won/lost so far
 bool crossedLine1 = false, crossedLine2 = false;
 //Camera variables
 int cameraMode = 0;  //0:Cockpit  /  1:Canhão  /  2:Externa
-GLfloat cam1x, cam1y, cam1z, cam2x, cam2y, cam2z, centro_x, centro_y, centro_z;
-int lastX, lastY;
-int buttonDown;
+GLfloat cam1x, cam1y, cam1z, cam2x, cam2y, cam2z, centro_x, centro_y, centro_z; //camera positions
+int lastX, lastY; //last position of mouse click
+int buttonDown; //mouse click controller
 double camDist=10;
 double camXYAngle=1;
 double camXZAngle=1;
@@ -60,6 +61,8 @@ bool light1Enabled = true;
 bool textureEnabled = true;
 bool foesEnabled = false;
 bool minimap = false;
+
+//End of the game variables
 
 int main(int argc, char** argv) {
 								player = new Car("player");
@@ -79,21 +82,21 @@ int main(int argc, char** argv) {
 								glutCreateWindow("Trabalho Final de Computacao Grafica");
 
 								glClearColor(0,0,0,0);
-								glEnable(GL_DEPTH_TEST);
-								glEnable( GL_TEXTURE_2D );
-								glEnable(GL_LIGHTING);
-								glEnable(GL_LIGHT0);
-								glEnable(GL_BLEND);
+								glEnable(GL_DEPTH_TEST); //Enables depth calculation
+								glEnable( GL_TEXTURE_2D ); //Enables textures
+								glEnable(GL_LIGHTING); //Enables lighting
+								glEnable(GL_LIGHT0); //Enables ambient light
+								glEnable(GL_BLEND); //blends the computed fragment color values with the values in the color buffers
 								glEnable(GL_NORMALIZE);
 								glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-								glShadeModel (GL_FLAT);
-								// glShadeModel (GL_SMOOTH);
+								glShadeModel (GL_FLAT); //Shading
+								// glShadeModel (GL_SMOOTH); //Heavy shading
 								glDepthFunc(GL_LEQUAL);
 
-								chao = LoadTextureRAW( "floor.bmp" );
-								parede = LoadTextureRAW( "parede.bmp" );
-								teto = LoadTextureRAW( "sky.bmp" );
-								largada = LoadTextureRAW("largada.bmp");
+								chao = LoadTextureRAW( "floor.bmp" ); //Loads floor texture from file
+								parede = LoadTextureRAW( "parede.bmp" ); //Loads walls texture from file
+								teto = LoadTextureRAW( "sky.bmp" ); //Loads sky texture from file
+								largada = LoadTextureRAW("largada.bmp"); //Loads start track texture from file
 
 								glMatrixMode(GL_PROJECTION);
 								glLoadIdentity();
@@ -113,170 +116,6 @@ int main(int argc, char** argv) {
 								glutMainLoop();
 								return 0;
 }
-
-
-void drawWalls(){
-								GLuint texture = parede;
-								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
-								GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
-								GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
-								GLfloat mat_shininess[] = { 128.0 };
-
-								if(!textureEnabled) {
-																glColor3f(0.75,0.75,0.75);
-								} else {
-																glColor3f(1,1,1);
-																glBindTexture (GL_TEXTURE_2D, texture);
-								}
-
-								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-								glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialColor);
-								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-
-								glColor3f(1,1,1);
-								glBindTexture (GL_TEXTURE_2D, texture);
-								double textureS = 40;
-
-								float j = 0, i=0;
-								float definition = 0.1;
-								Circle pistaOut = trackVector.at(0);
-								GLfloat x = pistaOut.getCenterX();
-								GLfloat y = pistaOut.getCenterY();
-								GLfloat altura = 4*player->getZHeight();
-
-								glPushMatrix();
-								glTranslatef(x, y, 0);
-
-								//External wall
-								GLfloat raio = trackVector.at(0).getRadius();
-								GLUquadricObj* quadratic=gluNewQuadric();           // Create A Pointer To The Quadric Object ( NEW )
-								gluQuadricNormals(quadratic, GLU_SMOOTH);
-								gluQuadricOrientation(quadratic, GLU_INSIDE);   // Create Smooth Normals ( NEW )
-								glPushMatrix();
-								glMatrixMode(GL_TEXTURE);
-								glLoadIdentity();
-								glScalef(25.0f, 1.0f, 1.0f);
-								gluQuadricTexture(quadratic, GL_TRUE);
-								gluCylinder(quadratic,raio,raio,altura,100,100);
-								glLoadIdentity();
-								glMatrixMode(GL_MODELVIEW);
-								glPopMatrix();
-
-								//Internal wall
-								raio = trackVector.at(1).getRadius();
-								gluQuadricOrientation(quadratic, GLU_OUTSIDE);
-								glPushMatrix();
-								glMatrixMode(GL_TEXTURE);
-								glLoadIdentity();
-								glScalef(25.0f, 1.0f, 1.0f);
-								gluQuadricTexture(quadratic, GL_TRUE);
-								gluCylinder(quadratic,raio,raio,altura,100,100);
-								glLoadIdentity();
-								glMatrixMode(GL_MODELVIEW);
-								glPopMatrix();
-
-								glPopMatrix();
-
-}
-
-void drawFloor(){
-
-								GLuint texture = chao;
-
-								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
-								GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
-								GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
-								GLfloat mat_shininess[] = { 128.0 };
-
-								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-								glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialColor);
-								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-
-								if(textureEnabled) {
-																glBindTexture (GL_TEXTURE_2D, texture);
-								}
-
-								glBindTexture (GL_TEXTURE_2D, texture);
-
-								float j = 0, i=0;
-								float definition = 0.1;
-								Circle pistaOut = trackVector.at(0);
-								GLfloat x = pistaOut.getCenterX();
-								GLfloat y = pistaOut.getCenterY();
-								GLfloat altura = 4*player->getZHeight();
-
-								glPushMatrix();
-								glTranslatef(x, y, 0);
-
-								GLfloat raioOut = trackVector.at(0).getRadius();
-								GLfloat raioIn = trackVector.at(1).getRadius();
-								GLUquadricObj* quadratic = gluNewQuadric();
-								gluQuadricNormals(quadratic, GLU_SMOOTH);
-								glPushMatrix();
-								glMatrixMode(GL_TEXTURE);
-								glLoadIdentity();
-								glScalef(25.0f, 25.0f, 1.0f);
-								gluQuadricTexture(quadratic, GL_TRUE);
-								gluQuadricOrientation(quadratic, GLU_OUTSIDE);
-								gluDisk(quadratic,raioIn, raioOut, 100,20);
-								glLoadIdentity();
-								glMatrixMode(GL_MODELVIEW);
-								glPopMatrix();
-								glPopMatrix();
-
-
-}
-
-void drawSky()
-{
-								GLuint texture = teto;
-
-								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
-								GLfloat materialColor[] = { 0.5, 0.5, 0.5, 1.0};
-								GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
-								GLfloat mat_shininess[] = { 128.0 };
-
-								if(!textureEnabled)
-																glColor3f(0, 0, 1);
-								else {
-																glColor3f(1,1,1);
-																glBindTexture (GL_TEXTURE_2D, texture);
-								}
-
-								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-								glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialColor);
-								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-
-								float j = 0, i=0;
-								float definition = 0.1;
-								Circle pistaOut = trackVector.at(0);
-								GLfloat x = pistaOut.getCenterX();
-								GLfloat y = pistaOut.getCenterY();
-								GLfloat altura = 4*player->getZHeight();
-
-								glPushMatrix();
-								glTranslatef(x, y, altura);
-
-								GLfloat raioOut = trackVector.at(0).getRadius();
-								GLfloat raioIn = trackVector.at(1).getRadius();
-								GLUquadricObj* quadratic = gluNewQuadric();
-								gluQuadricNormals(quadratic, GLU_SMOOTH);
-								glPushMatrix();
-								glMatrixMode(GL_TEXTURE);
-								glLoadIdentity();
-								glScalef(15.0f, 15.0f, 1.0f);
-								gluQuadricTexture(quadratic, GL_TRUE);
-								gluQuadricOrientation(quadratic, GLU_INSIDE);
-								gluDisk(quadratic,raioIn, raioOut, 100,20);
-								glLoadIdentity();
-								glMatrixMode(GL_MODELVIEW);
-								glPopMatrix();
-								glPopMatrix();
-}
-
 
 void display(){
 
@@ -311,7 +150,7 @@ void display(){
 																   glViewport(0,0,500,500);
 																   glLoadIdentity();*/
 
-																if(cameraMode == 0) {
+																if(cameraMode == 0) { //Sets camera to Cockpit vision
 																								cam1x = player->getCenterX() + 20*sin(player->getTheta()*M_PI/180);
 																								cam1y = player->getCenterY() - 20*cos(player->getTheta()*M_PI/180);
 																								cam1z = 20;
@@ -319,7 +158,7 @@ void display(){
 																								centro_y = cam1y + 50*sin((player->getTheta()-90)*M_PI/180);
 																								centro_z = cam1z/2;
 																								gluLookAt(cam1x, cam1y, cam1z, centro_x, centro_y, centro_z, 0, 0, 1);
-																} else if(cameraMode == 1) {
+																} else if(cameraMode == 1) { //Sets camera to cannon's vision
 																								GLfloat angulo = player->getTheta() + player->getCannonAngle();
 
 																								cam1x = player->getCenterX()-(sin(player->getTheta()*M_PI/180)*4)+(sin(angulo*M_PI/180));
@@ -329,20 +168,18 @@ void display(){
 																								centro_y = cam1y - cos(angulo*M_PI/180)*200;
 																								centro_z = cam1z + sin((player->getCannonZAngle()-10)*M_PI/180)*200;
 																								gluLookAt(cam1x,cam1y,cam1z, centro_x,centro_y,centro_z, 0,0,1);
-																} else if(cameraMode == 2) {
+																} else if(cameraMode == 2) { //Sets camera to external vision
 																								cam1x = player->getCenterX() + 2*(player->getCircleRadius())*sin((camXYAngle)*M_PI/180)*sin((camXZAngle)*M_PI/180);
 																								cam1y = player->getCenterY() - 2*(player->getCircleRadius())*cos((camXYAngle)*M_PI/180)*sin((camXZAngle)*M_PI/180);
 																								cam1z= player->getCenterZ() + 1*(player->getCircleRadius())*cos((camXZAngle)*M_PI/180);
 																								gluLookAt(cam1x,cam1y,cam1z, player->getCenterX(),player->getCenterY(),player->getCenterZ(), 0,0,1);
 																}
 
-
-																//luz1
+																//luz1 (car spotlight)
 																GLfloat nightmode_coeficient = night_mode ? 1 : 0;
 																GLfloat light_ambient0[] = { 0.8 - nightmode_coeficient*0.6, 0.8 - nightmode_coeficient*0.6, 0.8 - nightmode_coeficient*0.6, 1.0 };
 																GLfloat light_diffuse0[] = { 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 };
 																GLfloat light_specular0[] = { 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 - nightmode_coeficient, 1.0 };
-
 
 																//AMBIENT LIGHT
 																Circle pistaOut = trackVector.at(0);
@@ -352,10 +189,12 @@ void display(){
 																glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular0);
 																glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
+																//Light 1 parameters
 																GLfloat white[4] = { 1, 1, 1, 0 };
 																GLfloat dir[4] = {0, -1, -0.2, 0};
 																GLfloat zero[4] = {0, 0, 0, 1};
 
+																//Light 1 positioning and configuration (trying to simulate a focal light)
 																glPushMatrix();
 																glMatrixMode(GL_MODELVIEW);
 																glTranslatef(player->getCenterX(), player->getCenterY(), 25);
@@ -374,11 +213,9 @@ void display(){
 
 																glPopMatrix();
 
-																vector<Circle>::iterator it = trackVector.begin();
-
-
 																trab.drawScene();
 
+																//Shows minimap
 																if(minimap) {
 																								trab.drawMap();
 																}
@@ -471,6 +308,7 @@ void idle(){
 																								}
 																}
 
+																//Sets camera mode
 																c = '1';
 																if(i_status[c] == 1) cameraMode = 0;
 																c = '2';
@@ -478,7 +316,7 @@ void idle(){
 																c = '3';
 																if(i_status[c] == 1) cameraMode = 2;
 
-																//ativa/desativa modo noturno
+																//activates/deactivates the night mode
 																if(i_status['n'] == 1 || i_status['N'] == 1) {
 																								night_mode = !night_mode;
 
@@ -494,6 +332,7 @@ void idle(){
 
 																}
 
+																//Enables/disables lighting
 																if(i_status['l'] == 1 || i_status['L'] == 1) {
 																								if ( lightingEnabled ) {
 																																cout << "lighting off" << endl;
@@ -505,6 +344,7 @@ void idle(){
 																								lightingEnabled = !lightingEnabled;
 																}
 
+																//Enables/disables ambient light
 																if(i_status['j'] == 1 || i_status['J'] == 1) {
 																								if ( light0Enabled ) {
 																																cout << "light0 off" << endl;
@@ -516,6 +356,7 @@ void idle(){
 																								light0Enabled = !light0Enabled;
 																}
 
+																//Enables/disbales car's focal light
 																if(i_status['k'] == 1 || i_status['K'] == 1) {
 																								if ( light1Enabled ) {
 																																cout << "light1 off" << endl;
@@ -527,7 +368,7 @@ void idle(){
 																								light1Enabled = !light1Enabled;
 																}
 
-
+																//Enables/disables texturing
 																if(i_status['t'] == 1 || i_status['T'] == 1) {
 																								if ( textureEnabled ) {
 																																glDisable( GL_TEXTURE_2D );
@@ -537,10 +378,12 @@ void idle(){
 																								textureEnabled = !textureEnabled;
 																}
 
+																//Enables/disables minimap
 																if(i_status['m'] == 1 || i_status['M'] == 1) {
 																								minimap = !minimap;
 																}
 
+																//Enables/disables foes object modeling
 																if(i_status['f'] == 1 || i_status['F'] == 1) {
 																								foesEnabled = !foesEnabled;
 																}
@@ -558,12 +401,12 @@ void idle(){
 
 																//Adds a shot to the foes every X seg.
 																shootingTime += foeShootingFrequency*t;
-																// if(shootingTime >= 1) {
-																//  for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
-																//   (*it).addShot();
-																//  }
-																//  shootingTime = 0;
-																// }
+																if(shootingTime >= 1) {
+																								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
+																																(*it).addShot();
+																								}
+																								shootingTime = 0;
+																}
 
 																//Detects colision with the foes and tracks
 																if(player->detectFoeColision(foesVector) || player->detectTrackColision(trackVector, biggestRadius)) {
@@ -619,6 +462,7 @@ void idle(){
 								return;
 }
 
+//Detects if shots are out of screen
 bool outOfScreen(Shot shot)
 {
 								return shot.getCenterX() < arenaCenterX - biggestRadius ||
@@ -627,6 +471,7 @@ bool outOfScreen(Shot shot)
 															shot.getCenterY() > arenaCenterY + biggestRadius;
 }
 
+//Detects enemies colision
 bool detectEnemyShotColision(Car car){
 								Utils utils;
 								vector<Shot> playerShotsVector = player->getShotsVector();
@@ -713,11 +558,11 @@ void mouseMotion(int x, int y){
 
 //----------------------------MÉTODOS DA CLASSE--------------------------------
 
-Trab3::Trab3(){
+TrabCG::TrabCG(){
 }
 
 
-string Trab3::getArenaPath(int argc, char** argv){
+string TrabCG::getArenaPath(int argc, char** argv){
 								XMLDocument configs;
 								string configFile;
 								if(argc == 1) {
@@ -742,7 +587,7 @@ string Trab3::getArenaPath(int argc, char** argv){
 								return arenaPath + arenaFilename + "." + arenaExtension;
 }
 
-vector<Circle> Trab3::arenaReading(Trab3 trab, string arenaFullPath, vector<Circle> trackVector){
+vector<Circle> TrabCG::arenaReading(TrabCG trab, string arenaFullPath, vector<Circle> trackVector){
 								XMLDocument arena;
 								arena.LoadFile(arenaFullPath.c_str());
 								XMLElement* svgElement = arena.FirstChildElement("svg");
@@ -751,7 +596,7 @@ vector<Circle> Trab3::arenaReading(Trab3 trab, string arenaFullPath, vector<Circ
 								return trackVector;
 }
 
-Rectangle* Trab3::rectangleReading(XMLElement* svgElement){
+Rectangle* TrabCG::rectangleReading(XMLElement* svgElement){
 								XMLElement* rectElement = svgElement->FirstChildElement("rect");
 								Rectangle* rect = new Rectangle(
 																rectElement->Attribute("id"),
@@ -764,7 +609,7 @@ Rectangle* Trab3::rectangleReading(XMLElement* svgElement){
 								return rect;
 }
 
-vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> trackVector){
+vector<Circle> TrabCG::circleReading(XMLElement* svgElement, vector<Circle> trackVector){
 								for(XMLElement* circleElement = svgElement->FirstChildElement("circle"); circleElement != NULL; circleElement = circleElement->NextSiblingElement("circle"))
 								{
 																Circle* circle = new Circle(
@@ -817,7 +662,7 @@ vector<Circle> Trab3::circleReading(XMLElement* svgElement, vector<Circle> track
 								return trackVector;
 }
 
-void Trab3::RasterChars(GLfloat x, GLfloat y, GLfloat z, const char * text, double r, double g, double b)
+void TrabCG::RasterChars(GLfloat x, GLfloat y, GLfloat z, const char * text, double r, double g, double b)
 {
 								//Push to recover original attributes
 								glPushAttrib(GL_ENABLE_BIT);
@@ -835,7 +680,7 @@ void Trab3::RasterChars(GLfloat x, GLfloat y, GLfloat z, const char * text, doub
 								glPopAttrib();
 }
 
-void Trab3::PrintText(GLfloat x, GLfloat y, const char * text, double r, double g, double b)
+void TrabCG::PrintText(GLfloat x, GLfloat y, const char * text, double r, double g, double b)
 {
 								//Draw text considering a 2D space (disable all 3d features)
 								glMatrixMode (GL_PROJECTION);
@@ -848,7 +693,7 @@ void Trab3::PrintText(GLfloat x, GLfloat y, const char * text, double r, double 
 								glMatrixMode (GL_MODELVIEW);
 }
 
-void Trab3::printCronometer(GLfloat x, GLfloat y){
+void TrabCG::printCronometer(GLfloat x, GLfloat y){
 								char *tmpStr;
 								int seconds_since_start = difftime( time(0), start);
 								int minutes = seconds_since_start / 60;
@@ -857,7 +702,7 @@ void Trab3::printCronometer(GLfloat x, GLfloat y){
 								trab.PrintText(x, y, str, 0, 1, 0);
 }
 
-void Trab3::printEndMessage(GLfloat x, GLfloat y){
+void TrabCG::printEndMessage(GLfloat x, GLfloat y){
 								char *tmpStr;
 								if(gameState == 1) {
 																sprintf(str, "You win!");
@@ -868,13 +713,176 @@ void Trab3::printEndMessage(GLfloat x, GLfloat y){
 								this->PrintText(0.48, 0.5, str, 1, 1, 1);
 }
 
-void Trab3::drawScene(){
+void TrabCG::drawWalls(){
+								//Sets how material reacts to light
+								GLuint texture = parede;
+								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
+								GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
+								GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+								GLfloat mat_shininess[] = { 128.0 };
+
+								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+								glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialColor);
+								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+								//Texturing
+								if(!textureEnabled) {
+																glColor3f(0.75,0.75,0.75);
+								} else {
+																glColor3f(1,1,1);
+																glBindTexture (GL_TEXTURE_2D, texture);
+								}
+
+								glColor3f(1,1,1);
+								glBindTexture (GL_TEXTURE_2D, texture);
+
+								Circle pistaOut = trackVector.at(0);
+								GLfloat x = pistaOut.getCenterX();
+								GLfloat y = pistaOut.getCenterY();
+								GLfloat altura = 4*player->getZHeight();
+
+								glPushMatrix();
+								glTranslatef(x, y, 0);
+
+								//External wall
+								GLfloat raio = trackVector.at(0).getRadius();
+								GLUquadricObj* quadratic=gluNewQuadric();           // Create A Pointer To The Quadric Object
+								gluQuadricNormals(quadratic, GLU_SMOOTH);
+								gluQuadricOrientation(quadratic, GLU_INSIDE);   // Create Smooth Normals
+								glPushMatrix();
+								glMatrixMode(GL_TEXTURE);
+								glLoadIdentity();
+								glScalef(25.0f, 1.0f, 1.0f); //Scales the texture matrix to correctly fit the texture image
+								gluQuadricTexture(quadratic, GL_TRUE);
+								gluCylinder(quadratic,raio,raio,altura,100,100); //Draws a cilinder
+								glLoadIdentity();
+								glMatrixMode(GL_MODELVIEW);
+								glPopMatrix();
+
+								//Internal wall
+								raio = trackVector.at(1).getRadius();
+								gluQuadricOrientation(quadratic, GLU_OUTSIDE);
+								glPushMatrix();
+								glMatrixMode(GL_TEXTURE);
+								glLoadIdentity();
+								glScalef(25.0f, 1.0f, 1.0f);
+								gluQuadricTexture(quadratic, GL_TRUE);
+								gluCylinder(quadratic,raio,raio,altura,100,100);
+								glLoadIdentity();
+								glMatrixMode(GL_MODELVIEW);
+								glPopMatrix();
+
+								glPopMatrix();
+
+}
+
+void TrabCG::drawFloor(){
+								GLuint texture = chao;
+
+								//Sets how material reacts to light
+								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
+								GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
+								GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+								GLfloat mat_shininess[] = { 128.0 };
+
+								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+								glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialColor);
+								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+								//Material texturing
+								if(textureEnabled) {
+																glBindTexture (GL_TEXTURE_2D, texture);
+								}
+
+								glBindTexture (GL_TEXTURE_2D, texture);
+
+								Circle pistaOut = trackVector.at(0);
+								GLfloat x = pistaOut.getCenterX();
+								GLfloat y = pistaOut.getCenterY();
+								GLfloat altura = 4*player->getZHeight();
+
+								glPushMatrix();
+								glTranslatef(x, y, 0);
+
+								//Draws a disk using opengl functions
+								GLfloat raioOut = trackVector.at(0).getRadius();
+								GLfloat raioIn = trackVector.at(1).getRadius();
+								GLUquadricObj* quadratic = gluNewQuadric();
+								gluQuadricNormals(quadratic, GLU_SMOOTH);
+								glPushMatrix();
+								glMatrixMode(GL_TEXTURE);
+								glLoadIdentity();
+								glScalef(25.0f, 25.0f, 1.0f);
+								gluQuadricTexture(quadratic, GL_TRUE);
+								gluQuadricOrientation(quadratic, GLU_OUTSIDE);
+								gluDisk(quadratic,raioIn, raioOut, 100,20);
+								glLoadIdentity();
+								glMatrixMode(GL_MODELVIEW);
+								glPopMatrix();
+								glPopMatrix();
+
+
+}
+
+void TrabCG::drawSky()
+{
+								GLuint texture = teto;
+
+								//Sets how material reacts to light
+								GLfloat materialEmission[] = { 0, 0, 0, 1.0};
+								GLfloat materialColor[] = { 0.5, 0.5, 0.5, 1.0};
+								GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+								GLfloat mat_shininess[] = { 128.0 };
+
+								glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+								glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialColor);
+								glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+								glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+								//Texturing
+								if(!textureEnabled)
+																glColor3f(0, 0, 1);
+								else {
+																glColor3f(1,1,1);
+																glBindTexture (GL_TEXTURE_2D, texture);
+								}
+
+								//Draws sky using opengl objects
+								Circle pistaOut = trackVector.at(0);
+								GLfloat x = pistaOut.getCenterX();
+								GLfloat y = pistaOut.getCenterY();
+								GLfloat altura = 4*player->getZHeight();
+
+								glPushMatrix();
+								glTranslatef(x, y, altura);
+
+								GLfloat raioOut = trackVector.at(0).getRadius();
+								GLfloat raioIn = trackVector.at(1).getRadius();
+								GLUquadricObj* quadratic = gluNewQuadric();
+								gluQuadricNormals(quadratic, GLU_SMOOTH);
+								glPushMatrix();
+								glMatrixMode(GL_TEXTURE);
+								glLoadIdentity();
+								glScalef(15.0f, 15.0f, 1.0f);
+								gluQuadricTexture(quadratic, GL_TRUE);
+								gluQuadricOrientation(quadratic, GLU_INSIDE);
+								gluDisk(quadratic,raioIn, raioOut, 100,20);
+								glLoadIdentity();
+								glMatrixMode(GL_MODELVIEW);
+								glPopMatrix();
+								glPopMatrix();
+}
+
+
+void TrabCG::drawScene(){
 
 
 								//Draw scenario
-								drawFloor();
-								drawSky();
-								drawWalls();
+								this->drawFloor(); //Floor
+								this->drawSky(); //Sky
+								this->drawWalls(); //Walls
 
 								//Draws the player's car
 								player->drawCar();
@@ -908,23 +916,27 @@ void Trab3::drawScene(){
 
 }
 
-void Trab3::drawMap(){
+void TrabCG::drawMap(){
 
+								//Disables texturing and lighting
 								glDisable(GL_TEXTURE_2D);
 								glDisable(GL_LIGHTING);
 								glClearColor (0.0,0.0,0.0,0.0);
+								//Reads the projection matrix
 								glMatrixMode(GL_PROJECTION);
 								glPushMatrix();
 								glLoadIdentity();
+								//Sets two dimensional ortho
 								glOrtho(
 																arenaCenterX - biggestRadius, arenaCenterX + biggestRadius,
 																arenaCenterY - biggestRadius, arenaCenterY + biggestRadius,
-																-1, 1
+																0, 1
 																);
 								glMatrixMode(GL_MODELVIEW);
 								glPushMatrix();
 								glLoadIdentity();
 
+								//Draws tracks as it should be in trabalho 2
 								Circle outerCircle = Circle("outer", trackVector.at(0).getRadius()/2, arenaCenterX+biggestRadius/2, arenaCenterY-biggestRadius/2, "blue", 0.2);
 								glColor4f(0,0,1,0.3);
 								outerCircle.drawCircle();
@@ -944,13 +956,14 @@ void Trab3::drawMap(){
 								glVertex3f(trackBeginX,trackBeginY+startTrack->getHeight()/2,0);
 								glEnd();
 
+								//Draws player as it was done in trablaho 2
 								GLfloat playerPosX = arenaCenterX + (player->getCenterX() - (arenaCenterX - biggestRadius))/2;
 								GLfloat playerPosY = arenaCenterY - (player->getCenterY() - (arenaCenterY - biggestRadius))/2;
 								Circle playerCircle = Circle("player", 10, playerPosX, playerPosY, "green", 1.0);
 								glColor4f(0,1,0,1);
 								playerCircle.drawCircle();
 
-
+								//Draws circles representing foes
 								for(vector<Car>::iterator it = foesVector.begin(); it != foesVector.end(); ++it) {
 																GLfloat foePosX = arenaCenterX + ((*it).getCenterX() - (arenaCenterX - biggestRadius))/2;
 																GLfloat foePosY = arenaCenterY - ((*it).getCenterY() - (arenaCenterY - biggestRadius))/2;
@@ -959,11 +972,14 @@ void Trab3::drawMap(){
 																foeCircle.drawCircle();
 								}
 
+
 								glPopMatrix();
+								//Returns to previous projection and modelview matrices
 								glMatrixMode(GL_PROJECTION);
 								glPopMatrix();
 								glMatrixMode(GL_MODELVIEW);
 
+								//If needed, enables lighting and texturing again
 								if(textureEnabled)
 																glEnable(GL_TEXTURE_2D);
 								if(lightingEnabled)

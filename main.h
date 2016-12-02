@@ -1,5 +1,5 @@
-#ifndef TRAB3_H
-#define TRAB3_H
+#ifndef TrabCG_H
+#define TrabCG_H
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -27,11 +27,11 @@
 using namespace std;
 using namespace tinyxml2;
 
-class Trab3 {
+class TrabCG {
 
 public:
   // CONSTRUCTORS
-  Trab3();
+  TrabCG();
 
   // Gets the path to the arena.svg file.
   // Also sets some configurations as the car speed.
@@ -39,7 +39,7 @@ public:
 
   // Reads the arena.svg file.
   // Returns vector containing the tracks of the arena.
-  vector<Circle> arenaReading(Trab3, string, vector<Circle>);
+  vector<Circle> arenaReading(TrabCG, string, vector<Circle>);
 
   // Reads the first rectangle of the arena (start track)
   Rectangle *rectangleReading(XMLElement *);
@@ -53,15 +53,29 @@ public:
   // Prints the Win/Lose message at the end of the game.
   void printEndMessage(GLfloat x, GLfloat y);
 
+	// Draws the game scene
   void drawScene();
+
+	//Draws a map of the game track in the lower right corner of the screen
   void drawMap();
 
+	//Function used to print the cronometer in the upper right corner of the screen
+	//As weel as the win/loose messages
   void PrintText(GLfloat x, GLfloat y, const char *text, double r, double g,
                  double b);
 
 private:
   void RasterChars(GLfloat x, GLfloat y, GLfloat z, const char *text, double r,
                    double g, double b);
+
+	//Draws the floor of the track
+  void drawFloor();
+
+	//Draws the walls
+  void drawWalls();
+
+	//Draws the sky
+  void drawSky();
 };
 
 // OPENGL CALLBACKS
@@ -84,4 +98,4 @@ bool outOfScreen(Shot);
 // RETURN: true - colided / false - didn't colided
 bool detectEnemyShotColision(Car);
 
-#endif // TRAB3_H
+#endif // TrabCG_H
