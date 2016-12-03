@@ -76,8 +76,8 @@ int main(int argc, char** argv) {
 								//OpenGL initializations
 								glutInit(&argc, argv);
 								glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);
-								/**RETROVISOR glutInitWindowSize(500,700); **/
-								glutInitWindowSize(500,500);
+								glutInitWindowSize(500,700);
+								// glutInitWindowSize(500,500);
 								glutInitWindowPosition(100,100);
 								glutCreateWindow("Trabalho Final de Computacao Grafica");
 
@@ -135,20 +135,23 @@ void display(){
 								//If player hasn't won or lost
 								if(gameState == 0) {
 
-																/**RETROVISOR GLfloat scale = player->getCircleRadius()/player->getWidth();
-																   glViewport(0,500,500,700);
-																   glLoadIdentity();
-																   cam1x=player->getCenterX()-4.5*player->getCircleRadius()*cos((player->getTheta()-90)*M_PI/180)+t*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
-																   cam1y=player->getCenterY()-4.5*player->getCircleRadius()*sin((player->getTheta()-90)*M_PI/180)+t*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
-																   cam1z=1.5*player->getZHeight();
-																   centro_x=cam1x-5000*(player->getSpeed()*cos((player->getTheta()-90)*M_PI/180));
-																   centro_y=cam1y-5000*(player->getSpeed()*sin((player->getTheta()-90)*M_PI/180));
-																   centro_z=cam1z*8;
-																   gluLookAt(cam1x, cam1y, cam1z, centro_x, centro_y, centro_z, 0, 0, 1);
-																   trab.drawScene();
+																GLfloat scale = player->getCircleRadius()/player->getWidth();
+																glViewport(0,500,500,700);
+																glLoadIdentity();
+																glDisable(GL_LIGHT1);
+																cam1x = player->getCenterX() - 20*sin(player->getTheta()*M_PI/180);
+																cam1y = player->getCenterY() + 20*cos(player->getTheta()*M_PI/180);
+																cam1z = 20;
+																centro_x = cam1x - 500*cos((player->getTheta()-90)*M_PI/180);
+																centro_y = cam1y - 500*sin((player->getTheta()-90)*M_PI/180);
+																centro_z = 200;
+																gluLookAt(cam1x, cam1y, cam1z, centro_x, centro_y, centro_z, 0, 0, 1);
+																trab.drawScene();
 
-																   glViewport(0,0,500,500);
-																   glLoadIdentity();*/
+																glViewport(0,0,500,500);
+																glLoadIdentity();
+
+																if(light1Enabled) glEnable(GL_LIGHT1);
 
 																if(cameraMode == 0) { //Sets camera to Cockpit vision
 																								cam1x = player->getCenterX() + 20*sin(player->getTheta()*M_PI/180);
